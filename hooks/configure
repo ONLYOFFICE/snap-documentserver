@@ -1,0 +1,93 @@
+#!/bin/sh
+#snapctl set ports.http=80
+#snapctl restart onlyoffice-documentserver.nginx
+#snap restart onlyoffice-documentserver.nginx
+
+# USER=postgres
+# PASS=postgres
+# DIR=/home/$USER
+
+# 	if grep $USER /etc/passwd; then
+# 		echo "The user $USER Exists"
+# 	else
+# 		useradd $USER -p $(openssl passwd -1 $PASS) -U -m -d $DIR  -s /bin/bash; chown -R $USER:$USER $DIR;
+# 	fi
+
+set -e
+
+create_rabbitmq_user(){
+	if ! getent group rabbitmq >/dev/null; then
+		addgroup --system rabbitmq
+	fi
+
+	# create rabbitmq user
+	if ! getent passwd rabbitmq >/dev/null; then
+		adduser --system \
+		--ingroup rabbitmq \
+		--home /var/lib/rabbitmq \
+                --no-create-home \
+		--gecos "RabbitMQ messaging server" \
+                --disabled-login rabbitmq
+	fi
+
+	mkdir -p /etc/rabbitmq
+	chown rabbitmq:rabbitmq /etc/rabbitmq
+	if [ -f /etc/rabbitmq/rabbitmq.conf ] && [ ! -f /etc/rabbitmq/rabbitmq-env.conf ]; then
+		mv /etc/rabbitmq/rabbitmq.conf /etc/rabbitmq/rabbitmq-env.conf
+		chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq-env.conf
+	fi
+	if [ -r /usr/share/rabbitmq/rabbitmq-env.conf ] && ! [ -e /etc/rabbitmq/rabbitmq-env.conf ] ; then
+		install -m 0644 -o rabbitmq -g rabbitmq /usr/share/rabbitmq/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
+	fi
+	if [ -f /etc/rabbitmq/enabled_plugins ] ; then
+		chown rabbitmq:rabbitmq /etc/rabbitmq/enabled_plugins
+	fi
+
+	mkdir -p /var/lib/rabbitmq/mnesia
+	chmod 750 /var/lib/rabbitmq/mnesia
+	chmod -R o-rwx,g-w /var/lib/rabbitmq/mnesia
+
+	chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
+	chown -R rabbitmq:rabbitmq /var/log/rabbitmq
+
+}
+
+create_rabbitmq_user
+
+
+mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/
+mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/converter/
+mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/gc/
+mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/
+mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/
+mkdir -p $SNAP_DATA/var/log/supervisor/
+mkdir -p $SNAP_DATA/var/run/
+mkdir -p $SNAP_DATA/var/log/nginx/
+mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver-example
+touch $SNAP_DATA/var/log/supervisor/supervisord.log
+touch $SNAP_DATA/var/run/supervisord.pid
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/out.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/err.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/out.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/err.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/out.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/err.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/out.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/err.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/out.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
+mkdir -p $SNAP_DATA/var/run
+touch $SNAP_DATA/var/run/supervisord.pid
+mkdir -p $SNAP_DATA/var/onlyoffice-documentserver/common/run/
+mkdir -p $SNAP_DATA/var/lib/rabbitmq/mnesia
+chown -R rabbitmq:rabbitmq $SNAP_DATA/var/lib/rabbitmq/
+mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver
+mkdir -p $SNAP_DATA/var/log/nginx
+mkdir -p $SNAP_DATA/var/cache/nginx/client_temp
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/nginx.error.log
+touch $SNAP_DATA/var/log/nginx/access.log
+touch $SNAP_DATA/var/log/nginx/error.log
+
+exit 0
