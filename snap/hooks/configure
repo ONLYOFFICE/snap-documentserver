@@ -30,12 +30,12 @@ create_rabbitmq_user(){
                 --disabled-login rabbitmq
 	fi
 
-	mkdir -p /etc/rabbitmq
-	chown rabbitmq:rabbitmq /etc/rabbitmq
-	if [ -f /etc/rabbitmq/rabbitmq.conf ] && [ ! -f /etc/rabbitmq/rabbitmq-env.conf ]; then
-		mv /etc/rabbitmq/rabbitmq.conf /etc/rabbitmq/rabbitmq-env.conf
-		chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq-env.conf
-	fi
+	# mkdir -p /etc/rabbitmq
+	# chown rabbitmq:rabbitmq /etc/rabbitmq
+	# if [ -f /etc/rabbitmq/rabbitmq.conf ] && [ ! -f /etc/rabbitmq/rabbitmq-env.conf ]; then
+	# 	mv /etc/rabbitmq/rabbitmq.conf /etc/rabbitmq/rabbitmq-env.conf
+	# 	chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq-env.conf
+	# fi
 	# if [ -r /usr/share/rabbitmq/rabbitmq-env.conf ] && ! [ -e /etc/rabbitmq/rabbitmq-env.conf ] ; then
 	# 	install -m 0644 -o rabbitmq -g rabbitmq /usr/share/rabbitmq/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
 	# fi
