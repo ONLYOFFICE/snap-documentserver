@@ -190,7 +190,7 @@ parts:
       - zlibc 
       - zlib1g
       - zlib1g-dev
-      - bash-completion
+      - wget
 
 
   starter:
