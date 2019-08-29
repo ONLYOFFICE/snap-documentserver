@@ -65,7 +65,7 @@ DB_PWD="onlyoffice"
 DB_NAME="onlyoffice"
 
 install_db(){
-        CONNECTION_PARAMS="-h$DB_HOST -U$DB_USER -w"
+        CONNECTION_PARAMS=" -U$DB_USER -w"
         if [ -n "$DB_PWD" ]; then
                 export PGPASSWORD=$DB_PWD
         fi
