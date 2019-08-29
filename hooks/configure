@@ -15,44 +15,44 @@
 
 # set -e
 
-# create_rabbitmq_user(){
-# 	if ! getent group rabbitmq >/dev/null; then
-# 		addgroup --system rabbitmq
-# 	fi
+create_rabbitmq_user(){
+	if ! getent group rabbitmq >/dev/null; then
+		addgroup --system rabbitmq
+	fi
 
-# 	# create rabbitmq user
-# 	if ! getent passwd rabbitmq >/dev/null; then
-# 		adduser --system \
-# 		--ingroup rabbitmq \
-# 		--home /var/lib/rabbitmq \
-#                 --no-create-home \
-# 		--gecos "RabbitMQ messaging server" \
-#                 --disabled-login rabbitmq
-# 	fi
+	# create rabbitmq user
+	if ! getent passwd rabbitmq >/dev/null; then
+		adduser --system \
+		--ingroup rabbitmq \
+		--home /var/lib/rabbitmq \
+                --no-create-home \
+		--gecos "RabbitMQ messaging server" \
+                --disabled-login rabbitmq
+	fi
 
-# 	mkdir -p /etc/rabbitmq
-# 	chown rabbitmq:rabbitmq /etc/rabbitmq
-# 	if [ -f /etc/rabbitmq/rabbitmq.conf ] && [ ! -f /etc/rabbitmq/rabbitmq-env.conf ]; then
-# 		mv /etc/rabbitmq/rabbitmq.conf /etc/rabbitmq/rabbitmq-env.conf
-# 		chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq-env.conf
-# 	fi
-# 	if [ -r /usr/share/rabbitmq/rabbitmq-env.conf ] && ! [ -e /etc/rabbitmq/rabbitmq-env.conf ] ; then
-# 		install -m 0644 -o rabbitmq -g rabbitmq /usr/share/rabbitmq/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
-# 	fi
-# 	if [ -f /etc/rabbitmq/enabled_plugins ] ; then
-# 		chown rabbitmq:rabbitmq /etc/rabbitmq/enabled_plugins
-# 	fi
+	mkdir -p /etc/rabbitmq
+	chown rabbitmq:rabbitmq /etc/rabbitmq
+	if [ -f /etc/rabbitmq/rabbitmq.conf ] && [ ! -f /etc/rabbitmq/rabbitmq-env.conf ]; then
+		mv /etc/rabbitmq/rabbitmq.conf /etc/rabbitmq/rabbitmq-env.conf
+		chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq-env.conf
+	fi
+	# if [ -r /usr/share/rabbitmq/rabbitmq-env.conf ] && ! [ -e /etc/rabbitmq/rabbitmq-env.conf ] ; then
+	# 	install -m 0644 -o rabbitmq -g rabbitmq /usr/share/rabbitmq/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
+	# fi
+	# if [ -f /etc/rabbitmq/enabled_plugins ] ; then
+	# 	chown rabbitmq:rabbitmq /etc/rabbitmq/enabled_plugins
+	# fi
 
-# 	mkdir -p /var/lib/rabbitmq/mnesia
-# 	chmod 750 /var/lib/rabbitmq/mnesia
-# 	chmod -R o-rwx,g-w /var/lib/rabbitmq/mnesia
+	# mkdir -p /var/lib/rabbitmq/mnesia
+	# chmod 750 /var/lib/rabbitmq/mnesia
+	# chmod -R o-rwx,g-w /var/lib/rabbitmq/mnesia
 
-# 	chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
-# 	chown -R rabbitmq:rabbitmq /var/log/rabbitmq
+	# chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
+	# chown -R rabbitmq:rabbitmq /var/log/rabbitmq
 
-# }
+}
 
-# create_rabbitmq_user
+create_rabbitmq_user
 
 DIR="$SNAP/var/www/onlyoffice/documentserver"
 LOG_DIR="$SNAP_DATA/var/log/onlyoffice/documentserver"

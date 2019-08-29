@@ -194,7 +194,7 @@ parts:
 
   starter:
     plugin: dump
-    source: snap/config
+    source: ./config/
     organize:
       start: bin/start
       production-linux.json: etc/onlyoffice/documentserver/production-linux.json

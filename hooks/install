@@ -28,7 +28,7 @@ mkdir -p $SNAP_DATA/var/run
 touch $SNAP_DATA/var/run/supervisord.pid
 mkdir -p $SNAP_DATA/var/onlyoffice-documentserver/common/run/
 mkdir -p $SNAP_DATA/var/lib/rabbitmq/mnesia
-chown -R rabbitmq:rabbitmq $SNAP_DATA/var/lib/rabbitmq/
+#chown -R rabbitmq:rabbitmq $SNAP_DATA/var/lib/rabbitmq/
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver
 mkdir -p $SNAP_DATA/var/cache/nginx/client_temp
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/nginx.error.log
