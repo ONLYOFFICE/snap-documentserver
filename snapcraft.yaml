@@ -56,7 +56,7 @@ parts:
 
   onlyoffice-documentserver:
     plugin: dump
-    source: onlyoffice-documentserver-ie_5.3.4-3_amd64.deb
+    source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-ie_amd64.deb #snap/onlyoffice-documentserver-ie_5.3.4-3_amd64.deb
     source-type: deb
     stage-packages:
       - libcurl3
@@ -73,6 +73,10 @@ parts:
       - locales-all
       - locales
       - libc6
+      #- postgresql-client-common
+      #- perl
+    stage-snaps:
+      - postgresql96
     override-build: |
       rm -f lib/libicuuc.so.58
       rm -f lib/libPdfWriter.so
@@ -87,6 +91,8 @@ parts:
       rm -f lib/libicudata.so.58
       rm -f lib/libgraphics.so
       snapcraftctl build
+      # posgresql
+      cp $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.7.0 $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.6
       # edition supervisor/* && /supervisord.conf ds-example.conf
       sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/\/etc/%(ENV_SNAP)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
@@ -188,7 +194,7 @@ parts:
 
   starter:
     plugin: dump
-    source: ./config
+    source: snap/config
     organize:
       start: bin/start
       production-linux.json: etc/onlyoffice/documentserver/production-linux.json
