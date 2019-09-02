@@ -202,11 +202,6 @@ parts:
       ds-example.conf: etc/supervisor/conf.d/ds-example.conf
       default.json: etc/onlyoffice/documentserver-example/default.json
       nginx.conf: etc/nginx/nginx.conf
-
-  bin:
-    plugin: dump
-    source: ./bin/
-    organize:
       documentserver-start.sh: usr/sbin/documentserver-start.sh
       rabbitmq-env.sh: usr/lib/rabbitmq/bin/rabbitmq-env.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
