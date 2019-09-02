@@ -11,7 +11,7 @@ architectures:
 apps:
   onlyoffice-documentserver:
     adapter: full
-    command: bin/start
+    command: usr/sbin/documentserver-start.sh
     daemon: simple
     plugs:
       - home
@@ -26,8 +26,8 @@ apps:
     adapter: full
   
   nginx:
-    command: usr/nginx_start
-    stop-command: usr/nginx_start -s stop
+    command: usr/sbin/nginx-start.sh
+    stop-command: usr/sbin/nginx-start.sh -s stop
     daemon: simple
     restart-condition: always
     plugs: [network, network-bind, removable-media]
@@ -51,7 +51,8 @@ parts:
     override-build: |
       snapcraftctl build
       # rabbitmq-server
-      mv $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env-old
+      sed -i -e 's/rabbitmq-env/rabbitmq-env.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
+      #mv $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env-old
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
   onlyoffice-documentserver:
@@ -197,13 +198,15 @@ parts:
     plugin: dump
     source: ./config/
     organize:
-      start: bin/start
       production-linux.json: etc/onlyoffice/documentserver/production-linux.json
       ds-example.conf: etc/supervisor/conf.d/ds-example.conf
-      fastcgi.conf: etc/nginx/fastcgi.conf
-      proxy_params: etc/nginx/proxy_params
-      docManager.js: var/www/onlyoffice/documentserver-example/helpers/docManager.js
       default.json: etc/onlyoffice/documentserver-example/default.json
-      rabbitmq-env: usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env
-      nginx_start: usr/nginx_start
       nginx.conf: etc/nginx/nginx.conf
+
+  bin:
+    plugin: dump
+    source: ./bin/
+    organize:
+      documentserver-start.sh: usr/sbin/documentserver-start.sh
+      rabbitmq-env.sh: usr/lib/rabbitmq/bin/rabbitmq-env.sh
+      nginx-start.sh: usr/sbin/nginx-start.sh
