@@ -168,7 +168,7 @@ parts:
       rm -f etc/nginx/modules
       rm $SNAPCRAFT_PART_INSTALL/etc/nginx/nginx.conf
       #rm -f $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/default.conf
-      #################################
+      ################################
       sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i -e 's/\/etc/%(ENV_SNAP)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-documentserver\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
