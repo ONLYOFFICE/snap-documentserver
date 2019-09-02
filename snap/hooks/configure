@@ -54,46 +54,46 @@ create_rabbitmq_user(){
 
 create_rabbitmq_user
 
-DIR="$SNAP/var/www/onlyoffice/documentserver"
-LOG_DIR="$SNAP_DATA/var/log/onlyoffice/documentserver"
-APP_DIR="$SNAP/var/lib/onlyoffice/documentserver"
-CONF_DIR="$SNAP_DATA/etc/onlyoffice/documentserver"
+# DIR="$SNAP/var/www/onlyoffice/documentserver"
+# LOG_DIR="$SNAP_DATA/var/log/onlyoffice/documentserver"
+# APP_DIR="$SNAP/var/lib/onlyoffice/documentserver"
+# CONF_DIR="$SNAP_DATA/etc/onlyoffice/documentserver"
 
-DB_HOST="localhost"
-DB_USER="onlyoffice"
-DB_PWD="onlyoffice"
-DB_NAME="onlyoffice"
+# DB_HOST="localhost"
+# DB_USER="onlyoffice"
+# DB_PWD="onlyoffice"
+# DB_NAME="onlyoffice"
 
-install_db(){
-        CONNECTION_PARAMS=" -U$DB_USER -w"
-        if [ -n "$DB_PWD" ]; then
-                export PGPASSWORD=$DB_PWD
-        fi
+# install_db(){
+#         CONNECTION_PARAMS=" -U$DB_USER -w"
+#         if [ -n "$DB_PWD" ]; then
+#                 export PGPASSWORD=$DB_PWD
+#         fi
 
-        PSQL="$SNAP/usr/bin/wrapper-psql -h 127.0.0.1 -d postgres -q $CONNECTION_PARAMS"
-        CREATEDB="$SNAP/usr/bin/createdb $CONNECTION_PARAMS"
+#         PSQL="$SNAP/usr/bin/wrapper-psql -h 127.0.0.1 -d postgres -q $CONNECTION_PARAMS"
+#         CREATEDB="$SNAP/usr/bin/createdb $CONNECTION_PARAMS"
 
-	# test postgresql connection
-	set +e
-        $PSQL -c ";" &>/dev/null
-        ERRCODE=$?
-        if [ $ERRCODE -ne 0 ]; then
-                service postgresql start &>/dev/null
-                $PSQL -c ";" &>/dev/null || { echo "ERROR: can't connect to postgressql database"; exit 1; }
-        fi
-	set -e
+# 	# test postgresql connection
+# 	set +e
+#         $PSQL -c ";" &>/dev/null
+#         ERRCODE=$?
+#         if [ $ERRCODE -ne 0 ]; then
+#                 service postgresql start &>/dev/null
+#                 $PSQL -c ";" &>/dev/null || { echo "ERROR: can't connect to postgressql database"; exit 1; }
+#         fi
+# 	set -e
 
-        if ! $PSQL -lt | cut -d\| -f 1 | grep -qw $DB_NAME; then
-                $CREATEDB $DB_NAME >/dev/null 2>&1
-        fi
+#         if ! $PSQL -lt | cut -d\| -f 1 | grep -qw $DB_NAME; then
+#                 $CREATEDB $DB_NAME >/dev/null 2>&1
+#         fi
 
-        if [ ! "$CLUSTER_MODE" = true ]; then
-                $PSQL -d "$DB_NAME" -f "$DIR/server/schema/postgresql/removetbl.sql" >/dev/null 2>&1
-        fi
-        $PSQL -d "$DB_NAME" -f "$DIR/server/schema/postgresql/createdb.sql" >/dev/null 2>&1
-}
+#         if [ ! "$CLUSTER_MODE" = true ]; then
+#                 $PSQL -d "$DB_NAME" -f "$DIR/server/schema/postgresql/removetbl.sql" >/dev/null 2>&1
+#         fi
+#         $PSQL -d "$DB_NAME" -f "$DIR/server/schema/postgresql/createdb.sql" >/dev/null 2>&1
+# }
 
-install_db
+# install_db
 
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/converter/
@@ -110,7 +110,7 @@ touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/err.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/err.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/out.log
+touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/out.log	
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/err.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/err.log
@@ -130,3 +130,50 @@ touch $SNAP_DATA/var/log/onlyoffice/documentserver/nginx.error.log
 touch $SNAP_DATA/var/log/nginx/access.log
 touch $SNAP_DATA/var/log/nginx/error.log
 
+cp  -R $SNAP/etc $SNAP_DATA/
+
+DEFAULT_HTTP_PORT="80"
+
+nginx_http_port()
+{
+	http_port="$(http_port)"
+	previous_http_port="$(previous_http_port)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$http_port" = "$previous_http_port" ]; then
+		return 0
+	fi
+	set_http_port "$http_port"
+	set_previous_http_port $http_port
+	sed -i -e "s/${previous_http_port}/${http_port}/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
+	snapctl restart onlyoffice-documentserver.nginx
+}
+
+set_http_port()
+{
+	snapctl set ports.http="$1"
+}
+
+http_port()
+{
+	port="$(snapctl get ports.http)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_HTTP_PORT"
+		set_http_port $port
+		set_previous_http_port $port
+	fi
+
+	echo "$port"
+}
+
+previous_http_port()
+{
+	snapctl get private.ports.http
+}
+
+set_previous_http_port()
+{
+	snapctl set private.ports.http="$1"
+}
+
+nginx_http_port

@@ -75,8 +75,8 @@ parts:
       - libc6
       #- postgresql-client-common
       #- perl
-    stage-snaps:
-      - postgresql96
+    #stage-snaps:
+      #- postgresql96
     override-build: |
       rm -f lib/libicuuc.so.58
       rm -f lib/libPdfWriter.so
@@ -154,7 +154,7 @@ parts:
       wget https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.bz2 -O pcre.tar.bz2
       mkdir pcre
       tar xvf pcre.tar.bz2 --strip-components 1 -C pcre/
-      auto/configure --prefix=/snap/onlyoffice-documentserver/current/etc/nginx --sbin-path=/snap/onlyoffice-documentserver/current/usr/sbin --conf-path=/snap/onlyoffice-documentserver/current/etc/nginx/nginx.conf --error-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/error.log --http-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/access.log --pid-path=/var/snap/onlyoffice-documentserver/current/var/run/nginx.pid --lock-path=/var/snap/onlyoffice-documentserver/current/var/lock/nginx.lock --http-client-body-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/client_temp --http-proxy-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/scgi_temp --with-http_secure_link_module
+      auto/configure --prefix=/snap/onlyoffice-documentserver/current/etc/nginx --sbin-path=/snap/onlyoffice-documentserver/current/usr/sbin --conf-path=/var/snap/onlyoffice-documentserver/current/etc/nginx/nginx.conf --error-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/error.log --http-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/access.log --pid-path=/var/snap/onlyoffice-documentserver/current/var/run/nginx.pid --lock-path=/var/snap/onlyoffice-documentserver/current/var/lock/nginx.lock --http-client-body-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/client_temp --http-proxy-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/scgi_temp --with-http_secure_link_module
       make
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
       cp objs/nginx $SNAPCRAFT_PART_INSTALL/bin/nginx
