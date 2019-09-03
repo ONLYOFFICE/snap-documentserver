@@ -51,7 +51,7 @@ parts:
       snapcraftctl build
       # rabbitmq-server
       sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
-      #mv $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env-old
+      # mv $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env-old
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
   onlyoffice-documentserver:
