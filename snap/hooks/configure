@@ -164,3 +164,13 @@ set_sql_port()
 
 nginx_http_port
 db_sql_port
+
+# if grep ds /etc/passwd; then
+# 	echo "The user ds Exists"
+# else
+# 	# add nginx user to M4_ONLYOFFICE_VALUE group to allow access nginx to M4_ONLYOFFICE_VALUE log dir
+# 	adduser --quiet --home "$DIR" --system --group ds
+# 	adduser --quiet www-data ds
+# 	chown ds:ds -R "$SNAP_COMMON"
+# 	chown ds:ds -R "$SNAP_DATA"
+# fi
