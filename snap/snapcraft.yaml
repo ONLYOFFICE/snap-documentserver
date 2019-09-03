@@ -58,7 +58,7 @@ parts:
     override-build: |
       snapcraftctl build
       # rabbitmq-server
-      sed -i -e 's/rabbitmq-env/rabbitmq-env.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
+      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
       #mv $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-env-old
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
@@ -103,10 +103,10 @@ parts:
       cp $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.7.0 $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.6
       # edition supervisor/* && /supervisord.conf ds-example.conf
       sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/\/etc/%(ENV_SNAP)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
+      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/ds-example.conf
-      sed -i -e 's/\/etc/%(ENV_SNAP)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/ds-example.conf
+      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/ds-example.conf
       sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/ds-example.conf
       sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/*
@@ -156,9 +156,9 @@ parts:
       - redis-server
     override-build: |
       snapcraftctl build
-      wget https://sourceforge.net/projects/libpng/files/zlib/1.2.11/zlib-1.2.11.tar.gz/download -O zlib.tar.gz
+      wget https://www.zlib.net/fossils/zlib-1.2.11.tar.gz
       mkdir zlib
-      tar xvf zlib.tar.gz --strip-components 1 -C zlib/
+      tar xvf zlib-1.2.11.tar.gz --strip-components 1 -C zlib/
       wget https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.bz2 -O pcre.tar.bz2
       mkdir pcre
       tar xvf pcre.tar.bz2 --strip-components 1 -C pcre/
@@ -177,7 +177,7 @@ parts:
       #rm -f $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/default.conf
       ################################
       sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/\/etc/%(ENV_SNAP)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i -e 's/chmod=0700/chmod=0777\nchown root:root/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-documentserver\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
       sed -i -e 's/etc/snap\/onlyoffice-documentserver\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
@@ -216,5 +216,5 @@ parts:
     source: ./bin/
     organize:
       documentserver-start.sh: usr/sbin/documentserver-start.sh
-      rabbitmq-env.sh: usr/lib/rabbitmq/bin/rabbitmq-env.sh
+      rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh

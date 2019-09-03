@@ -13,8 +13,6 @@
 # 		useradd $USER -p $(openssl passwd -1 $PASS) -U -m -d $DIR  -s /bin/bash; chown -R $USER:$USER $DIR;
 # 	fi
 
-# set -e
-
 create_rabbitmq_user(){
 	if ! getent group rabbitmq >/dev/null; then
 		addgroup --system rabbitmq
@@ -29,26 +27,6 @@ create_rabbitmq_user(){
 		--gecos "RabbitMQ messaging server" \
                 --disabled-login rabbitmq
 	fi
-
-	# mkdir -p /etc/rabbitmq
-	# chown rabbitmq:rabbitmq /etc/rabbitmq
-	# if [ -f /etc/rabbitmq/rabbitmq.conf ] && [ ! -f /etc/rabbitmq/rabbitmq-env.conf ]; then
-	# 	mv /etc/rabbitmq/rabbitmq.conf /etc/rabbitmq/rabbitmq-env.conf
-	# 	chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq-env.conf
-	# fi
-	# if [ -r /usr/share/rabbitmq/rabbitmq-env.conf ] && ! [ -e /etc/rabbitmq/rabbitmq-env.conf ] ; then
-	# 	install -m 0644 -o rabbitmq -g rabbitmq /usr/share/rabbitmq/rabbitmq-env.conf /etc/rabbitmq/rabbitmq-env.conf
-	# fi
-	# if [ -f /etc/rabbitmq/enabled_plugins ] ; then
-	# 	chown rabbitmq:rabbitmq /etc/rabbitmq/enabled_plugins
-	# fi
-
-	# mkdir -p /var/lib/rabbitmq/mnesia
-	# chmod 750 /var/lib/rabbitmq/mnesia
-	# chmod -R o-rwx,g-w /var/lib/rabbitmq/mnesia
-
-	# chown -R rabbitmq:rabbitmq /var/lib/rabbitmq
-	# chown -R rabbitmq:rabbitmq /var/log/rabbitmq
 
 }
 
@@ -95,44 +73,11 @@ create_rabbitmq_user
 
 # install_db
 
-# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/
-# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/converter/
-# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/gc/
-# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/
-# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/
-# mkdir -p $SNAP_DATA/var/log/supervisor/
-# mkdir -p $SNAP_DATA/var/run/
-# mkdir -p $SNAP_DATA/var/log/nginx/
-# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver-example
-# touch $SNAP_DATA/var/log/supervisor/supervisord.log
-# touch $SNAP_DATA/var/run/supervisord.pid
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/out.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/err.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/out.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/err.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/out.log	
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/err.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/out.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/err.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/out.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
-# mkdir -p $SNAP_DATA/var/run
-# touch $SNAP_DATA/var/run/supervisord.pid
-# mkdir -p $SNAP_DATA/var/onlyoffice-documentserver/common/run/
-# mkdir -p $SNAP_DATA/var/lib/rabbitmq/mnesia
-# chown -R rabbitmq:rabbitmq $SNAP_DATA/var/lib/rabbitmq/
-# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver
-# mkdir -p $SNAP_DATA/var/log/nginx
-# mkdir -p $SNAP_DATA/var/cache/nginx/client_temp
-# touch $SNAP_DATA/var/log/onlyoffice/documentserver/nginx.error.log
-# touch $SNAP_DATA/var/log/nginx/access.log
-# touch $SNAP_DATA/var/log/nginx/error.log
 
 cp  -R $SNAP/etc $SNAP_DATA/
 
 DEFAULT_HTTP_PORT="80"
+DEFAULT_SQL_PORT="5432"
 
 nginx_http_port()
 {
@@ -176,4 +121,46 @@ set_previous_http_port()
 	snapctl set private.ports.http="$1"
 }
 
+db_sql_port()
+{
+	sql_port="$(sql_port)"
+	previous_sql_port="$(previous_sql_port)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$sql_port" = "$previous_sql_port" ]; then
+		return 0
+	fi
+	set_sql_port "$sql_port"
+	set_previous_sql_port $sql_port
+	sed -i -e "s/${previous_sql_port}/${sql_port}/g" $SNAP_DATA/etc/onlyoffice/documentserver/default.json
+	snapctl restart onlyoffice-documentserver.onlyoffice-documentserver
+}
+
+previous_sql_port()
+{
+	snapctl get private.ports.sql
+}
+
+sql_port()
+{
+	port="$(snapctl get ports.sql)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_SQL_PORT"
+		set_sql_port $port
+		set_previous_sql_port $port
+	fi
+
+	echo "$port"
+}
+
+set_previous_sql_port()
+{
+	snapctl set private.ports.sql="$1"
+}
+set_sql_port()
+{
+	snapctl set ports.sql="$1"
+}
+
 nginx_http_port
+db_sql_port
