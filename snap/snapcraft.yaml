@@ -20,8 +20,9 @@ apps:
       - network
       - network-bind
       - locale-control
-      - browser-support
       - removable-media
+      - system-observe
+      - network-observe
 
   node:
     command: bin/node
@@ -178,7 +179,7 @@ parts:
       ################################
       sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/chmod=0700/chmod=0777\nchown root:root/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/chmod=0700/chmod=0777\nchown root/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-documentserver\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
       sed -i -e 's/etc/snap\/onlyoffice-documentserver\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
       sed -i -e 's/lib/snap\/onlyoffice-documentserver\/current\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
