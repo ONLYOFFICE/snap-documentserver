@@ -95,40 +95,40 @@ create_rabbitmq_user
 
 # install_db
 
-mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/
-mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/converter/
-mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/gc/
-mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/
-mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/
-mkdir -p $SNAP_DATA/var/log/supervisor/
-mkdir -p $SNAP_DATA/var/run/
-mkdir -p $SNAP_DATA/var/log/nginx/
-mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver-example
-touch $SNAP_DATA/var/log/supervisor/supervisord.log
-touch $SNAP_DATA/var/run/supervisord.pid
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/out.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/err.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/out.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/err.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/out.log	
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/err.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/out.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/err.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/out.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
-touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
-mkdir -p $SNAP_DATA/var/run
-touch $SNAP_DATA/var/run/supervisord.pid
-mkdir -p $SNAP_DATA/var/onlyoffice-documentserver/common/run/
-mkdir -p $SNAP_DATA/var/lib/rabbitmq/mnesia
-chown -R rabbitmq:rabbitmq $SNAP_DATA/var/lib/rabbitmq/
-mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver
-mkdir -p $SNAP_DATA/var/log/nginx
-mkdir -p $SNAP_DATA/var/cache/nginx/client_temp
-touch $SNAP_DATA/var/log/onlyoffice/documentserver/nginx.error.log
-touch $SNAP_DATA/var/log/nginx/access.log
-touch $SNAP_DATA/var/log/nginx/error.log
+# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/
+# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/converter/
+# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/gc/
+# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/
+# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/
+# mkdir -p $SNAP_DATA/var/log/supervisor/
+# mkdir -p $SNAP_DATA/var/run/
+# mkdir -p $SNAP_DATA/var/log/nginx/
+# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver-example
+# touch $SNAP_DATA/var/log/supervisor/supervisord.log
+# touch $SNAP_DATA/var/run/supervisord.pid
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/out.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/err.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/out.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/converter/err.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/out.log	
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/gc/err.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/out.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/err.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/out.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
+# mkdir -p $SNAP_DATA/var/run
+# touch $SNAP_DATA/var/run/supervisord.pid
+# mkdir -p $SNAP_DATA/var/onlyoffice-documentserver/common/run/
+# mkdir -p $SNAP_DATA/var/lib/rabbitmq/mnesia
+# chown -R rabbitmq:rabbitmq $SNAP_DATA/var/lib/rabbitmq/
+# mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver
+# mkdir -p $SNAP_DATA/var/log/nginx
+# mkdir -p $SNAP_DATA/var/cache/nginx/client_temp
+# touch $SNAP_DATA/var/log/onlyoffice/documentserver/nginx.error.log
+# touch $SNAP_DATA/var/log/nginx/access.log
+# touch $SNAP_DATA/var/log/nginx/error.log
 
 cp  -R $SNAP/etc $SNAP_DATA/
 
