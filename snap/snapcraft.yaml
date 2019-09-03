@@ -1,5 +1,5 @@
 name: onlyoffice-documentserver
-version: "1.1"
+version: "5.4.0"
 summary: "An office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE onlyoffice-documentserver"
 grade: stable # must be 'stable' to release into candidate/stable channels
@@ -9,7 +9,7 @@ architectures:
   - amd64
 
 apps:
-  onlyoffice-documentserver:
+  documentserver:
     adapter: full
     command: usr/sbin/documentserver-start.sh
     daemon: simple
@@ -56,7 +56,7 @@ parts:
 
   onlyoffice-documentserver:
     plugin: dump
-    source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-ie_amd64.deb #snap/onlyoffice-documentserver-ie_5.3.4-3_amd64.deb
+    source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver_amd64.deb
     source-type: deb
     stage-packages:
       - libcurl3
@@ -73,10 +73,6 @@ parts:
       - locales-all
       - locales
       - libc6
-      #- postgresql-client-common
-      #- perl
-    #stage-snaps:
-      #- postgresql96
     override-build: |
       rm -f lib/libicuuc.so.58
       rm -f lib/libPdfWriter.so
@@ -91,44 +87,28 @@ parts:
       rm -f lib/libicudata.so.58
       rm -f lib/libgraphics.so
       snapcraftctl build
-      # posgresql
-      cp $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.7.0 $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.6
-      # edition supervisor/* && /supervisord.conf ds-example.conf
+      # edition supervisor/* && /supervisord.conf
       sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/ds-example.conf
-      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/ds-example.conf
-      sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/ds-example.conf
       sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/supervisor/*
       # edition etc/onlyoffice/documentserver/nginx/ds...
       sed -i -e 's/etc/snap\/onlyoffice-documentserver\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
       cp $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/ds.conf
-      sed -i -e 's/var\/log\/onlyoffice\/documentserver\/nginx.error.log/var\/snap\/onlyoffice-documentserver\/current\/var\/log\/onlyoffice\/documentserver\/nginx.error.log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-common.conf
+      sed -i -e 's/\(var\/log\/onlyoffice\/documentserver\/nginx.error.log\)/var\/snap\/onlyoffice-documentserver\/current\/\1/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-common.conf
       sed -i -e 's/var\/www/snap\/onlyoffice-documentserver\/current\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
       sed -i -e 's/var\/lib/var\/snap\/onlyoffice-documentserver\/common\/var\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
-      sed -i -e 's/var/snap\/onlyoffice-documentserver\/current\/var/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/nginx/includes/ds-example.conf
       # edition documentserver && documentserver-example
       mv $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json-old
-      mv $SNAPCRAFT_PART_INSTALL/etc/supervisor/conf.d/ds-example.conf $SNAPCRAFT_PART_INSTALL/etc/supervisor/conf.d/ds-example.conf-old
-      sed -i -e 's/web-apps/snap\/onlyoffice-documentserver\/current\/var\/www\/onlyoffice\/documentserver\/web-apps/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/default.json
       # copy lib
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/*.so $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicuuc.so.58 $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicudata.so.58 $SNAPCRAFT_PART_INSTALL/lib/
-      # mv docManager.js and default.json
-      mv $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver-example/helpers/docManager.js $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver-example/helpers/docManager.js-old
-      mv $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/default.json $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example/default.json-old
       # documentserver-generate-allfonts.sh
-      sed -i -e 's/DIR="/DIR="$SNAPCRAFT_PART_INSTALL/g' $SNAPCRAFT_PART_INSTALL/usr/bin/documentserver-generate-allfonts.sh
-      sed -i -e 's/echo -n Generating AllFonts.js, please wait.../echo -n Generating AllFonts.js, please wait...\nexport LD_LIBRARY_PATH="\$LD_LIBRARY_PATH:\$SNAPCRAFT_PART_INSTALL\/lib:$LD_LIBRARY_PATH"/g' $SNAPCRAFT_PART_INSTALL/usr/bin/documentserver-generate-allfonts.sh
-      sed -i -e 's/--use-system="true"/--use-system="false"/g' $SNAPCRAFT_PART_INSTALL/usr/bin/documentserver-generate-allfonts.sh
-      sed -i -e 's/chown/#chown/g' $SNAPCRAFT_PART_INSTALL/usr/bin/documentserver-generate-allfonts.sh
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/fonts
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
-      "$DIR/server/tools/AllFontsGen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
+      "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
 
 
   node:
@@ -154,16 +134,17 @@ parts:
       wget https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.bz2 -O pcre.tar.bz2
       mkdir pcre
       tar xvf pcre.tar.bz2 --strip-components 1 -C pcre/
-      auto/configure --prefix=/snap/onlyoffice-documentserver/current/etc/nginx --sbin-path=/snap/onlyoffice-documentserver/current/usr/sbin --conf-path=/var/snap/onlyoffice-documentserver/current/etc/nginx/nginx.conf --error-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/error.log --http-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/access.log --pid-path=/var/snap/onlyoffice-documentserver/current/var/run/nginx.pid --lock-path=/var/snap/onlyoffice-documentserver/current/var/lock/nginx.lock --http-client-body-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/client_temp --http-proxy-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/proxy_temp --http-fastcgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/scgi_temp --with-http_secure_link_module
+      auto/configure --prefix=/snap/onlyoffice-documentserver/current/etc/nginx --sbin-path=/snap/onlyoffice-documentserver/current/usr/sbin --conf-path=/var/snap/onlyoffice-documentserver/current/etc/nginx/nginx.conf \
+      --error-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/error.log --http-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/access.log --pid-path=/var/snap/onlyoffice-documentserver/current/var/run/nginx.pid \
+      --lock-path=/var/snap/onlyoffice-documentserver/current/var/lock/nginx.lock --http-client-body-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/client_temp --http-proxy-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/proxy_temp \
+      --http-fastcgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/scgi_temp \
+      --with-http_secure_link_module
       make
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
       cp objs/nginx $SNAPCRAFT_PART_INSTALL/bin/nginx
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx
       cp conf/* $SNAPCRAFT_PART_INSTALL/etc/nginx
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
-      ###########################################################
-      #cp /root/parts/onlyoffice-documentserver/install/etc/onlyoffice/documentserver/nginx/ds.conf $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/ds.conf
-      ###########################################################
       rm -f etc/nginx/modules
       rm $SNAPCRAFT_PART_INSTALL/etc/nginx/nginx.conf
       #rm -f $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/default.conf
@@ -199,8 +180,6 @@ parts:
     source: ./config/
     organize:
       production-linux.json: etc/onlyoffice/documentserver/production-linux.json
-      ds-example.conf: etc/supervisor/conf.d/ds-example.conf
-      default.json: etc/onlyoffice/documentserver-example/default.json
       nginx.conf: etc/nginx/nginx.conf
 
   bin:
