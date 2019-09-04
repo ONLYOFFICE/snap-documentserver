@@ -1,176 +1,236 @@
 #!/bin/sh
-#snapctl set ports.http=80
-#snapctl restart onlyoffice-documentserver.nginx
-#snap restart onlyoffice-documentserver.nginx
-
-# USER=postgres
-# PASS=postgres
-# DIR=/home/$USER
-
-# 	if grep $USER /etc/passwd; then
-# 		echo "The user $USER Exists"
-# 	else
-# 		useradd $USER -p $(openssl passwd -1 $PASS) -U -m -d $DIR  -s /bin/bash; chown -R $USER:$USER $DIR;
-# 	fi
-
-create_rabbitmq_user(){
-	if ! getent group rabbitmq >/dev/null; then
-		addgroup --system rabbitmq
-	fi
-
-	# create rabbitmq user
-	if ! getent passwd rabbitmq >/dev/null; then
-		adduser --system \
-		--ingroup rabbitmq \
-		--home /var/lib/rabbitmq \
-                --no-create-home \
-		--gecos "RabbitMQ messaging server" \
-                --disabled-login rabbitmq
-	fi
-
-}
-
-create_rabbitmq_user
-
-# DIR="$SNAP/var/www/onlyoffice/documentserver"
-# LOG_DIR="$SNAP_DATA/var/log/onlyoffice/documentserver"
-# APP_DIR="$SNAP/var/lib/onlyoffice/documentserver"
-# CONF_DIR="$SNAP_DATA/etc/onlyoffice/documentserver"
-
-# DB_HOST="localhost"
-# DB_USER="onlyoffice"
-# DB_PWD="onlyoffice"
-# DB_NAME="onlyoffice"
-
-# install_db(){
-#         CONNECTION_PARAMS=" -U$DB_USER -w"
-#         if [ -n "$DB_PWD" ]; then
-#                 export PGPASSWORD=$DB_PWD
-#         fi
-
-#         PSQL="$SNAP/usr/bin/wrapper-psql -h 127.0.0.1 -d postgres -q $CONNECTION_PARAMS"
-#         CREATEDB="$SNAP/usr/bin/createdb $CONNECTION_PARAMS"
-
-# 	# test postgresql connection
-# 	set +e
-#         $PSQL -c ";" &>/dev/null
-#         ERRCODE=$?
-#         if [ $ERRCODE -ne 0 ]; then
-#                 service postgresql start &>/dev/null
-#                 $PSQL -c ";" &>/dev/null || { echo "ERROR: can't connect to postgressql database"; exit 1; }
-#         fi
-# 	set -e
-
-#         if ! $PSQL -lt | cut -d\| -f 1 | grep -qw $DB_NAME; then
-#                 $CREATEDB $DB_NAME >/dev/null 2>&1
-#         fi
-
-#         if [ ! "$CLUSTER_MODE" = true ]; then
-#                 $PSQL -d "$DB_NAME" -f "$DIR/server/schema/postgresql/removetbl.sql" >/dev/null 2>&1
-#         fi
-#         $PSQL -d "$DB_NAME" -f "$DIR/server/schema/postgresql/createdb.sql" >/dev/null 2>&1
-# }
-
-# install_db
-
 
 cp  -R $SNAP/etc $SNAP_DATA/
-
 DEFAULT_HTTP_PORT="80"
-DEFAULT_SQL_PORT="5432"
+DEFAULT_DB_HOST="localhost"
+DEFAULT_DB_PORT="5432"
+DEFAULT_DB_NAME="onlyoffice"
+DEFAULT_DB_USER="onlyoffice"
+DEFAULT_DB_PWD="onlyoffice"
 
-nginx_http_port()
+
+nginx_onlyoffice_http_port()
 {
-	http_port="$(http_port)"
-	previous_http_port="$(previous_http_port)"
+	onlyoffice_http_port="$(onlyoffice_http_port)"
+	previous_onlyoffice_http_port="$(previous_onlyoffice_http_port)"
 
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$http_port" = "$previous_http_port" ]; then
+	if [ "$onlyoffice_http_port" = "$previous_onlyoffice_http_port" ]; then
 		return 0
 	fi
-	set_http_port "$http_port"
-	set_previous_http_port $http_port
-	sed -i -e "s/${previous_http_port}/${http_port}/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
+	set_onlyoffice_http_port "$onlyoffice_http_port"
+	set_previous_onlyoffice_http_port $onlyoffice_http_port
+	sed -i -e "s/${previous_onlyoffice_http_port}/${onlyoffice_http_port}/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
 	snapctl restart onlyoffice-documentserver.nginx
 }
 
-set_http_port()
+set_onlyoffice_http_port()
 {
-	snapctl set ports.http="$1"
+	snapctl set onlyoffice.http-port="$1"
 }
 
-http_port()
+onlyoffice_http_port()
 {
-	port="$(snapctl get ports.http)"
+	port="$(snapctl get onlyoffice.http-port)"
 	if [ -z "$port" ]; then
 		port="$DEFAULT_HTTP_PORT"
-		set_http_port $port
-		set_previous_http_port $port
+		set_onlyoffice_http_port $port
+		set_previous_onlyoffice_http_port $port
 	fi
 
 	echo "$port"
 }
 
-previous_http_port()
+previous_onlyoffice_http_port()
 {
-	snapctl get private.ports.http
+	snapctl get private.onlyoffice.http-port
 }
 
-set_previous_http_port()
+set_previous_onlyoffice_http_port()
 {
-	snapctl set private.ports.http="$1"
+	snapctl set private.onlyoffice.http-port="$1"
 }
 
-db_sql_port()
+db_onlyoffice_db_host()
 {
-	sql_port="$(sql_port)"
-	previous_sql_port="$(previous_sql_port)"
+	onlyoffice_db_host="$(onlyoffice_db_host)"
+	previous_onlyoffice_db_host="$(previous_onlyoffice_db_host)"
 
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$sql_port" = "$previous_sql_port" ]; then
+	if [ "$onlyoffice_db_host" = "$previous_onlyoffice_db_host" ]; then
 		return 0
 	fi
-	set_sql_port "$sql_port"
-	set_previous_sql_port $sql_port
-	sed -i -e "s/${previous_sql_port}/${sql_port}/g" $SNAP_DATA/etc/onlyoffice/documentserver/default.json
-	snapctl restart onlyoffice-documentserver.onlyoffice-documentserver
+	set_onlyoffice_db_host "$onlyoffice_db_host"
+	set_previous_onlyoffice_db_host $onlyoffice_db_host
+	sed -i -e "/dbHost/s/${previous_onlyoffice_db_host}/${onlyoffice_db_host}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	snapctl restart onlyoffice-documentserver.documentserver
 }
 
-previous_sql_port()
+previous_onlyoffice_db_host()
 {
-	snapctl get private.ports.sql
+	snapctl get private.onlyoffice.db-host
 }
 
-sql_port()
+onlyoffice_db_host()
 {
-	port="$(snapctl get ports.sql)"
+	port="$(snapctl get onlyoffice.db-host)"
 	if [ -z "$port" ]; then
-		port="$DEFAULT_SQL_PORT"
-		set_sql_port $port
-		set_previous_sql_port $port
+		port="$DEFAULT_DB_HOST"
+		set_onlyoffice_db_host $port
+		set_previous_onlyoffice_db_host $port
 	fi
 
 	echo "$port"
 }
 
-set_previous_sql_port()
+set_previous_onlyoffice_db_host()
 {
-	snapctl set private.ports.sql="$1"
+	snapctl set private.onlyoffice.db-host="$1"
 }
-set_sql_port()
+set_onlyoffice_db_host()
 {
-	snapctl set ports.sql="$1"
+	snapctl set onlyoffice.db-host="$1"
 }
 
-nginx_http_port
-db_sql_port
+# nginx_onlyoffice_http_port && \
+# db_onlyoffice_db_host && \
+# db_onlyoffice_db_name && \
+# db_onlyoffice_db_port && \
+# db_onlyoffice_db_user && \
+################################################
+#db_onlyoffice_db_port
+db_onlyoffice_db_port()
+{
+	onlyoffice_db_port="$(onlyoffice_db_port)"
+	previous_onlyoffice_db_port="$(previous_onlyoffice_db_port)"
 
-# if grep ds /etc/passwd; then
-# 	echo "The user ds Exists"
-# else
-# 	# add nginx user to M4_ONLYOFFICE_VALUE group to allow access nginx to M4_ONLYOFFICE_VALUE log dir
-# 	adduser --quiet --home "$DIR" --system --group ds
-# 	adduser --quiet www-data ds
-# 	chown ds:ds -R "$SNAP_COMMON"
-# 	chown ds:ds -R "$SNAP_DATA"
-# fi
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_db_port" = "$previous_onlyoffice_db_port" ]; then
+		return 0
+	fi
+	set_onlyoffice_db_port "$onlyoffice_db_port"
+	set_previous_onlyoffice_db_port $onlyoffice_db_port
+	sed -i -e "/dbPort/s/${previous_onlyoffice_db_port}/${onlyoffice_db_port}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	snapctl restart onlyoffice-documentserver.documentserver
+}
+
+set_onlyoffice_db_port()
+{
+	snapctl set onlyoffice.db-port="$1"
+}
+
+onlyoffice_db_port()
+{
+	port="$(snapctl get onlyoffice.db-port)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_DB_PORT"
+		set_onlyoffice_db_port $port
+		set_previous_onlyoffice_db_port $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_db_port()
+{
+	snapctl get private.onlyoffice.db-port
+}
+
+set_previous_onlyoffice_db_port()
+{
+	snapctl set private.onlyoffice.db-port="$1"
+}
+#######################################################
+#######################################################
+#db_onlyoffice_db_name
+db_onlyoffice_db_name()
+{
+	onlyoffice_db_name="$(onlyoffice_db_name)"
+	previous_onlyoffice_db_name="$(previous_onlyoffice_db_name)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_db_name" = "$previous_onlyoffice_db_name" ]; then
+		return 0
+	fi
+	set_onlyoffice_db_name "$onlyoffice_db_name"
+	set_previous_onlyoffice_db_name $onlyoffice_db_name
+	sed -i -e "/dbName/s/${previous_onlyoffice_db_name}/${onlyoffice_db_name}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	snapctl restart onlyoffice-documentserver.documentserver
+}
+
+set_onlyoffice_db_name()
+{
+	snapctl set onlyoffice.db-name="$1"
+}
+
+onlyoffice_db_name()
+{
+	port="$(snapctl get onlyoffice.db-name)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_DB_NAME"
+		set_onlyoffice_db_name $port
+		set_previous_onlyoffice_db_name $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_db_name()
+{
+	snapctl get private.onlyoffice.db-name
+}
+
+set_previous_onlyoffice_db_name()
+{
+	snapctl set private.onlyoffice.db-name="$1"
+}
+#######################################################
+#######################################################
+#######################################################
+#db_onlyoffice_db_user
+db_onlyoffice_db_user()
+{
+	onlyoffice_db_user="$(onlyoffice_db_user)"
+	previous_onlyoffice_db_user="$(previous_onlyoffice_db_user)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_db_user" = "$previous_onlyoffice_db_user" ]; then
+		return 0
+	fi
+	set_onlyoffice_db_user "$onlyoffice_db_user"
+	set_previous_onlyoffice_db_user $onlyoffice_db_user
+	sed -i -e "/dbName/s/${previous_onlyoffice_db_user}/${onlyoffice_db_user}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	snapctl restart onlyoffice-documentserver.documentserver
+}
+
+set_onlyoffice_db_user()
+{
+	snapctl set onlyoffice.db-user="$1"
+}
+
+onlyoffice_db_user()
+{
+	port="$(snapctl get onlyoffice.db-user)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_DB_USER"
+		set_onlyoffice_db_user $port
+		set_previous_onlyoffice_db_user $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_db_user()
+{
+	snapctl get private.onlyoffice.db-user
+}
+
+set_previous_onlyoffice_db_user()
+{
+	snapctl set private.onlyoffice.db-user="$1"
+}
+nginx_onlyoffice_http_port && \
+db_onlyoffice_db_host && \
+db_onlyoffice_db_name && \
+db_onlyoffice_db_port && \
+db_onlyoffice_db_user
