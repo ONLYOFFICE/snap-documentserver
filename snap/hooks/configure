@@ -20,7 +20,7 @@ nginx_onlyoffice_http_port()
 	fi
 	set_onlyoffice_http_port "$onlyoffice_http_port"
 	set_previous_onlyoffice_http_port $onlyoffice_http_port
-	sed -i -e "s/${previous_onlyoffice_http_port}/${onlyoffice_http_port}/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
+	sed -i "s/${previous_onlyoffice_http_port}/${onlyoffice_http_port}/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
 	snapctl restart onlyoffice-documentserver.nginx
 }
 
@@ -62,7 +62,7 @@ db_onlyoffice_db_host()
 	fi
 	set_onlyoffice_db_host "$onlyoffice_db_host"
 	set_previous_onlyoffice_db_host $onlyoffice_db_host
-	sed -i -e "/dbHost/s/${previous_onlyoffice_db_host}/${onlyoffice_db_host}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbHost/s/${previous_onlyoffice_db_host}/${onlyoffice_db_host}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-documentserver.documentserver
 }
 
@@ -92,13 +92,8 @@ set_onlyoffice_db_host()
 	snapctl set onlyoffice.db-host="$1"
 }
 
-# nginx_onlyoffice_http_port && \
-# db_onlyoffice_db_host && \
-# db_onlyoffice_db_name && \
-# db_onlyoffice_db_port && \
-# db_onlyoffice_db_user && \
 ################################################
-#db_onlyoffice_db_port
+
 db_onlyoffice_db_port()
 {
 	onlyoffice_db_port="$(onlyoffice_db_port)"
@@ -110,7 +105,7 @@ db_onlyoffice_db_port()
 	fi
 	set_onlyoffice_db_port "$onlyoffice_db_port"
 	set_previous_onlyoffice_db_port $onlyoffice_db_port
-	sed -i -e "/dbPort/s/${previous_onlyoffice_db_port}/${onlyoffice_db_port}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbPort/s/${previous_onlyoffice_db_port}/${onlyoffice_db_port}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-documentserver.documentserver
 }
 
@@ -142,7 +137,6 @@ set_previous_onlyoffice_db_port()
 }
 #######################################################
 #######################################################
-#db_onlyoffice_db_name
 db_onlyoffice_db_name()
 {
 	onlyoffice_db_name="$(onlyoffice_db_name)"
@@ -154,7 +148,7 @@ db_onlyoffice_db_name()
 	fi
 	set_onlyoffice_db_name "$onlyoffice_db_name"
 	set_previous_onlyoffice_db_name $onlyoffice_db_name
-	sed -i -e "/dbName/s/${previous_onlyoffice_db_name}/${onlyoffice_db_name}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbName/s/${previous_onlyoffice_db_name}/${onlyoffice_db_name}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-documentserver.documentserver
 }
 
@@ -187,7 +181,7 @@ set_previous_onlyoffice_db_name()
 #######################################################
 #######################################################
 #######################################################
-#db_onlyoffice_db_user
+
 db_onlyoffice_db_user()
 {
 	onlyoffice_db_user="$(onlyoffice_db_user)"
@@ -199,7 +193,7 @@ db_onlyoffice_db_user()
 	fi
 	set_onlyoffice_db_user "$onlyoffice_db_user"
 	set_previous_onlyoffice_db_user $onlyoffice_db_user
-	sed -i -e "/dbName/s/${previous_onlyoffice_db_user}/${onlyoffice_db_user}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbName/s/${previous_onlyoffice_db_user}/${onlyoffice_db_user}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-documentserver.documentserver
 }
 
@@ -229,8 +223,55 @@ set_previous_onlyoffice_db_user()
 {
 	snapctl set private.onlyoffice.db-user="$1"
 }
+
+#######
+#######
+#######
+db_onlyoffice_db_pwd()
+{
+	onlyoffice_db_pwd="$(onlyoffice_db_pwd)"
+	previous_onlyoffice_db_pwd="$(previous_onlyoffice_db_pwd)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_db_pwd" = "$previous_onlyoffice_db_pwd" ]; then
+		return 0
+	fi
+	set_onlyoffice_db_pwd "$onlyoffice_db_pwd"
+	set_previous_onlyoffice_db_pwd $onlyoffice_db_pwd
+	sed -i "/dbName/s/${previous_onlyoffice_db_pwd}/${onlyoffice_db_pwd}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	snapctl restart onlyoffice-documentserver.documentserver
+}
+
+set_onlyoffice_db_pwd()
+{
+	snapctl set onlyoffice.db-pwd="$1"
+}
+
+onlyoffice_db_pwd()
+{
+	port="$(snapctl get onlyoffice.db-pwd)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_DB_USER"
+		set_onlyoffice_db_pwd $port
+		set_previous_onlyoffice_db_pwd $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_db_pwd()
+{
+	snapctl get private.onlyoffice.db-pwd
+}
+
+set_previous_onlyoffice_db_pwd()
+{
+	snapctl set private.onlyoffice.db-pwd="$1"
+}
 nginx_onlyoffice_http_port && \
 db_onlyoffice_db_host && \
 db_onlyoffice_db_name && \
 db_onlyoffice_db_port && \
-db_onlyoffice_db_user
+db_onlyoffice_db_user && \
+db_onlyoffice_db_pwd
+
