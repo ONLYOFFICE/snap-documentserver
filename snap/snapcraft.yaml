@@ -92,6 +92,7 @@ parts:
       sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i '4d' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
+      sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       # edition etc/onlyoffice/documentserver/nginx/ds...
       sed -i -e 's/etc/snap\/onlyoffice-documentserver\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
