@@ -1,10 +1,10 @@
 {
   "log": {
-    "filePath": "/snap/onlyoffice-documentserver/current/etc/onlyoffice/documentserver/log4js/production.json"
+    "filePath": "/snap/onlyoffice-ds/current/etc/onlyoffice/documentserver/log4js/production.json"
   },
   "storage": {
     "fs": {
-      "folderPath": "/var/snap/onlyoffice-documentserver/common/var/lib/onlyoffice/documentserver/App_Data/cache/files"
+      "folderPath": "/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver/App_Data/cache/files"
     }
   },
   "services": {
@@ -12,54 +12,54 @@
       "server": {
         "static_content": {
           "/fonts": {
-            "path": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/fonts",
+            "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/fonts",
             "options": {"maxAge": "7d"}
           },
           "/sdkjs": {
-            "path": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/sdkjs",
+            "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/sdkjs",
             "options": {"maxAge": "7d"}
           },
           "/web-apps": {
-            "path": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/web-apps",
+            "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/web-apps",
             "options": {"maxAge": "7d"}
           },
           "/welcome": {
-            "path": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/server/welcome",
+            "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/welcome",
             "options": {"maxAge": "7d"}
           },
           "/info": {
-            "path": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/server/info",
+            "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/info",
             "options": {"maxAge": "7d"}
           },
           "/sdkjs-plugins": {
-            "path": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/sdkjs-plugins",
+            "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/sdkjs-plugins",
             "options": {"maxAge": "7d"}
           }
         }
       },
       "utils": {
-        "utils_common_fontdir": "/snap/onlyoffice-documentserver/current/usr/share/fonts"
+        "utils_common_fontdir": "/snap/onlyoffice-ds/current/usr/share/fonts"
       },
       "sockjs": {
-        "sockjs_url": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/web-apps/vendor/sockjs/sockjs.min.js"
+        "sockjs_url": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/web-apps/vendor/sockjs/sockjs.min.js"
       }
     }
   },
   "license": {
-    "license_file": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/../Data/license.lic",
+    "license_file": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/../Data/license.lic",
     "warning_limit_percents": "70"
   },
   "FileConverter": {
     "converter": {
-      "fontDir": "/snap/onlyoffice-documentserver/current/usr/share/fonts",
-      "presentationThemesDir": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/sdkjs/slide/themes",
-      "x2tPath": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/server/FileConverter/bin/x2t",
-      "docbuilderPath": "/snap/onlyoffice-documentserver/current/var/www/onlyoffice/documentserver/server/FileConverter/bin/docbuilder",
-      "docbuilderAllFontsPath": "/snap/onlyoffice-documentserver/current/var/lib/onlyoffice/documentserver/App_Data/docbuilder/AllFonts.js"
+      "fontDir": "/snap/onlyoffice-ds/current/usr/share/fonts",
+      "presentationThemesDir": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/sdkjs/slide/themes",
+      "x2tPath": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/FileConverter/bin/x2t",
+      "docbuilderPath": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/FileConverter/bin/docbuilder",
+      "docbuilderAllFontsPath": "/snap/onlyoffice-ds/current/var/lib/onlyoffice/documentserver/App_Data/docbuilder/AllFonts.js"
     }
   },
   "FileStorage": {
-    "directory": "/var/snap/onlyoffice-documentserver/common/var/lib/onlyoffice/documentserver/App_Data"
+    "directory": "/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver/App_Data"
   }
 }
 

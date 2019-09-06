@@ -1,8 +1,8 @@
-name: onlyoffice-documentserver
+name: onlyoffice-ds
 version: "5.4.0"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
-icon: icons/asc-de-256.png
+icon: snap/icons/asc-de-256.png
 grade: stable
 confinement: strict
 base: core18
@@ -54,7 +54,7 @@ parts:
       sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
-  onlyoffice-documentserver:
+  onlyoffice-ds:
     plugin: dump
     source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver_amd64.deb
     source-type: deb
@@ -94,12 +94,12 @@ parts:
       sed -i '4d' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       # editing etc/onlyoffice/documentserver/nginx/ds...
-      sed -i -e 's/etc/snap\/onlyoffice-documentserver\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf
+      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
       cp $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/ds.conf
-      sed -i -e 's/\(var\/log\/onlyoffice\/documentserver\/nginx.error.log\)/var\/snap\/onlyoffice-documentserver\/current\/\1/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-common.conf
-      sed -i -e 's/var\/www/snap\/onlyoffice-documentserver\/current\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
-      sed -i -e 's/var\/lib/var\/snap\/onlyoffice-documentserver\/common\/var\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
+      sed -i -e 's/\(var\/log\/onlyoffice\/documentserver\/nginx.error.log\)/var\/snap\/onlyoffice-ds\/current\/\1/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-common.conf
+      sed -i -e 's/var\/www/snap\/onlyoffice-ds\/current\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
+      sed -i -e 's/var\/lib/var\/snap\/onlyoffice-ds\/common\/var\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
       # editing documentserver && documentserver-example
       mv $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json-old
       # copy lib
@@ -110,6 +110,7 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/fonts
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
+      "$DIR/server/tools/allthemesgen" --converter-dir="$DIR/server/FileConverter/bin" --src="$DIR/sdkjs/slide/themes" --output="$DIR/sdkjs/common/Images"
 
 
   node:
@@ -135,10 +136,10 @@ parts:
       wget https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.bz2 -O pcre.tar.bz2
       mkdir pcre
       tar xvf pcre.tar.bz2 --strip-components 1 -C pcre/
-      auto/configure --prefix=/snap/onlyoffice-documentserver/current/etc/nginx --sbin-path=/snap/onlyoffice-documentserver/current/usr/sbin --conf-path=/var/snap/onlyoffice-documentserver/current/etc/nginx/nginx.conf \
-      --error-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/error.log --http-log-path=/var/snap/onlyoffice-documentserver/current/var/log/nginx/access.log --pid-path=/var/snap/onlyoffice-documentserver/current/var/run/nginx.pid \
-      --lock-path=/var/snap/onlyoffice-documentserver/current/var/lock/nginx.lock --http-client-body-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/client_temp --http-proxy-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/proxy_temp \
-      --http-fastcgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-documentserver/current/var/cache/nginx/scgi_temp \
+      auto/configure --prefix=/snap/onlyoffice-ds/current/etc/nginx --sbin-path=/snap/onlyoffice-ds/current/usr/sbin --conf-path=/var/snap/onlyoffice-ds/current/etc/nginx/nginx.conf \
+      --error-log-path=/var/snap/onlyoffice-ds/current/var/log/nginx/error.log --http-log-path=/var/snap/onlyoffice-ds/current/var/log/nginx/access.log --pid-path=/var/snap/onlyoffice-ds/current/var/run/nginx.pid \
+      --lock-path=/var/snap/onlyoffice-ds/current/var/lock/nginx.lock --http-client-body-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/client_temp --http-proxy-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/proxy_temp \
+      --http-fastcgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/scgi_temp \
       --with-http_secure_link_module
       make
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
@@ -151,9 +152,9 @@ parts:
       sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
       sed -i '3,5d' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-documentserver\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/etc/snap\/onlyoffice-documentserver\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/lib/snap\/onlyoffice-documentserver\/current\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
     build-packages:
       - libc6
       - libgd3

@@ -3,16 +3,12 @@
 		"CoAuthoring": {
 			"sql": {
 				"type": "postgres",
-				"tableChanges": "doc_changes",
-				"tableResult": "task_result",
 				"dbHost": "localhost",
 				"dbPort": 5432,
 				"dbName": "onlyoffice",
 				"dbUser": "onlyoffice",
 				"dbPass": "onlyoffice",
-				"charset": "utf8",
-				"connectionlimit": 10,
-				"max_allowed_packet": 1048575
+				"charset": "utf8"
 			}
 		}
 	}
