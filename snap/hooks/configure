@@ -26,12 +26,12 @@ nginx_onlyoffice_http_port()
 
 set_onlyoffice_http_port()
 {
-	snapctl set onlyoffice.http-port="$1"
+	snapctl set onlyoffice.ds-port="$1"
 }
 
 onlyoffice_http_port()
 {
-	port="$(snapctl get onlyoffice.http-port)"
+	port="$(snapctl get onlyoffice.ds-port)"
 	if [ -z "$port" ]; then
 		port="$DEFAULT_HTTP_PORT"
 		set_onlyoffice_http_port $port
@@ -43,12 +43,12 @@ onlyoffice_http_port()
 
 previous_onlyoffice_http_port()
 {
-	snapctl get private.onlyoffice.http-port
+	snapctl get private.onlyoffice.ds-port
 }
 
 set_previous_onlyoffice_http_port()
 {
-	snapctl set private.onlyoffice.http-port="$1"
+	snapctl set private.onlyoffice.ds-port="$1"
 }
 
 db_onlyoffice_db_host()
