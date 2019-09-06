@@ -1,7 +1,7 @@
 name: onlyoffice-documentserver
 version: "5.4.0"
-summary: "An office suite that allowing to create, view and edit documents."
-description: "ONLYOFFICE onlyoffice-documentserver"
+summary: "An online office suite that allowing to create, view and edit documents."
+description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
 grade: stable # must be 'stable' to release into candidate/stable channels
 confinement: strict # use 'strict' once you have the right plugs and slots
 base: core18
