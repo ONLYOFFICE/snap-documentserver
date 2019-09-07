@@ -37,6 +37,23 @@ apps:
     daemon: simple
     plugs: [network, network-bind, removable-media]
 
+  # MySQL daemon
+  mysql:
+    command: start_mysql
+    stop-command: support-files/mysql.server stop
+    daemon: simple
+    restart-condition: always
+    plugs: [network, network-bind]
+  
+  # MySQL client
+  mysql-client:
+    command: run-mysql
+    plugs: [network, network-bind]
+
+  mysqldump:
+    command: mysqldump --defaults-file=$SNAP_DATA/mysql/root.ini --lock-tables nextcloud
+    plugs: [network, network-bind]
+
 hooks:
   configure:
     plugs: [network, network-bind, account-control, gpg-keys, accounts-service, system-observe] #system-files, 
@@ -60,6 +77,7 @@ parts:
     source-type: deb
     stage-packages:
       - libcurl3
+      #- libcurl4
       - libxml2
       - fonts-dejavu
       - fonts-liberation
@@ -110,6 +128,7 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/fonts
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
+      #"$DIR/server/tools/allthemesgen" --converter-dir="$DIR/server/FileConverter/bin" --src="$DIR/sdkjs/slide/themes" --output="$DIR/sdkjs/common/Images"
 
 
   node:
@@ -172,6 +191,90 @@ parts:
       - zlib1g
       - zlib1g-dev
       - wget
+  
+  boost:
+    plugin: dump
+    source: https://github.com/kyrofa/boost_tarball/raw/master/boost_1_59_0.tar.gz
+    stage:
+      - boost/
+    prime:
+      - -*
+
+  mysql:
+    plugin: cmake
+    source: https://github.com/mysql/mysql-server.git
+    source-tag: mysql-5.7.27
+    source-depth: 1
+    stage-packages:
+      - libcurl4
+    override-pull: |
+      snapcraftctl pull
+      git apply $SNAPCRAFT_STAGE/mysql-support-compile-time-disabling-of-setpriority.patch
+    after: [patches]
+    configflags:
+      - -DWITH_BOOST=$SNAPCRAFT_STAGE
+      - -DWITH_INNODB_PAGE_CLEANER_PRIORITY=OFF
+      - -DCMAKE_INSTALL_PREFIX=/
+      - -DBUILD_CONFIG=mysql_release
+      - -DWITH_UNIT_TESTS=OFF
+      - -DWITH_EMBEDDED_SERVER=OFF
+      - -DWITH_ARCHIVE_STORAGE_ENGINE=OFF
+      - -DWITH_BLACKHOLE_STORAGE_ENGINE=OFF
+      - -DWITH_FEDERATED_STORAGE_ENGINE=OFF
+      - -DWITH_PARTITION_STORAGE_ENGINE=OFF
+      - -DINSTALL_MYSQLTESTDIR=
+    build-packages:
+      - wget
+      - g++
+      - cmake
+      - bison
+      - libncurses5-dev
+      - libaio-dev
+    stage:
+      # Remove scripts that we'll be replacing with our own
+      - -support-files/mysql.server
+      - -COPYING
+    prime:
+      # Remove scripts that we'll be replacing with our own
+      - -support-files/mysql.server
+
+      # Remove unused binaries that waste space
+      - -bin/innochecksum
+      - -bin/lz4_decompress
+      - -bin/myisam*
+      - -bin/mysqladmin
+      - -bin/mysqlbinlog
+      - -bin/mysql_client_test
+      - -bin/mysql_config*
+      - -bin/mysqld_multi
+      - -bin/mysqlimport
+      - -bin/mysql_install_db
+      - -bin/mysql_plugin
+      - -bin/mysqlpump
+      - -bin/mysql_secure_installation
+      - -bin/mysqlshow
+      - -bin/mysqlslap
+      - -bin/mysql_ssl_rsa_setup
+      - -bin/mysqltest
+      - -bin/mysql_tzinfo_to_sql
+      - -bin/perror
+      - -bin/replace
+      - -bin/resolveip
+      - -bin/resolve_stack_dump
+      - -bin/zlib_decompress
+
+  mysql-customizations:
+    plugin: dump
+    source: src/mysql/
+
+  patches:
+    source: src/patches
+    plugin: dump
+    prime:
+      - -*
+  common:
+    plugin: dump
+    source: src/common/
 
 
   starter:
