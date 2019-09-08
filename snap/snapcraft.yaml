@@ -76,7 +76,7 @@ parts:
     source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver_amd64.deb
     source-type: deb
     stage-packages:
-      - libcurl3
+      #- libcurl3
       #- libcurl4
       - libxml2
       - fonts-dejavu
@@ -207,10 +207,11 @@ parts:
     source-depth: 1
     stage-packages:
       - libcurl4
+      - libaio1
     override-pull: |
       snapcraftctl pull
       git apply $SNAPCRAFT_STAGE/mysql-support-compile-time-disabling-of-setpriority.patch
-    after: [patches]
+    after: [boost, patches]
     configflags:
       - -DWITH_BOOST=$SNAPCRAFT_STAGE
       - -DWITH_INNODB_PAGE_CLEANER_PRIORITY=OFF
