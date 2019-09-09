@@ -39,7 +39,7 @@ apps:
 
 hooks:
   configure:
-    plugs: [network, network-bind, account-control, gpg-keys, accounts-service, system-observe] #system-files, 
+    plugs: [network, network-bind]
 
 parts:
   rabbitmq:
