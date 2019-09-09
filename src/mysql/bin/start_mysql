@@ -32,7 +32,7 @@ if [ $new_install = true ]; then
 	# Save root user information
 	cat <<-EOF > "$root_option_file"
 		[client]
-		socket=$MYSQL_SOCKET
+		port=3306
 		user=root
 	EOF
 	chmod 600 "$root_option_file"
@@ -58,11 +58,11 @@ if [ $new_install = true ]; then
 		"$SNAP/support-files/mysql.server" stop
 		rm -rf "$SNAP_DATA"/mysql/*
 	fi
-else
+#else
 	# Okay, this isn't a new installation. However, we recently changed
 	# the location of MySQL's socket (11.0.2snap1). Make sure the root
 	# option file is updated to look there instead of the old location.
-	sed -ri "s|(socket\s*=\s*)/var/snap/.*mysql.sock|\1$MYSQL_SOCKET|" "$root_option_file"
+	#sed -ri "s|(socket\s*=\s*)/var/snap/.*mysql.sock|\1$MYSQL_SOCKET|" "$root_option_file"
 fi
 
 # Wait here until mysql is running
