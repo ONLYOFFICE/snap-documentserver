@@ -14,7 +14,7 @@ DEFAULT_DB_USER="onlyoffice"
 DEFAULT_DB_PWD="onlyoffice"
 
 install_db(){
-        CONNECTION_PARAMS="-h$DEFAULT_DB_HOST -U$DEFAULT_DB_USER -w"
+        CONNECTION_PARAMS="-U$DEFAULT_DB_USER -w"
         if [ -n "$DEFAULT_DB_PWD" ]; then
                 export PGPASSWORD=$DEFAULT_DB_PWD
         fi
