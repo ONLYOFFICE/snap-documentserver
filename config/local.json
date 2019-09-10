@@ -2,9 +2,9 @@
 	"services": {
 		"CoAuthoring": {
 			"sql": {
-				"type": "postgres",
+				"type": "mysql",
 				"dbHost": "localhost",
-				"dbPort": 5432,
+				"dbPort": 3306,
 				"dbName": "onlyoffice",
 				"dbUser": "onlyoffice",
 				"dbPass": "onlyoffice",

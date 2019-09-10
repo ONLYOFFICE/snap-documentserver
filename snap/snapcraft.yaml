@@ -51,7 +51,7 @@ apps:
     plugs: [network, network-bind]
 
   mysqldump:
-    command: mysqldump --defaults-file=$SNAP_DATA/mysql/root.ini --lock-tables nextcloud
+    command: mysqldump --defaults-file=$SNAP_DATA/mysql/root.ini --lock-tables onlyoffice
     plugs: [network, network-bind]
 
 hooks:
@@ -213,6 +213,8 @@ parts:
       git apply $SNAPCRAFT_STAGE/mysql-support-compile-time-disabling-of-setpriority.patch
     after: [boost, patches]
     configflags:
+      - -WITH_LIBWRAP=ON
+      - -DMYSQL_TCP_PORT=3306
       - -DWITH_BOOST=$SNAPCRAFT_STAGE
       - -DWITH_INNODB_PAGE_CLEANER_PRIORITY=OFF
       - -DCMAKE_INSTALL_PREFIX=/
