@@ -73,6 +73,8 @@ parts:
       - locales-all
       - locales
       - libc6
+    stage-snaps:
+      - postgresql96
     override-build: |
       rm -f lib/libicuuc.so.58
       rm -f lib/libPdfWriter.so
@@ -87,6 +89,7 @@ parts:
       rm -f lib/libicudata.so.58
       rm -f lib/libgraphics.so
       snapcraftctl build
+      cp $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.7.0 $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.6
       # editing supervisor/* && /supervisord.conf
       sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
