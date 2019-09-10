@@ -25,10 +25,24 @@ sudo apt update
 sudo apt install snapd
 ```
 
+Also you have to install the PostgreSQL version included in your version of Ubuntu:
+
+sudo apt-get install postgresql
+If you want to install some other PostgreSQL version from the PostgreSQL Repository, please see the official PostgreSQL documentation for more detail on that.
+After PostgreSQL is installed, create the PostgreSQL database and user:
+
+The created database must have onlyoffice both for user and password.
+
+```
+sudo -i -u postgres psql -c "CREATE DATABASE onlyoffice;"
+sudo -i -u postgres psql -c "CREATE USER onlyoffice WITH password 'onlyoffice';"
+sudo -i -u postgres psql -c "GRANT ALL privileges ON DATABASE onlyoffice TO onlyoffice;"
+```
+
 Now the editors can be easily installed using the following command:
 
 ```
-snap install onlyoffice-ds
+snap install onlyoffice-ds --beta --devmode
 ```
 
 ## Running ONLYOFFICE Document Server
