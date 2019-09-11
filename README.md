@@ -16,7 +16,7 @@ The editors allow you to create, edit, save and export text, spreadsheet and pre
 
 ## Installing ONLYOFFICE Document Server using Snapcraft command line tool
 
-ONLYOFFICE Document Server are available in [Snapcraft store](https://snapcraft.io/onlyoffice-ds) as a snap package. A snap contains all the dependencies to run the application. To use it, all you need is snapd, a system to install and manage snaps. Snapd is included into most of modern distributions. You only need to either enable or install it. See the [official snap project page](https://docs.snapcraft.io/core/install) for the snapd installation instructions.
+ONLYOFFICE Document Server is available in [Snapcraft store](https://snapcraft.io/onlyoffice-ds) as a snap package. A snap contains all the dependencies to run the application. To use it, all you need is snapd, a system to install and manage snaps. Snapd is included into most of modern distributions. You only need to either enable or install it. See the [official snap project page](https://docs.snapcraft.io/core/install) for the snapd installation instructions.
 
 For example, to install snapd under Ubuntu you need to run the commands:
 
@@ -27,11 +27,14 @@ sudo apt install snapd
 
 Also you have to install the PostgreSQL version included in your version of Ubuntu:
 
+```
 sudo apt-get install postgresql
-If you want to install some other PostgreSQL version from the PostgreSQL Repository, please see the official PostgreSQL documentation for more detail on that.
-After PostgreSQL is installed, create the PostgreSQL database and user:
+```
 
-The created database must have onlyoffice both for user and password.
+If you want to install some other PostgreSQL version from the PostgreSQL Repository, please see the official PostgreSQL documentation for more detail on that.
+After PostgreSQL is installed, create the PostgreSQL database and user.
+
+The created database must have onlyoffice both for user and password:
 
 ```
 sudo -i -u postgres psql -c "CREATE DATABASE onlyoffice;"
@@ -47,7 +50,7 @@ snap install onlyoffice-ds --beta --devmode
 
 ## Running ONLYOFFICE Document Server
 
-Once the installation is over, it will be avalible at [http://localhost](http://localhost)
+Once the installation is over, ONLYOFFICE Document Server will be avalible at [http://localhost](http://localhost)
 
 You can check status of ONLYOFFICE Document Server [here](http://localhost/welcome)
 
