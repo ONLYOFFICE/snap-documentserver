@@ -13,36 +13,52 @@ DEFAULT_DB_NAME="onlyoffice"
 DEFAULT_DB_USER="onlyoffice"
 DEFAULT_DB_PWD="onlyoffice"
 
-install_db(){
-        CONNECTION_PARAMS="-U$DEFAULT_DB_USER -w"
-        if [ -n "$DEFAULT_DB_PWD" ]; then
-                export PGPASSWORD=$DEFAULT_DB_PWD
-        fi
+export I18NPATH=$SNAP/usr/share/i18n
+export LOCPATH=$SNAP_USER_DATA/.local/share/locale
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/lib/x86_64-linux-gnu:$SNAP/usr/lib/x86_64-linux-gnu"
+export LD_LIBRARY_PATH="$SNAP/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH=$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
+# PERL_MB_OPT=--install_base "/home/feelsafe/perl5"
+# PERL_MM_OPT=INSTALL_BASE=/home/feelsafe/perl5
+export PERL_LOCAL_LIB_ROOT=/usr/lib/perl5
+export PERL5LIB=/usr/lib/perl5
+if [ ! -d $LOCPATH ]; then
+mkdir -p $LOCPATH
+fi
+if [ ! -d $LOCPATH/$LANG ]; then
+$SNAP/usr/bin/localedef -f UTF-8 -i $(echo $LANG | cut -d. -f1) $LOCPATH/$LANG
+fi
 
-        PSQL="$SNAP/usr/bin/psql -h 127.0.0.1 -d postgres -q $CONNECTION_PARAMS"
-        CREATEDB="$SNAP/usr/bin/createdb $CONNECTION_PARAMS"
+# install_db(){
+#         CONNECTION_PARAMS="-U$DEFAULT_DB_USER -w"
+#         if [ -n "$DEFAULT_DB_PWD" ]; then
+#                 export PGPASSWORD=$DEFAULT_DB_PWD
+#         fi
 
-	# test postgresql connection
-	set +e
-        $PSQL -c ";" &>/dev/null
-        ERRCODE=$?
-        if [ $ERRCODE -ne 0 ]; then
-                service postgresql start &>/dev/null
-                $PSQL -c ";" &>/dev/null || { echo "ERROR: can't connect to postgressql database"; exit 1; }
-        fi
-	set -e
+#         PSQL="/usr/bin/psql -h 127.0.0.1 -d postgres -q $CONNECTION_PARAMS"
+#         CREATEDB="/usr/bin/createdb $CONNECTION_PARAMS"
 
-        if ! $PSQL -lt | cut -d\| -f 1 | grep -qw $DEFAULT_DB_NAME; then
-                $CREATEDB $DEFAULT_DB_NAME >/dev/null 2>&1
-        fi
+# 	# test postgresql connection
+# 	set +e
+#         $PSQL -c ";" &>/dev/null
+#         ERRCODE=$?
+#         if [ $ERRCODE -ne 0 ]; then
+#                 service postgresql start &>/dev/null
+#                 $PSQL -c ";" &>/dev/null || { echo "ERROR: can't connect to postgressql database"; exit 1; }
+#         fi
+# 	set -e
 
-        if [ ! "$CLUSTER_MODE" = true ]; then
-                $PSQL -d "$DEFAULT_DB_NAME" -f "$DIR/server/schema/postgresql/removetbl.sql" >/dev/null 2>&1
-        fi
-        $PSQL -d "$DEFAULT_DB_NAME" -f "$DIR/server/schema/postgresql/createdb.sql" >/dev/null 2>&1
-}
+#         if ! $PSQL -lt | cut -d\| -f 1 | grep -qw $DEFAULT_DB_NAME; then
+#                 $CREATEDB $DEFAULT_DB_NAME >/dev/null 2>&1
+#         fi
 
-install_db
+#         if [ ! "$CLUSTER_MODE" = true ]; then
+#                 $PSQL -d "$DEFAULT_DB_NAME" -f "$DIR/server/schema/postgresql/removetbl.sql" >/dev/null 2>&1
+#         fi
+#         $PSQL -d "$DEFAULT_DB_NAME" -f "$DIR/server/schema/postgresql/createdb.sql" >/dev/null 2>&1
+# }
+
+# install_db
 
 nginx_onlyoffice_http_port()
 {
