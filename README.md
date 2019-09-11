@@ -42,10 +42,17 @@ sudo -i -u postgres psql -c "CREATE USER onlyoffice WITH password 'onlyoffice';"
 sudo -i -u postgres psql -c "GRANT ALL privileges ON DATABASE onlyoffice TO onlyoffice;"
 ```
 
+Run the following commands to configure the database:
+```
+wget https://raw.githubusercontent.com/ONLYOFFICE/server/master/schema/postgresql/createdb.sql
+export PGPASSWORD=onlyoffice
+psql -hlocalhost -Uonlyoffice -d onlyoffice -f createdb.sql -w
+```
+
 Now the editors can be easily installed using the following command:
 
 ```
-snap install onlyoffice-ds --beta --devmode
+snap install onlyoffice-ds --beta
 ```
 
 ## Running ONLYOFFICE Document Server
