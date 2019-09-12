@@ -18,7 +18,8 @@ export LD_LIBRARY_PATH=$SNAP_LIBRARY_PATH:$LD_LIBRARY_PATH
 export PERL_MM_OPT=INSTALL_BASE=/usr/lib/perl5
 export PERL_LOCAL_LIB_ROOT=/usr/lib/perl5
 export PERL5LIB=/usr/lib/perl5
-
+PATH=$SNAP/usr/local/pgsql/bin:$PATH 
+export PATH
 if [ ! -d $LOCPATH ]; then
 mkdir -p $LOCPATH
 fi
@@ -32,7 +33,7 @@ install_db(){
                 export PGPASSWORD=$DEFAULT_DB_PWD
         fi
 
-        PSQL="$SNAP/usr/bin/psql -h 127.0.0.1 -d postgres -q $CONNECTION_PARAMS"
+        PSQL="$SNAP/usr/bin/perl -I /snap/onlyoffice-ds/current/usr/share/perl5/ $SNAP/usr/bin/psql -h 127.0.0.1 -d postgres -q $CONNECTION_PARAMS"
         CREATEDB="$SNAP/usr/bin/createdb $CONNECTION_PARAMS"
 
 	# test postgresql connection

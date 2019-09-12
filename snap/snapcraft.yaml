@@ -75,6 +75,7 @@ parts:
       - libc-bin
       - locales
       - libc6
+      - postgresql-client
       - postgresql-client-common
       - postgresql-common
       - postgresql-contrib
@@ -97,7 +98,8 @@ parts:
       rm -f lib/libicudata.so.58
       rm -f lib/libgraphics.so
       snapcraftctl build
-      sed -i -e 's/use PgCommon;/require "/snap/onlyoffice-ds/current/usr/share/perl5/PgCommon.pm";/g' $SNAPCRAFT_PART_INSTALL/usr/bin/psql
+      # require "/snap/onlyoffice-ds/current/usr/share/perl5/PgCommon.pm";
+      # sed -i -e "s/use PgCommon;/BEGIN {\npush @INC, '\/snap\/onlyoffice-ds\/current\/usr\/share\/perl5\/PgCommon.pm';\n}\nuse Modules::PgCommon;/g" $SNAPCRAFT_PART_INSTALL/usr/bin/psql
       export LC_ALL=en_US.UTF-8
       locale-gen en_US.UTF-8
       cp $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.7.0 $SNAPCRAFT_PART_INSTALL/lib/x86_64-linux-gnu/libreadline.so.6
