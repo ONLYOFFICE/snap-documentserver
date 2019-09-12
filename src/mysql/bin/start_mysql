@@ -48,6 +48,7 @@ if [ $new_install = true ]; then
 		CREATE USER 'onlyoffice'@'localhost' IDENTIFIED BY '$nextcloud_password';
 		CREATE DATABASE onlyoffice;
 		GRANT ALL PRIVILEGES ON onlyoffice.* TO 'onlyoffice'@'localhost' IDENTIFIED BY 'onlyoffice';
+		sourse /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/schema/mysql/createdb.sql
 		SQL
 	then
 		# Now the root mysql user has a password. Save that as well.
