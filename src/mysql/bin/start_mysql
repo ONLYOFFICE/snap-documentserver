@@ -2,6 +2,7 @@
 
 # shellcheck source=src/mysql/utilities/mysql-utilities
 . "$SNAP/utilities/mysql-utilities"
+. "$SNAP/snap/hooks/configure"
 
 root_option_file="$SNAP_DATA/mysql/root.ini"
 new_install=false
@@ -32,7 +33,7 @@ if [ $new_install = true ]; then
 	# Save root user information
 	cat <<-EOF > "$root_option_file"
 		[client]
-		port=3306
+		port=${onlyoffice_db_port}
 		user=root
 	EOF
 	chmod 600 "$root_option_file"
@@ -48,7 +49,8 @@ if [ $new_install = true ]; then
 		CREATE USER 'onlyoffice'@'localhost' IDENTIFIED BY '$nextcloud_password';
 		CREATE DATABASE onlyoffice;
 		GRANT ALL PRIVILEGES ON onlyoffice.* TO 'onlyoffice'@'localhost' IDENTIFIED BY 'onlyoffice';
-		sourse /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/schema/mysql/createdb.sql
+		USE onlyoffice;
+		SOURCE /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/schema/mysql/createdb.sql;
 		SQL
 	then
 		# Now the root mysql user has a password. Save that as well.

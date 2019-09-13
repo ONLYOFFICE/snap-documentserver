@@ -1,10 +1,10 @@
 #!/bin/sh
 
-cp  -R $SNAP/etc $SNAP_DATA/
+#cp  -R $SNAP/etc $SNAP_DATA/
 cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
 DEFAULT_HTTP_PORT="80"
 DEFAULT_DB_HOST="localhost"
-DEFAULT_DB_PORT="5432"
+DEFAULT_DB_PORT="3306"
 DEFAULT_DB_NAME="onlyoffice"
 DEFAULT_DB_USER="onlyoffice"
 DEFAULT_DB_PWD="onlyoffice"
@@ -21,7 +21,7 @@ nginx_onlyoffice_http_port()
 	fi
 	set_onlyoffice_http_port "$onlyoffice_http_port"
 	set_previous_onlyoffice_http_port $onlyoffice_http_port
-	sed -i "s/${previous_onlyoffice_http_port}/${onlyoffice_http_port}/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
+	sed -i "s/"${previous_onlyoffice_http_port}"/"${onlyoffice_http_port}"/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
 	snapctl restart onlyoffice-ds.nginx
 }
 
@@ -63,7 +63,7 @@ db_onlyoffice_db_host()
 	fi
 	set_onlyoffice_db_host "$onlyoffice_db_host"
 	set_previous_onlyoffice_db_host $onlyoffice_db_host
-	sed -i "/dbHost/s/${previous_onlyoffice_db_host}/${onlyoffice_db_host}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbHost/s/"${previous_onlyoffice_db_host}"/"${onlyoffice_db_host}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-ds.documentserver
 }
 
@@ -106,8 +106,9 @@ db_onlyoffice_db_port()
 	fi
 	set_onlyoffice_db_port "$onlyoffice_db_port"
 	set_previous_onlyoffice_db_port $onlyoffice_db_port
-	sed -i "/dbPort/s/${previous_onlyoffice_db_port}/${onlyoffice_db_port}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
+	sed -i "/dbPort/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/port/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/mysql/root.ini
+	snapctl restart onlyoffice-ds
 }
 
 set_onlyoffice_db_port()
@@ -149,7 +150,7 @@ db_onlyoffice_db_name()
 	fi
 	set_onlyoffice_db_name "$onlyoffice_db_name"
 	set_previous_onlyoffice_db_name $onlyoffice_db_name
-	sed -i "/dbName/s/${previous_onlyoffice_db_name}/${onlyoffice_db_name}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbName/s/"${previous_onlyoffice_db_name}"/"${onlyoffice_db_name}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-ds.documentserver
 }
 
@@ -194,7 +195,7 @@ db_onlyoffice_db_user()
 	fi
 	set_onlyoffice_db_user "$onlyoffice_db_user"
 	set_previous_onlyoffice_db_user $onlyoffice_db_user
-	sed -i "/dbName/s/${previous_onlyoffice_db_user}/${onlyoffice_db_user}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbUser/s/"${previous_onlyoffice_db_user}"/"${onlyoffice_db_user}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-ds.documentserver
 }
 
@@ -239,7 +240,7 @@ db_onlyoffice_db_pwd()
 	fi
 	set_onlyoffice_db_pwd "$onlyoffice_db_pwd"
 	set_previous_onlyoffice_db_pwd $onlyoffice_db_pwd
-	sed -i "/dbName/s/${previous_onlyoffice_db_pwd}/${onlyoffice_db_pwd}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/dbPass/s/"${previous_onlyoffice_db_pwd}"/"${onlyoffice_db_pwd}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-ds.documentserver
 }
 
