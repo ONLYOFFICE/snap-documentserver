@@ -8,7 +8,18 @@ DEFAULT_DB_PORT="3306"
 DEFAULT_DB_NAME="onlyoffice"
 DEFAULT_DB_USER="onlyoffice"
 DEFAULT_DB_PWD="onlyoffice"
+DEFAULT_JWT="false"
+APP_DIR="$SNAP/var/www/onlyoffice/documentserver"
+CONF_DIR="$SNAP_DATA/etc/onlyoffice/documentserver"
 
+ONLYOFFICE_DEFAULT_CONFIG=${CONF_DIR}/local.json
+
+JWT_ENABLED=${JWT_ENABLED:-false}
+JWT_SECRET=${JWT_SECRET:-secret}
+JWT_HEADER=${JWT_HEADER:-Authorization}
+
+JSON_BIN=${APP_DIR}/npm/node_modules/json/lib/json.js
+JSON="${JSON_BIN} -q -f ${ONLYOFFICE_DEFAULT_CONFIG}"
 
 nginx_onlyoffice_http_port()
 {
@@ -270,10 +281,69 @@ set_previous_onlyoffice_db_pwd()
 {
 	snapctl set private.onlyoffice.db-pwd="$1"
 }
+
+token_onlyoffice_jwt()
+{
+	onlyoffice_jwt="$(onlyoffice_jwt)"
+	previous_onlyoffice_jwt="$(previous_onlyoffice_jwt)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_jwt" = "$previous_onlyoffice_jwt" ]; then
+		return 0
+	fi
+	set_onlyoffice_jwt "$onlyoffice_jwt"
+	set_previous_onlyoffice_jwt $onlyoffice_jwt
+	update_jwt_settings "$onlyoffice_jwt"
+	#${JSON} -I -e "this.services.CoAuthoring.token.enable.browser = ${DEFAULT_DB_HOST}"
+	snapctl restart onlyoffice-ds.documentserver
+}
+
+set_onlyoffice_jwt()
+{
+	snapctl set onlyoffice.jwt="$1"
+}
+
+onlyoffice_jwt()
+{
+	port="$(snapctl get onlyoffice.jwt)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_JWT"
+		set_onlyoffice_jwt $port
+		set_previous_onlyoffice_jwt $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_jwt()
+{
+	snapctl get private.onlyoffice.jwt
+}
+
+set_previous_onlyoffice_jwt()
+{
+	snapctl set private.onlyoffice.jwt="$1"
+}
+
+update_jwt_settings()
+{
+	JWT_ENABLED="$1"
+    ${JSON} -I -e "this.services.CoAuthoring.token.enable.browser = ${JWT_ENABLED}"
+    ${JSON} -I -e "this.services.CoAuthoring.token.enable.request.inbox = ${JWT_ENABLED}"
+    ${JSON} -I -e "this.services.CoAuthoring.token.enable.request.outbox = ${JWT_ENABLED}"
+
+    ${JSON} -I -e "this.services.CoAuthoring.secret.inbox.string = '${JWT_SECRET}'"
+    ${JSON} -I -e "this.services.CoAuthoring.secret.outbox.string = '${JWT_SECRET}'"
+    ${JSON} -I -e "this.services.CoAuthoring.secret.session.string = '${JWT_SECRET}'"
+
+    ${JSON} -I -e "this.services.CoAuthoring.token.inbox.header = '${JWT_HEADER}'"
+    ${JSON} -I -e "this.services.CoAuthoring.token.outbox.header = '${JWT_HEADER}'"
+}
+
 nginx_onlyoffice_http_port && \
 db_onlyoffice_db_host && \
 db_onlyoffice_db_name && \
 db_onlyoffice_db_port && \
 db_onlyoffice_db_user && \
-db_onlyoffice_db_pwd
-
+db_onlyoffice_db_pwd && \
+token_onlyoffice_jwt
