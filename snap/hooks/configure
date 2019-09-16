@@ -8,18 +8,20 @@ DEFAULT_DB_PORT="3306"
 DEFAULT_DB_NAME="onlyoffice"
 DEFAULT_DB_USER="onlyoffice"
 DEFAULT_DB_PWD="onlyoffice"
-DEFAULT_JWT="false"
-APP_DIR="$SNAP/var/www/onlyoffice/documentserver"
-CONF_DIR="$SNAP_DATA/etc/onlyoffice/documentserver"
+DEFAULT_JWT_ENABLED="false"
+DEFAULT_JWT_SECRET="secret"
+DEFAULT_JWT_HEADER="Authorization"
+# APP_DIR="$SNAP/var/www/onlyoffice/documentserver"
+# CONF_DIR="$SNAP_DATA/etc/onlyoffice/documentserver"
 
-ONLYOFFICE_DEFAULT_CONFIG=${CONF_DIR}/local.json
+# ONLYOFFICE_DEFAULT_CONFIG=${CONF_DIR}/local.json
 
-JWT_ENABLED=${JWT_ENABLED:-false}
-JWT_SECRET=${JWT_SECRET:-secret}
-JWT_HEADER=${JWT_HEADER:-Authorization}
+# JWT_ENABLED=${JWT_ENABLED:-true}
+# JWT_SECRET=${JWT_SECRET:-secret}
+# JWT_HEADER=${JWT_HEADER:-Authorization}
 
-JSON_BIN=${APP_DIR}/npm/node_modules/json/lib/json.js
-JSON="${JSON_BIN} -q -f ${ONLYOFFICE_DEFAULT_CONFIG}"
+# JSON_BIN=${APP_DIR}/npm/node_modules/json/lib/json.js
+# JSON="${JSON_BIN} -q -f ${ONLYOFFICE_DEFAULT_CONFIG}"
 
 nginx_onlyoffice_http_port()
 {
@@ -282,62 +284,139 @@ set_previous_onlyoffice_db_pwd()
 	snapctl set private.onlyoffice.db-pwd="$1"
 }
 
-token_onlyoffice_jwt()
+token_onlyoffice_jwt_enabled()
 {
-	onlyoffice_jwt="$(onlyoffice_jwt)"
-	previous_onlyoffice_jwt="$(previous_onlyoffice_jwt)"
+	onlyoffice_jwt_enabled="$(onlyoffice_jwt_enabled)"
+	previous_onlyoffice_jwt_enabled="$(previous_onlyoffice_jwt_enabled)"
 
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_jwt" = "$previous_onlyoffice_jwt" ]; then
+	if [ "$onlyoffice_jwt_enabled" = "$previous_onlyoffice_jwt_enabled" ]; then
 		return 0
 	fi
-	set_onlyoffice_jwt "$onlyoffice_jwt"
-	set_previous_onlyoffice_jwt $onlyoffice_jwt
-	update_jwt_settings "$onlyoffice_jwt"
-	#${JSON} -I -e "this.services.CoAuthoring.token.enable.browser = ${DEFAULT_DB_HOST}"
+	set_onlyoffice_jwt_enabled "$onlyoffice_jwt_enabled"
+	set_previous_onlyoffice_jwt_enabled $onlyoffice_jwt_enabled
+	update_jwt_enabled_settings
 	snapctl restart onlyoffice-ds.documentserver
 }
 
-set_onlyoffice_jwt()
+set_onlyoffice_jwt_enabled()
 {
-	snapctl set onlyoffice.jwt="$1"
+	snapctl set onlyoffice.jwt-enabled="$1"
 }
 
-onlyoffice_jwt()
+onlyoffice_jwt_enabled()
 {
-	port="$(snapctl get onlyoffice.jwt)"
+	port="$(snapctl get onlyoffice.jwt-enabled)"
 	if [ -z "$port" ]; then
-		port="$DEFAULT_JWT"
-		set_onlyoffice_jwt $port
-		set_previous_onlyoffice_jwt $port
+		port="$DEFAULT_JWT_ENABLED"
+		set_onlyoffice_jwt_enabled $port
+		set_previous_onlyoffice_jwt_enabled $port
 	fi
 
 	echo "$port"
 }
 
-previous_onlyoffice_jwt()
+previous_onlyoffice_jwt_enabled()
 {
-	snapctl get private.onlyoffice.jwt
+	snapctl get private.onlyoffice.jwt-enabled
 }
 
-set_previous_onlyoffice_jwt()
+set_previous_onlyoffice_jwt_enabled()
 {
-	snapctl set private.onlyoffice.jwt="$1"
+	snapctl set private.onlyoffice.jwt-enabled="$1"
 }
 
-update_jwt_settings()
+update_jwt_enabled_settings()
 {
-	JWT_ENABLED="$1"
-    ${JSON} -I -e "this.services.CoAuthoring.token.enable.browser = ${JWT_ENABLED}"
-    ${JSON} -I -e "this.services.CoAuthoring.token.enable.request.inbox = ${JWT_ENABLED}"
-    ${JSON} -I -e "this.services.CoAuthoring.token.enable.request.outbox = ${JWT_ENABLED}"
+	sed -i "/browser/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/inbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/outbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+}
+#######################################################################################
+token_onlyoffice_jwt_secret()
+{
+	onlyoffice_jwt_secret="$(onlyoffice_jwt_secret)"
+	previous_onlyoffice_jwt_secret="$(previous_onlyoffice_jwt_secret)"
 
-    ${JSON} -I -e "this.services.CoAuthoring.secret.inbox.string = '${JWT_SECRET}'"
-    ${JSON} -I -e "this.services.CoAuthoring.secret.outbox.string = '${JWT_SECRET}'"
-    ${JSON} -I -e "this.services.CoAuthoring.secret.session.string = '${JWT_SECRET}'"
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_jwt_secret" = "$previous_onlyoffice_jwt_secret" ]; then
+		return 0
+	fi
+	set_onlyoffice_jwt_secret "$onlyoffice_jwt_secret"
+	set_previous_onlyoffice_jwt_secret $onlyoffice_jwt_secret
+	sed -i "/inbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/outbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/session/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	snapctl restart onlyoffice-ds.documentserver
+}
 
-    ${JSON} -I -e "this.services.CoAuthoring.token.inbox.header = '${JWT_HEADER}'"
-    ${JSON} -I -e "this.services.CoAuthoring.token.outbox.header = '${JWT_HEADER}'"
+set_onlyoffice_jwt_secret()
+{
+	snapctl set onlyoffice.jwt-secret="$1"
+}
+
+onlyoffice_jwt_secret()
+{
+	port="$(snapctl get onlyoffice.jwt-secret)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_JWT_SECRET"
+		set_onlyoffice_jwt_secret $port
+		set_previous_onlyoffice_jwt_secret $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_jwt_secret()
+{
+	snapctl get private.onlyoffice.jwt-secret
+}
+
+set_previous_onlyoffice_jwt_secret()
+{
+	snapctl set private.onlyoffice.jwt-secret="$1"
+}
+##############################################################
+token_onlyoffice_jwt_header()
+{
+	onlyoffice_jwt_header="$(onlyoffice_jwt_header)"
+	previous_onlyoffice_jwt_header="$(previous_onlyoffice_jwt_header)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_jwt_header" = "$previous_onlyoffice_jwt_header" ]; then
+		return 0
+	fi
+	set_onlyoffice_jwt_header "$onlyoffice_jwt_header"
+	set_previous_onlyoffice_jwt_header $onlyoffice_jwt_header
+	sed -i "/header/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	snapctl restart onlyoffice-ds.documentserver
+}
+
+set_onlyoffice_jwt_header()
+{
+	snapctl set onlyoffice.jwt-header="$1"
+}
+
+onlyoffice_jwt_header()
+{
+	port="$(snapctl get onlyoffice.jwt-header)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_JWT_HEADER"
+		set_onlyoffice_jwt_header $port
+		set_previous_onlyoffice_jwt_header $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_jwt_header()
+{
+	snapctl get private.onlyoffice.jwt-header
+}
+
+set_previous_onlyoffice_jwt_header()
+{
+	snapctl set private.onlyoffice.jwt-header="$1"
 }
 
 nginx_onlyoffice_http_port && \
@@ -346,4 +425,6 @@ db_onlyoffice_db_name && \
 db_onlyoffice_db_port && \
 db_onlyoffice_db_user && \
 db_onlyoffice_db_pwd && \
-token_onlyoffice_jwt
+token_onlyoffice_jwt_enabled && \
+token_onlyoffice_jwt_secret && \
+token_onlyoffice_jwt_header
