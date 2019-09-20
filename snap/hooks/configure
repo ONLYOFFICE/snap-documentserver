@@ -439,7 +439,7 @@ token_onlyoffice_https()
 	set_onlyoffice_https "$onlyoffice_https"
 	set_previous_onlyoffice_https $onlyoffice_https
 	update_nginx_settings
-	snapctl restart onlyoffice-ds.documentserver
+	snapctl restart onlyoffice-ds
 	
 }
 
@@ -480,7 +480,7 @@ update_nginx_settings(){
   # setup HTTPS
   if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" ]; then
     cp -f ${NGINX_ONLYOFFICE_PATH}/ds-ssl.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
-	sed -i -e "s#etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
+	sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
 
     # configure nginx
     sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i ${NGINX_ONLYOFFICE_CONF}
@@ -511,6 +511,7 @@ update_nginx_settings(){
   else
     #ln -sf ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
 	cp -f ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
+	sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
 	cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
   fi
 

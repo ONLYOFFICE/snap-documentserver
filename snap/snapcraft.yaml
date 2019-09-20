@@ -149,8 +149,11 @@ parts:
     override-build: |
       snapcraftctl build
       wget https://www.zlib.net/fossils/zlib-1.2.11.tar.gz
+      wget https://www.openssl.org/source/openssl-1.0.2t.tar.gz
       mkdir zlib
+      mkdir openssl
       tar xvf zlib-1.2.11.tar.gz --strip-components 1 -C zlib/
+      tar xvf openssl-1.0.2t.tar.gz --strip-components 1 -C openssl/
       wget https://ftp.pcre.org/pub/pcre/pcre-8.41.tar.bz2 -O pcre.tar.bz2
       mkdir pcre
       tar xvf pcre.tar.bz2 --strip-components 1 -C pcre/
@@ -158,7 +161,7 @@ parts:
       --error-log-path=/var/snap/onlyoffice-ds/current/var/log/nginx/error.log --http-log-path=/var/snap/onlyoffice-ds/current/var/log/nginx/access.log --pid-path=/var/snap/onlyoffice-ds/current/var/run/nginx.pid \
       --lock-path=/var/snap/onlyoffice-ds/current/var/lock/nginx.lock --http-client-body-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/client_temp --http-proxy-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/proxy_temp \
       --http-fastcgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/scgi_temp \
-      --with-http_secure_link_module
+      --with-http_secure_link_module --with-http_ssl_module --with-mail_ssl_module --with-openssl=openssl --with-http_v2_module
       make
       mkdir -p $SNAPCRAFT_PART_INSTALL/bin
       cp objs/nginx $SNAPCRAFT_PART_INSTALL/bin/nginx
