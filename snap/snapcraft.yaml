@@ -11,14 +11,12 @@ architectures:
 
 apps:
   documentserver:
-    adapter: full
     command: usr/sbin/documentserver-start.sh
     daemon: simple
     plugs: [network, network-bind, removable-media]
 
   node:
     command: bin/node
-    adapter: full
     plugs: [network, network-bind, removable-media]
   
   nginx:
@@ -76,8 +74,6 @@ parts:
     source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver_amd64.deb
     source-type: deb
     stage-packages:
-      #- libcurl3
-      #- libcurl4
       - libxml2
       - fonts-dejavu
       - fonts-liberation
@@ -208,9 +204,6 @@ parts:
     source: https://github.com/mysql/mysql-server.git
     source-tag: mysql-5.7.27
     source-depth: 1
-    stage-packages:
-      - libcurl4
-      - libaio1
     override-pull: |
       snapcraftctl pull
       git apply $SNAPCRAFT_STAGE/mysql-support-compile-time-disabling-of-setpriority.patch

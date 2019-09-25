@@ -4,15 +4,12 @@
 . "$SNAP/utilities/common-utilities"
 
 export MYSQL_PIDFILE="/tmp/pids/mysql.pid"
-#export MYSQL_SOCKET="/tmp/sockets/mysql.sock"
-export NEXTCLOUD_PASSWORD_FILE="$SNAP_DATA/mysql/nextcloud_password"
+export ONLYOFFICE_PASSWORD_FILE="$SNAP_DATA/mysql/onlyoffice_password"
 MYSQL_SETUP_LOCKFILE="/tmp/locks/mysql-setup"
 
 mkdir -p "$(dirname "$MYSQL_PIDFILE")"
-#mkdir -p "$(dirname "$MYSQL_SOCKET")"
 mkdir -p "$(dirname "$MYSQL_SETUP_LOCKFILE")"
 chmod 750 "$(dirname "$MYSQL_PIDFILE")"
-#chmod 750 "$(dirname "$MYSQL_SOCKET")"
 chmod 750 "$(dirname "$MYSQL_SETUP_LOCKFILE")"
 
 mysql_is_running()
@@ -54,18 +51,18 @@ mysql_pid()
 	fi
 }
 
-mysql_set_nextcloud_password()
+mysql_set_onlyoffice_password()
 {
-	echo "$1" > "$NEXTCLOUD_PASSWORD_FILE"
-	chmod 600 "$NEXTCLOUD_PASSWORD_FILE"
+	echo "$1" > "$ONLYOFFICE_PASSWORD_FILE"
+	chmod 600 "$ONLYOFFICE_PASSWORD_FILE"
 }
 
-mysql_get_nextcloud_password()
+mysql_get_onlyoffice_password()
 {
-	if [ -f "$NEXTCLOUD_PASSWORD_FILE" ]; then
-		cat "$NEXTCLOUD_PASSWORD_FILE"
+	if [ -f "$ONLYOFFICE_PASSWORD_FILE" ]; then
+		cat "$ONLYOFFICE_PASSWORD_FILE"
 	else
-		echo "MySQL Nextcloud password has not yet been generated" >&2
+		echo "MySQL onlyoffice password has not yet been generated" >&2
 		echo ""
 	fi
 }

@@ -25,9 +25,11 @@ if [ $new_install = true ]; then
 	root_password="$(tr -dc _A-Z-a-z-0-9 < /dev/urandom | head -c64)"
 	printf "done\n"
 
-	# Generate a password for the nextcloud mysql user.
-	printf "Generating nextcloud mysql password... "
-	nextcloud_password="onlyoffice"
+	# Generate a password for the onlyoffice mysql user.
+	printf "Generating onlyoffice mysql password... "
+	onlyoffice_password="$(tr -dc _A-Z-a-z-0-9 < /dev/urandom | head -c64)"
+	# Save onlyoffice user password
+	sed -i -e "s#dbPass\": \"onlyoffice#dbPass\": \"${onlyoffice_password}#g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	printf "done\n"
 
 	# Save root user information
@@ -40,15 +42,15 @@ if [ $new_install = true ]; then
 
 	# Now set everything up in one step:
 	# 1) Set the root user's password
-	# 2) Create the nextcloud user
-	# 3) Create the nextcloud database
-	# 4) Grant the nextcloud user privileges on the nextcloud database
-	printf "Setting up users and nextcloud database... "
+	# 2) Create the onlyoffice user
+	# 3) Create the onlyoffice database
+	# 4) Grant the onlyoffice user privileges on the onlyoffice database
+	printf "Setting up users and onlyoffice database... "
 	if mysql --defaults-file="$root_option_file" <<-SQL
 		ALTER USER 'root'@'localhost' IDENTIFIED BY '$root_password';
-		CREATE USER 'onlyoffice'@'localhost' IDENTIFIED BY '$nextcloud_password';
+		CREATE USER 'onlyoffice'@'localhost' IDENTIFIED BY '$onlyoffice_password';
 		CREATE DATABASE onlyoffice;
-		GRANT ALL PRIVILEGES ON onlyoffice.* TO 'onlyoffice'@'localhost' IDENTIFIED BY 'onlyoffice';
+		GRANT ALL PRIVILEGES ON onlyoffice.* TO 'onlyoffice'@'localhost' IDENTIFIED BY '$onlyoffice_password';
 		USE onlyoffice;
 		SOURCE /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/schema/mysql/createdb.sql;
 		SQL
@@ -61,11 +63,6 @@ if [ $new_install = true ]; then
 		"$SNAP/support-files/mysql.server" stop
 		rm -rf "$SNAP_DATA"/mysql/*
 	fi
-#else
-	# Okay, this isn't a new installation. However, we recently changed
-	# the location of MySQL's socket (11.0.2snap1). Make sure the root
-	# option file is updated to look there instead of the old location.
-	#sed -ri "s|(socket\s*=\s*)/var/snap/.*mysql.sock|\1$MYSQL_SOCKET|" "$root_option_file"
 fi
 
 # Wait here until mysql is running
@@ -83,10 +80,10 @@ if mysql_upgrade --defaults-file="$root_option_file"; then
 fi
 
 # If this was a new installation, wait until the server is all up and running
-# before saving off the nextcloud user's password. This way the presence of the
+# before saving off the onlyoffice user's password. This way the presence of the
 # file can be used as a signal that mysql is ready to be used.
 if [ $new_install = true ]; then
-	mysql_set_nextcloud_password "$nextcloud_password"
+	mysql_set_onlyoffice_password "$onlyoffice_password"
 fi
 
 set_mysql_setup_not_running

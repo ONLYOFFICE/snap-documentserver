@@ -1,13 +1,9 @@
 #!/bin/sh
 
-#cp  -R $SNAP/etc $SNAP_DATA/
 cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
 DEFAULT_HTTP_PORT="80"
 DEFAULT_DB_HOST="localhost"
 DEFAULT_DB_PORT="3306"
-DEFAULT_DB_NAME="onlyoffice"
-DEFAULT_DB_USER="onlyoffice"
-DEFAULT_DB_PWD="onlyoffice"
 DEFAULT_JWT_ENABLED="false"
 DEFAULT_JWT_SECRET="secret"
 DEFAULT_JWT_HEADER="Authorization"
@@ -158,137 +154,6 @@ set_previous_onlyoffice_db_port()
 }
 #######################################################
 #######################################################
-db_onlyoffice_db_name()
-{
-	onlyoffice_db_name="$(onlyoffice_db_name)"
-	previous_onlyoffice_db_name="$(previous_onlyoffice_db_name)"
-
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_name" = "$previous_onlyoffice_db_name" ]; then
-		return 0
-	fi
-	set_onlyoffice_db_name "$onlyoffice_db_name"
-	set_previous_onlyoffice_db_name $onlyoffice_db_name
-	sed -i "/dbName/s/"${previous_onlyoffice_db_name}"/"${onlyoffice_db_name}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
-}
-
-set_onlyoffice_db_name()
-{
-	snapctl set onlyoffice.db-name="$1"
-}
-
-onlyoffice_db_name()
-{
-	port="$(snapctl get onlyoffice.db-name)"
-	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_NAME"
-		set_onlyoffice_db_name $port
-		set_previous_onlyoffice_db_name $port
-	fi
-
-	echo "$port"
-}
-
-previous_onlyoffice_db_name()
-{
-	snapctl get private.onlyoffice.db-name
-}
-
-set_previous_onlyoffice_db_name()
-{
-	snapctl set private.onlyoffice.db-name="$1"
-}
-#######################################################
-#######################################################
-#######################################################
-
-db_onlyoffice_db_user()
-{
-	onlyoffice_db_user="$(onlyoffice_db_user)"
-	previous_onlyoffice_db_user="$(previous_onlyoffice_db_user)"
-
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_user" = "$previous_onlyoffice_db_user" ]; then
-		return 0
-	fi
-	set_onlyoffice_db_user "$onlyoffice_db_user"
-	set_previous_onlyoffice_db_user $onlyoffice_db_user
-	sed -i "/dbUser/s/"${previous_onlyoffice_db_user}"/"${onlyoffice_db_user}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
-}
-
-set_onlyoffice_db_user()
-{
-	snapctl set onlyoffice.db-user="$1"
-}
-
-onlyoffice_db_user()
-{
-	port="$(snapctl get onlyoffice.db-user)"
-	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_USER"
-		set_onlyoffice_db_user $port
-		set_previous_onlyoffice_db_user $port
-	fi
-
-	echo "$port"
-}
-
-previous_onlyoffice_db_user()
-{
-	snapctl get private.onlyoffice.db-user
-}
-
-set_previous_onlyoffice_db_user()
-{
-	snapctl set private.onlyoffice.db-user="$1"
-}
-
-#######
-#######
-#######
-db_onlyoffice_db_pwd()
-{
-	onlyoffice_db_pwd="$(onlyoffice_db_pwd)"
-	previous_onlyoffice_db_pwd="$(previous_onlyoffice_db_pwd)"
-
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_pwd" = "$previous_onlyoffice_db_pwd" ]; then
-		return 0
-	fi
-	set_onlyoffice_db_pwd "$onlyoffice_db_pwd"
-	set_previous_onlyoffice_db_pwd $onlyoffice_db_pwd
-	sed -i "/dbPass/s/"${previous_onlyoffice_db_pwd}"/"${onlyoffice_db_pwd}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
-}
-
-set_onlyoffice_db_pwd()
-{
-	snapctl set onlyoffice.db-pwd="$1"
-}
-
-onlyoffice_db_pwd()
-{
-	port="$(snapctl get onlyoffice.db-pwd)"
-	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_USER"
-		set_onlyoffice_db_pwd $port
-		set_previous_onlyoffice_db_pwd $port
-	fi
-
-	echo "$port"
-}
-
-previous_onlyoffice_db_pwd()
-{
-	snapctl get private.onlyoffice.db-pwd
-}
-
-set_previous_onlyoffice_db_pwd()
-{
-	snapctl set private.onlyoffice.db-pwd="$1"
-}
 
 token_onlyoffice_jwt_enabled()
 {
@@ -387,11 +252,6 @@ token_onlyoffice_jwt_header()
 {
 	onlyoffice_jwt_header="$(onlyoffice_jwt_header)"
 	previous_onlyoffice_jwt_header="$(previous_onlyoffice_jwt_header)"
-
-	# If no changes were requested, then there's nothing to do here.
-	# if [ "$onlyoffice_jwt_header" = "$previous_onlyoffice_jwt_header" ]; then
-	# 	return 0
-	# fi
 	set_onlyoffice_jwt_header "$onlyoffice_jwt_header"
 	set_previous_onlyoffice_jwt_header $onlyoffice_jwt_header
 	sed -i "/header/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
@@ -436,10 +296,13 @@ token_onlyoffice_https()
 	if [ "$onlyoffice_https" = "$previous_onlyoffice_https" ]; then
 		return 0
 	fi
-	set_onlyoffice_https "$onlyoffice_https"
-	set_previous_onlyoffice_https $onlyoffice_https
-	update_nginx_settings
-	snapctl restart onlyoffice-ds
+	if [ "$onlyoffice_https" = "true" ] || [ "$onlyoffice_https" = "false" ]; then
+		set_onlyoffice_https "$onlyoffice_https"
+		set_previous_onlyoffice_https $onlyoffice_https
+		update_nginx_settings
+		snapctl restart onlyoffice-ds
+	fi
+
 	
 }
 
@@ -472,10 +335,6 @@ set_previous_onlyoffice_https()
 
 
 update_nginx_settings(){
-  # Set up nginx
-  #sed 's/^worker_processes.*/'"worker_processes ${NGINX_WORKER_PROCESSES};"'/' -i ${NGINX_CONFIG_PATH}
-  #sed 's/worker_connections.*/'"worker_connections ${NGINX_WORKER_CONNECTIONS};"'/' -i ${NGINX_CONFIG_PATH}
-  #sed 's/access_log.*/'"access_log off;"'/' -i ${NGINX_CONFIG_PATH}
 
   # setup HTTPS
   if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" ]; then
@@ -524,10 +383,7 @@ update_nginx_settings(){
 
 nginx_onlyoffice_http_port && \
 db_onlyoffice_db_host && \
-db_onlyoffice_db_name && \
 db_onlyoffice_db_port && \
-db_onlyoffice_db_user && \
-db_onlyoffice_db_pwd && \
 token_onlyoffice_jwt_enabled && \
 token_onlyoffice_jwt_secret && \
 token_onlyoffice_jwt_header && \
