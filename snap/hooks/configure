@@ -67,47 +67,6 @@ set_previous_onlyoffice_http_port()
 	snapctl set private.onlyoffice.ds-port="$1"
 }
 
-db_onlyoffice_db_host()
-{
-	onlyoffice_db_host="$(onlyoffice_db_host)"
-	previous_onlyoffice_db_host="$(previous_onlyoffice_db_host)"
-
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_host" = "$previous_onlyoffice_db_host" ]; then
-		return 0
-	fi
-	set_onlyoffice_db_host "$onlyoffice_db_host"
-	set_previous_onlyoffice_db_host $onlyoffice_db_host
-	sed -i "/dbHost/s/"${previous_onlyoffice_db_host}"/"${onlyoffice_db_host}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
-}
-
-previous_onlyoffice_db_host()
-{
-	snapctl get private.onlyoffice.db-host
-}
-
-onlyoffice_db_host()
-{
-	port="$(snapctl get onlyoffice.db-host)"
-	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_HOST"
-		set_onlyoffice_db_host $port
-		set_previous_onlyoffice_db_host $port
-	fi
-
-	echo "$port"
-}
-
-set_previous_onlyoffice_db_host()
-{
-	snapctl set private.onlyoffice.db-host="$1"
-}
-set_onlyoffice_db_host()
-{
-	snapctl set onlyoffice.db-host="$1"
-}
-
 ################################################
 
 db_onlyoffice_db_port()
@@ -382,7 +341,6 @@ update_nginx_settings(){
 
 
 nginx_onlyoffice_http_port && \
-db_onlyoffice_db_host && \
 db_onlyoffice_db_port && \
 token_onlyoffice_jwt_enabled && \
 token_onlyoffice_jwt_secret && \

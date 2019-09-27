@@ -3,7 +3,6 @@
 		"CoAuthoring": {
 			"sql": {
 				"type": "mysql",
-				"dbHost": "localhost",
 				"dbPort": 3306,
 				"dbPass": "onlyoffice",
 				"charset": "utf8"
