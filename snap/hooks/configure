@@ -9,21 +9,6 @@ DEFAULT_JWT_SECRET="secret"
 DEFAULT_JWT_HEADER="Authorization"
 DEFAULT_HTTPS="false"
 
-CONF_DIR="$SNAP_DATA/etc/onlyoffice/documentserver"
-DATA_DIR="$SNAP_DATA/var/www/onlyoffice/Data"
-NGINX_ONLYOFFICE_PATH="${CONF_DIR}/nginx"
-NGINX_ONLYOFFICE_CONF="${NGINX_ONLYOFFICE_PATH}/ds.conf"
-NGINX_CONFIG_PATH="$SNAP_DATA/etc/nginx/nginx.conf"
-NGINX_WORKER_PROCESSES="1"
-NGINX_WORKER_CONNECTIONS="(ulimit -n)"
-SSL_VERIFY_CLIENT="off"
-ONLYOFFICE_HTTPS_HSTS_ENABLED="true"
-ONLYOFFICE_HTTPS_HSTS_MAXAGE="31536000"
-SSL_CERTIFICATES_DIR="${DATA_DIR}/certs"
-SSL_DHPARAM_PATH="$SSL_CERTIFICATES_DIR/dhparam.pem"
-SSL_CERTIFICATE_PATH="$SSL_CERTIFICATES_DIR/onlyoffice.crt"
-SSL_KEY_PATH="$SSL_CERTIFICATES_DIR/onlyoffice.key"
-
 
 nginx_onlyoffice_http_port()
 {
@@ -67,7 +52,8 @@ set_previous_onlyoffice_http_port()
 	snapctl set private.onlyoffice.ds-port="$1"
 }
 
-################################################
+
+
 
 db_onlyoffice_db_port()
 {
@@ -111,8 +97,9 @@ set_previous_onlyoffice_db_port()
 {
 	snapctl set private.onlyoffice.db-port="$1"
 }
-#######################################################
-#######################################################
+
+
+
 
 token_onlyoffice_jwt_enabled()
 {
@@ -162,7 +149,10 @@ update_jwt_enabled_settings()
 	sed -i "/inbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/outbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 }
-#######################################################################################
+
+
+
+
 token_onlyoffice_jwt_secret()
 {
 	onlyoffice_jwt_secret="$(onlyoffice_jwt_secret)"
@@ -206,7 +196,10 @@ set_previous_onlyoffice_jwt_secret()
 {
 	snapctl set private.onlyoffice.jwt-secret="$1"
 }
-##############################################################
+
+
+
+
 token_onlyoffice_jwt_header()
 {
 	onlyoffice_jwt_header="$(onlyoffice_jwt_header)"
@@ -243,106 +236,12 @@ set_previous_onlyoffice_jwt_header()
 {
 	snapctl set private.onlyoffice.jwt-header="$1"
 }
-#####################################################################################
-#####################################################################################
-
-token_onlyoffice_https()
-{
-	onlyoffice_https="$(onlyoffice_https)"
-	previous_onlyoffice_https="$(previous_onlyoffice_https)"
-
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_https" = "$previous_onlyoffice_https" ]; then
-		return 0
-	fi
-	if [ "$onlyoffice_https" = "true" ] || [ "$onlyoffice_https" = "false" ]; then
-		set_onlyoffice_https "$onlyoffice_https"
-		set_previous_onlyoffice_https $onlyoffice_https
-		update_nginx_settings
-		snapctl restart onlyoffice-ds
-	fi
-
-	
-}
-
-set_onlyoffice_https()
-{
-	snapctl set onlyoffice.https="$1"
-}
-
-onlyoffice_https()
-{
-	port="$(snapctl get onlyoffice.https)"
-	if [ -z "$port" ]; then
-		port="$DEFAULT_HTTPS"
-		set_onlyoffice_https $port
-		set_previous_onlyoffice_https $port
-	fi
-
-	echo "$port"
-}
-
-previous_onlyoffice_https()
-{
-	snapctl get private.onlyoffice.https
-}
-
-set_previous_onlyoffice_https()
-{
-	snapctl set private.onlyoffice.https="$1"
-}
 
 
-update_nginx_settings(){
-
-  # setup HTTPS
-  if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" ]; then
-    cp -f ${NGINX_ONLYOFFICE_PATH}/ds-ssl.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
-	sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
-
-    # configure nginx
-    sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i ${NGINX_ONLYOFFICE_CONF}
-    sed 's,{{SSL_KEY_PATH}},'"${SSL_KEY_PATH}"',' -i ${NGINX_ONLYOFFICE_CONF}
-
-    # turn on http2
-    sed 's,\(443 ssl\),\1 http2,' -i ${NGINX_ONLYOFFICE_CONF}
-
-    # if dhparam path is valid, add to the config, otherwise remove the option
-    if [ -r "${SSL_DHPARAM_PATH}" ]; then
-      sed 's,\(\#* *\)\?\(ssl_dhparam \).*\(;\)$,'"\2${SSL_DHPARAM_PATH}\3"',' -i ${NGINX_ONLYOFFICE_CONF}
-    else
-      sed '/ssl_dhparam/d' -i ${NGINX_ONLYOFFICE_CONF}
-    fi
-
-    sed 's,\(ssl_verify_client \).*\(;\)$,'"\1${SSL_VERIFY_CLIENT}\2"',' -i ${NGINX_ONLYOFFICE_CONF}
-
-    if [ -f "${CA_CERTIFICATES_PATH}" ]; then
-      sed '/ssl_verify_client/a '"ssl_client_certificate ${CA_CERTIFICATES_PATH}"';' -i ${NGINX_ONLYOFFICE_CONF}
-    fi
-
-    if [ "${ONLYOFFICE_HTTPS_HSTS_ENABLED}" == "true" ]; then
-      sed 's,\(max-age=\).*\(;\)$,'"\1${ONLYOFFICE_HTTPS_HSTS_MAXAGE}\2"',' -i ${NGINX_ONLYOFFICE_CONF}
-    else
-      sed '/max-age=/d' -i ${NGINX_ONLYOFFICE_CONF}
-    fi
-	cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
-  else
-    #ln -sf ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
-	cp -f ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
-	sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
-	cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
-  fi
-
-  # check if ipv6 supported otherwise remove it from nginx config
-  if [ ! -f /proc/net/if_inet6 ]; then
-    sed '/listen\s\+\[::[0-9]*\].\+/d' -i $NGINX_ONLYOFFICE_CONF
-  fi
-}
 
 
 nginx_onlyoffice_http_port && \
 db_onlyoffice_db_port && \
 token_onlyoffice_jwt_enabled && \
 token_onlyoffice_jwt_secret && \
-token_onlyoffice_jwt_header && \
-token_onlyoffice_https
+token_onlyoffice_jwt_header
