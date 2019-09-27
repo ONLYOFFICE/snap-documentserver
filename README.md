@@ -128,6 +128,12 @@ cp dhparam.pem /app/onlyoffice/DocumentServer/data/certs/
 chmod 400 /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
 ```
 
+Then you must configure ONLYOFFICE Document Server to work on ssl, run:
+
+```bash
+sudo snap set onlyoffice-ds onlyoffice.https=true
+```
+
 You are now just one step away from having our application secured.
 
 
