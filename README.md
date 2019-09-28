@@ -72,11 +72,6 @@ To secure the application via SSL basically two things are needed:
 - **Private key (.key)**
 - **SSL certificate (.crt)**
 
-So you need to create and install the following files:
-
-        /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
-        /app/onlyoffice/DocumentServer/data/certs/onlyoffice.crt
-
 When using CA certified certificates, these files are provided to you by the CA. When using self-signed certificates you need to generate these files yourself. Skip the following section if you are have CA certified SSL certificates.
 
 #### Generation of Self Signed Certificates
@@ -118,24 +113,29 @@ Out of the four files generated above, you need to install the `onlyoffice.key`,
 
 The default path that the onlyoffice application is configured to look for the SSL certificates is at `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs`.
 
-The `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/` path is the path of the data store, which means that you have to create a folder named certs inside `/app/onlyoffice/DocumentServer/data/` and copy the files into it and as a measure of security you will update the permission on the `onlyoffice.key` file to only be readable by the owner.
+The `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/` path is the path of the data store, which means that you have to copy the files into it.
 
 ```bash
-mkdir -p /app/onlyoffice/DocumentServer/data/certs
-cp onlyoffice.key /app/onlyoffice/DocumentServer/data/certs/
-cp onlyoffice.crt /app/onlyoffice/DocumentServer/data/certs/
-cp dhparam.pem /app/onlyoffice/DocumentServer/data/certs/
-chmod 400 /app/onlyoffice/DocumentServer/data/certs/onlyoffice.key
+sudo cp onlyoffice.key /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+sudo cp onlyoffice.crt /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+sudo cp dhparam.pem /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
 ```
 
-Then you must configure ONLYOFFICE Document Server to work on ssl, run:
+Then you must restart ONLYOFFICE Document Server to work on ssl, run:
 
 ```bash
-sudo snap set onlyoffice-ds onlyoffice.https=true
+sudo snap restart onlyoffice-ds
 ```
 
 You are now just one step away from having our application secured.
 
+If you want to return ONLYOFFICE Document Server to work on http, delete files from the `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs` and restart ONLYOFFICE Document Server.
+
+```bash
+sudo rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/onlyoffice.*
+sudo rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/dhparam.pem
+sudo snap restart onlyoffice-ds
+```
 
 #### JSON Web Token
 
