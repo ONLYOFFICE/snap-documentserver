@@ -129,7 +129,7 @@ sudo snap restart onlyoffice-ds
 
 You are now just one step away from having our application secured.
 
-If you want to return ONLYOFFICE Document Server to work on http, delete files from the `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs` and restart ONLYOFFICE Document Server.
+If you want to return ONLYOFFICE Document Server to work on HTTP, delete files from the `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs` and restart ONLYOFFICE Document Server.
 
 ```bash
 sudo rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/onlyoffice.*
