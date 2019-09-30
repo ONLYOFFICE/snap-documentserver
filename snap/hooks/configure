@@ -2,12 +2,10 @@
 
 cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
 DEFAULT_HTTP_PORT="80"
-DEFAULT_DB_HOST="localhost"
 DEFAULT_DB_PORT="3306"
 DEFAULT_JWT_ENABLED="false"
 DEFAULT_JWT_SECRET="secret"
 DEFAULT_JWT_HEADER="Authorization"
-DEFAULT_HTTPS="false"
 
 
 nginx_onlyoffice_http_port()
