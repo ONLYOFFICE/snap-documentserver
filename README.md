@@ -25,30 +25,6 @@ sudo apt update
 sudo apt install snapd
 ```
 
-Also you have to install the PostgreSQL version included in your version of Ubuntu:
-
-```
-sudo apt-get install postgresql
-```
-
-If you want to install some other PostgreSQL version from the PostgreSQL Repository, please see the official PostgreSQL documentation for more detail on that.
-After PostgreSQL is installed, create the PostgreSQL database and user.
-
-The created database must have onlyoffice both for user and password:
-
-```
-sudo -i -u postgres psql -c "CREATE DATABASE onlyoffice;"
-sudo -i -u postgres psql -c "CREATE USER onlyoffice WITH password 'onlyoffice';"
-sudo -i -u postgres psql -c "GRANT ALL privileges ON DATABASE onlyoffice TO onlyoffice;"
-```
-
-Run the following commands to configure the database:
-```
-wget https://raw.githubusercontent.com/ONLYOFFICE/server/master/schema/postgresql/createdb.sql
-export PGPASSWORD=onlyoffice
-psql -hlocalhost -Uonlyoffice -d onlyoffice -f createdb.sql -w
-```
-
 Now the editors can be easily installed using the following command:
 
 ```
@@ -69,12 +45,108 @@ To remove the snap containing ONLYOFFICE editors use the following command:
 snap remove onlyoffice-ds
 ```
 
-## Running ONLYOFFICE Document Server on Different Port
+## Configuration
 
-To change the port, use the `snap set` command.
+### Running ONLYOFFICE Document Server on Different Port
+
+By default, the snap will listen on port 80. If you'd like to change the HTTP port (say, to port 8888), run:
 
 ```
 sudo snap set onlyoffice-ds onlyoffice.ds-port=8888
+```
+
+### MySQL port configuration
+
+By default, MySQL uses port 3306. You can also change the database port, using the command:
+
+```
+sudo snap set onlyoffice-ds onlyoffice.db-port=3307
+```
+
+### Running ONLYOFFICE Document Server using HTTPS
+
+Access to the onlyoffice application can be secured using SSL so as to prevent unauthorized access. While a CA certified SSL certificate allows for verification of trust via the CA, a self signed certificates can also provide an equal level of trust verification as long as each client takes some additional steps to verify the identity of your website. Below the instructions on achieving this are provided.
+
+To secure the application via SSL basically two things are needed:
+
+- **Private key (.key)**
+- **SSL certificate (.crt)**
+
+When using CA certified certificates, these files are provided to you by the CA. When using self-signed certificates you need to generate these files yourself. Skip the following section if you are have CA certified SSL certificates.
+
+#### Generation of Self Signed Certificates
+
+Generation of self-signed SSL certificates involves a simple 3 step procedure.
+
+**STEP 1**: Create the server private key
+
+```bash
+openssl genrsa -out onlyoffice.key 2048
+```
+
+**STEP 2**: Create the certificate signing request (CSR)
+
+```bash
+openssl req -new -key onlyoffice.key -out onlyoffice.csr
+```
+
+**STEP 3**: Sign the certificate using the private key and CSR
+
+```bash
+openssl x509 -req -days 365 -in onlyoffice.csr -signkey onlyoffice.key -out onlyoffice.crt
+```
+
+You have now generated an SSL certificate that's valid for 365 days.
+
+#### Strengthening the server security
+
+This section provides you with instructions to [strengthen your server security](https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html).
+To achieve this you need to generate stronger DHE parameters.
+
+```bash
+openssl dhparam -out dhparam.pem 2048
+```
+
+#### Installation of the SSL Certificates
+
+Out of the four files generated above, you need to install the `onlyoffice.key`, `onlyoffice.crt` and `dhparam.pem` files at the onlyoffice server. The CSR file is not needed, but do make sure you safely backup the file (in case you ever need it again).
+
+The default path that the onlyoffice application is configured to look for the SSL certificates is at `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs`.
+
+The `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/` path is the path of the data store, which means that you have to copy the files into it.
+
+```bash
+sudo cp onlyoffice.key /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+sudo cp onlyoffice.crt /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+sudo cp dhparam.pem /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+```
+
+Then you must restart ONLYOFFICE Document Server to work on ssl, run:
+
+```bash
+sudo snap restart onlyoffice-ds
+```
+
+You are now just one step away from having our application secured.
+
+If you want to return ONLYOFFICE Document Server to work on HTTP, delete files from the `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs` and restart ONLYOFFICE Document Server.
+
+```bash
+sudo rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/onlyoffice.*
+sudo rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/dhparam.pem
+sudo snap restart onlyoffice-ds
+```
+
+#### JSON Web Token
+
+- **jwt-enabled**: Specifies the enabling the JSON Web Token validation by the ONLYOFFICE Document Server. Defaults to `false`.
+- **jwt-secret**: Defines the secret key to validate the JSON Web Token in the request to the ONLYOFFICE Document Server. Defaults to `secret`.
+- **jwt-header**: Defines the http header that will be used to send the JSON Web Token. Defaults to `Authorization`.
+
+If you'd like to change the JSON Web Token parameters, run:
+
+```
+sudo snap set onlyoffice-ds onlyoffice.key=value
 ```
 
 ## Project Information

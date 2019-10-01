@@ -2,13 +2,31 @@
 	"services": {
 		"CoAuthoring": {
 			"sql": {
-				"type": "postgres",
-				"dbHost": "localhost",
-				"dbPort": 5432,
-				"dbName": "onlyoffice",
-				"dbUser": "onlyoffice",
+				"type": "mysql",
+				"dbPort": 3306,
 				"dbPass": "onlyoffice",
 				"charset": "utf8"
+			},
+			"secret": {
+				"browser": {"string": "secret", "file": "", "tenants": {}},
+				"inbox": {"string": "secret", "file": "", "tenants": {}},
+				"outbox": {"string": "secret", "file": ""},
+				"session": {"string": "secret", "file": ""}
+			},
+			"token": {
+				"enable": {
+					"browser": false,
+					"request": {
+						"inbox": false,
+						"outbox": false
+					}
+				},
+				"inbox": {
+					"header": "Authorization"
+				},
+				"outbox": {
+					"header": "Authorization"
+				}
 			}
 		}
 	}

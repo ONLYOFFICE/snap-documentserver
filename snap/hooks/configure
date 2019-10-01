@@ -1,12 +1,11 @@
 #!/bin/sh
 
-cp  -R $SNAP/etc $SNAP_DATA/
+cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
 DEFAULT_HTTP_PORT="80"
-DEFAULT_DB_HOST="localhost"
-DEFAULT_DB_PORT="5432"
-DEFAULT_DB_NAME="onlyoffice"
-DEFAULT_DB_USER="onlyoffice"
-DEFAULT_DB_PWD="onlyoffice"
+DEFAULT_DB_PORT="3306"
+DEFAULT_JWT_ENABLED="false"
+DEFAULT_JWT_SECRET="secret"
+DEFAULT_JWT_HEADER="Authorization"
 
 
 nginx_onlyoffice_http_port()
@@ -20,7 +19,7 @@ nginx_onlyoffice_http_port()
 	fi
 	set_onlyoffice_http_port "$onlyoffice_http_port"
 	set_previous_onlyoffice_http_port $onlyoffice_http_port
-	sed -i "s/${previous_onlyoffice_http_port}/${onlyoffice_http_port}/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
+	sed -i "s/"${previous_onlyoffice_http_port}"/"${onlyoffice_http_port}"/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
 	snapctl restart onlyoffice-ds.nginx
 }
 
@@ -51,48 +50,8 @@ set_previous_onlyoffice_http_port()
 	snapctl set private.onlyoffice.ds-port="$1"
 }
 
-db_onlyoffice_db_host()
-{
-	onlyoffice_db_host="$(onlyoffice_db_host)"
-	previous_onlyoffice_db_host="$(previous_onlyoffice_db_host)"
 
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_host" = "$previous_onlyoffice_db_host" ]; then
-		return 0
-	fi
-	set_onlyoffice_db_host "$onlyoffice_db_host"
-	set_previous_onlyoffice_db_host $onlyoffice_db_host
-	sed -i "/dbHost/s/${previous_onlyoffice_db_host}/${onlyoffice_db_host}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
-}
 
-previous_onlyoffice_db_host()
-{
-	snapctl get private.onlyoffice.db-host
-}
-
-onlyoffice_db_host()
-{
-	port="$(snapctl get onlyoffice.db-host)"
-	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_HOST"
-		set_onlyoffice_db_host $port
-		set_previous_onlyoffice_db_host $port
-	fi
-
-	echo "$port"
-}
-
-set_previous_onlyoffice_db_host()
-{
-	snapctl set private.onlyoffice.db-host="$1"
-}
-set_onlyoffice_db_host()
-{
-	snapctl set onlyoffice.db-host="$1"
-}
-
-################################################
 
 db_onlyoffice_db_port()
 {
@@ -105,8 +64,9 @@ db_onlyoffice_db_port()
 	fi
 	set_onlyoffice_db_port "$onlyoffice_db_port"
 	set_previous_onlyoffice_db_port $onlyoffice_db_port
-	sed -i "/dbPort/s/${previous_onlyoffice_db_port}/${onlyoffice_db_port}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
+	sed -i "/dbPort/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/port/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/mysql/root.ini
+	snapctl restart onlyoffice-ds
 }
 
 set_onlyoffice_db_port()
@@ -135,143 +95,151 @@ set_previous_onlyoffice_db_port()
 {
 	snapctl set private.onlyoffice.db-port="$1"
 }
-#######################################################
-#######################################################
-db_onlyoffice_db_name()
+
+
+
+
+token_onlyoffice_jwt_enabled()
 {
-	onlyoffice_db_name="$(onlyoffice_db_name)"
-	previous_onlyoffice_db_name="$(previous_onlyoffice_db_name)"
+	onlyoffice_jwt_enabled="$(onlyoffice_jwt_enabled)"
+	previous_onlyoffice_jwt_enabled="$(previous_onlyoffice_jwt_enabled)"
 
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_name" = "$previous_onlyoffice_db_name" ]; then
+	if [ "$onlyoffice_jwt_enabled" = "$previous_onlyoffice_jwt_enabled" ]; then
 		return 0
 	fi
-	set_onlyoffice_db_name "$onlyoffice_db_name"
-	set_previous_onlyoffice_db_name $onlyoffice_db_name
-	sed -i "/dbName/s/${previous_onlyoffice_db_name}/${onlyoffice_db_name}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	set_onlyoffice_jwt_enabled "$onlyoffice_jwt_enabled"
+	set_previous_onlyoffice_jwt_enabled $onlyoffice_jwt_enabled
+	update_jwt_enabled_settings
 	snapctl restart onlyoffice-ds.documentserver
 }
 
-set_onlyoffice_db_name()
+set_onlyoffice_jwt_enabled()
 {
-	snapctl set onlyoffice.db-name="$1"
+	snapctl set onlyoffice.jwt-enabled="$1"
 }
 
-onlyoffice_db_name()
+onlyoffice_jwt_enabled()
 {
-	port="$(snapctl get onlyoffice.db-name)"
+	port="$(snapctl get onlyoffice.jwt-enabled)"
 	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_NAME"
-		set_onlyoffice_db_name $port
-		set_previous_onlyoffice_db_name $port
+		port="$DEFAULT_JWT_ENABLED"
+		set_onlyoffice_jwt_enabled $port
+		set_previous_onlyoffice_jwt_enabled $port
 	fi
 
 	echo "$port"
 }
 
-previous_onlyoffice_db_name()
+previous_onlyoffice_jwt_enabled()
 {
-	snapctl get private.onlyoffice.db-name
+	snapctl get private.onlyoffice.jwt-enabled
 }
 
-set_previous_onlyoffice_db_name()
+set_previous_onlyoffice_jwt_enabled()
 {
-	snapctl set private.onlyoffice.db-name="$1"
+	snapctl set private.onlyoffice.jwt-enabled="$1"
 }
-#######################################################
-#######################################################
-#######################################################
 
-db_onlyoffice_db_user()
+update_jwt_enabled_settings()
 {
-	onlyoffice_db_user="$(onlyoffice_db_user)"
-	previous_onlyoffice_db_user="$(previous_onlyoffice_db_user)"
+	sed -i "/browser/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/inbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/outbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+}
+
+
+
+
+token_onlyoffice_jwt_secret()
+{
+	onlyoffice_jwt_secret="$(onlyoffice_jwt_secret)"
+	previous_onlyoffice_jwt_secret="$(previous_onlyoffice_jwt_secret)"
 
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_user" = "$previous_onlyoffice_db_user" ]; then
+	if [ "$onlyoffice_jwt_secret" = "$previous_onlyoffice_jwt_secret" ]; then
 		return 0
 	fi
-	set_onlyoffice_db_user "$onlyoffice_db_user"
-	set_previous_onlyoffice_db_user $onlyoffice_db_user
-	sed -i "/dbName/s/${previous_onlyoffice_db_user}/${onlyoffice_db_user}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	set_onlyoffice_jwt_secret "$onlyoffice_jwt_secret"
+	set_previous_onlyoffice_jwt_secret $onlyoffice_jwt_secret
+	sed -i "/inbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/outbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/session/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-ds.documentserver
 }
 
-set_onlyoffice_db_user()
+set_onlyoffice_jwt_secret()
 {
-	snapctl set onlyoffice.db-user="$1"
+	snapctl set onlyoffice.jwt-secret="$1"
 }
 
-onlyoffice_db_user()
+onlyoffice_jwt_secret()
 {
-	port="$(snapctl get onlyoffice.db-user)"
+	port="$(snapctl get onlyoffice.jwt-secret)"
 	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_USER"
-		set_onlyoffice_db_user $port
-		set_previous_onlyoffice_db_user $port
+		port="$DEFAULT_JWT_SECRET"
+		set_onlyoffice_jwt_secret $port
+		set_previous_onlyoffice_jwt_secret $port
 	fi
 
 	echo "$port"
 }
 
-previous_onlyoffice_db_user()
+previous_onlyoffice_jwt_secret()
 {
-	snapctl get private.onlyoffice.db-user
+	snapctl get private.onlyoffice.jwt-secret
 }
 
-set_previous_onlyoffice_db_user()
+set_previous_onlyoffice_jwt_secret()
 {
-	snapctl set private.onlyoffice.db-user="$1"
+	snapctl set private.onlyoffice.jwt-secret="$1"
 }
 
-#######
-#######
-#######
-db_onlyoffice_db_pwd()
-{
-	onlyoffice_db_pwd="$(onlyoffice_db_pwd)"
-	previous_onlyoffice_db_pwd="$(previous_onlyoffice_db_pwd)"
 
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_db_pwd" = "$previous_onlyoffice_db_pwd" ]; then
-		return 0
-	fi
-	set_onlyoffice_db_pwd "$onlyoffice_db_pwd"
-	set_previous_onlyoffice_db_pwd $onlyoffice_db_pwd
-	sed -i "/dbName/s/${previous_onlyoffice_db_pwd}/${onlyoffice_db_pwd}/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+
+
+token_onlyoffice_jwt_header()
+{
+	onlyoffice_jwt_header="$(onlyoffice_jwt_header)"
+	previous_onlyoffice_jwt_header="$(previous_onlyoffice_jwt_header)"
+	set_onlyoffice_jwt_header "$onlyoffice_jwt_header"
+	set_previous_onlyoffice_jwt_header $onlyoffice_jwt_header
+	sed -i "/header/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	snapctl restart onlyoffice-ds.documentserver
 }
 
-set_onlyoffice_db_pwd()
+set_onlyoffice_jwt_header()
 {
-	snapctl set onlyoffice.db-pwd="$1"
+	snapctl set onlyoffice.jwt-header="$1"
 }
 
-onlyoffice_db_pwd()
+onlyoffice_jwt_header()
 {
-	port="$(snapctl get onlyoffice.db-pwd)"
+	port="$(snapctl get onlyoffice.jwt-header)"
 	if [ -z "$port" ]; then
-		port="$DEFAULT_DB_USER"
-		set_onlyoffice_db_pwd $port
-		set_previous_onlyoffice_db_pwd $port
+		port="$DEFAULT_JWT_HEADER"
+		set_onlyoffice_jwt_header $port
+		set_previous_onlyoffice_jwt_header $port
 	fi
 
 	echo "$port"
 }
 
-previous_onlyoffice_db_pwd()
+previous_onlyoffice_jwt_header()
 {
-	snapctl get private.onlyoffice.db-pwd
+	snapctl get private.onlyoffice.jwt-header
 }
 
-set_previous_onlyoffice_db_pwd()
+set_previous_onlyoffice_jwt_header()
 {
-	snapctl set private.onlyoffice.db-pwd="$1"
+	snapctl set private.onlyoffice.jwt-header="$1"
 }
+
+
+
+
 nginx_onlyoffice_http_port && \
-db_onlyoffice_db_host && \
-db_onlyoffice_db_name && \
 db_onlyoffice_db_port && \
-db_onlyoffice_db_user && \
-db_onlyoffice_db_pwd
-
+token_onlyoffice_jwt_enabled && \
+token_onlyoffice_jwt_secret && \
+token_onlyoffice_jwt_header
