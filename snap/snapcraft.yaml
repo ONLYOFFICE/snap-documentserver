@@ -222,6 +222,8 @@ parts:
       - -DWITH_FEDERATED_STORAGE_ENGINE=OFF
       - -DWITH_PARTITION_STORAGE_ENGINE=OFF
       - -DINSTALL_MYSQLTESTDIR=
+    stage-packages:
+      - libaio1
     build-packages:
       - wget
       - g++
