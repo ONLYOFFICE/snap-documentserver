@@ -20,7 +20,7 @@ nginx_onlyoffice_http_port()
 	set_onlyoffice_http_port "$onlyoffice_http_port"
 	set_previous_onlyoffice_http_port $onlyoffice_http_port
 	sed -i "s/"${previous_onlyoffice_http_port}"/"${onlyoffice_http_port}"/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
-	snapctl restart ds1.nginx
+	snapctl restart onlyoffice-ds.nginx
 }
 
 set_onlyoffice_http_port()
@@ -66,7 +66,7 @@ db_onlyoffice_db_port()
 	set_previous_onlyoffice_db_port $onlyoffice_db_port
 	sed -i "/dbPort/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/port/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/mysql/root.ini
-	snapctl restart ds1
+	snapctl restart onlyoffice-ds
 }
 
 set_onlyoffice_db_port()
@@ -111,7 +111,7 @@ token_onlyoffice_jwt_enabled()
 	set_onlyoffice_jwt_enabled "$onlyoffice_jwt_enabled"
 	set_previous_onlyoffice_jwt_enabled $onlyoffice_jwt_enabled
 	update_jwt_enabled_settings
-	snapctl restart ds1.documentserver
+	snapctl restart onlyoffice-ds.documentserver
 }
 
 set_onlyoffice_jwt_enabled()
@@ -165,7 +165,7 @@ token_onlyoffice_jwt_secret()
 	sed -i "/inbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/outbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/session/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart ds1.documentserver
+	snapctl restart onlyoffice-ds.documentserver
 }
 
 set_onlyoffice_jwt_secret()
@@ -205,7 +205,7 @@ token_onlyoffice_jwt_header()
 	set_onlyoffice_jwt_header "$onlyoffice_jwt_header"
 	set_previous_onlyoffice_jwt_header $onlyoffice_jwt_header
 	sed -i "/header/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart ds1.documentserver
+	snapctl restart onlyoffice-ds.documentserver
 }
 
 set_onlyoffice_jwt_header()
