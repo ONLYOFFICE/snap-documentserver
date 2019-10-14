@@ -19,7 +19,10 @@ nginx_onlyoffice_http_port()
 	fi
 	set_onlyoffice_http_port "$onlyoffice_http_port"
 	set_previous_onlyoffice_http_port $onlyoffice_http_port
-	sed -i "s/"${previous_onlyoffice_http_port}"/"${onlyoffice_http_port}"/g" $SNAP_DATA/etc/nginx/conf.d/ds.conf
+	cat <<-EOF > "$SNAP_DATA/etc/nginx/ds.port.conf"
+		${previous_onlyoffice_http_port}
+		${onlyoffice_http_port}
+	EOF
 	snapctl restart onlyoffice-ds.nginx
 }
 

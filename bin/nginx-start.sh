@@ -24,7 +24,7 @@ update_nginx_settings(){
   # setup HTTPS
   if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" ]; then
     cp -f ${NGINX_ONLYOFFICE_PATH}/ds-ssl.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
-	sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
+	  sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
 
     # configure nginx
     sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i ${NGINX_ONLYOFFICE_CONF}
@@ -51,12 +51,18 @@ update_nginx_settings(){
     else
       sed '/max-age=/d' -i ${NGINX_ONLYOFFICE_CONF}
     fi
+  port=$(<$SNAP_DATA/etc/nginx/ds.port.conf)
+  set -- $port
+  sed -i "s/"${1}"/"${2}"/g"  $SNAP_DATA/etc/onlyoffice/documentserver/nginx/ds.conf
 	cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
   else
     #ln -sf ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
-	cp -f ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
-	sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
-	cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
+    cp -f ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
+    sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
+    port=$(<$SNAP_DATA/etc/nginx/ds.port.conf)
+    set -- $port
+    sed -i "s/"${1}"/"${2}"/g"  $SNAP_DATA/etc/onlyoffice/documentserver/nginx/ds.conf
+    cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
   fi
 
   # check if ipv6 supported otherwise remove it from nginx config
