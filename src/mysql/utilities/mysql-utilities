@@ -4,19 +4,22 @@
 . "$SNAP/utilities/common-utilities"
 
 export MYSQL_PIDFILE="/tmp/pids/mysql.pid"
+export MYSQL_SOCKET="/tmp/mysql.sock"
 export ONLYOFFICE_PASSWORD_FILE="$SNAP_DATA/mysql/onlyoffice_password"
 MYSQL_SETUP_LOCKFILE="/tmp/locks/mysql-setup"
 
 mkdir -p "$(dirname "$MYSQL_PIDFILE")"
+mkdir -p "$(dirname "$MYSQL_SOCKET")"
 mkdir -p "$(dirname "$MYSQL_SETUP_LOCKFILE")"
 chmod 750 "$(dirname "$MYSQL_PIDFILE")"
+chmod 750 "$(dirname "$MYSQL_SOCKET")"
 chmod 750 "$(dirname "$MYSQL_SETUP_LOCKFILE")"
 
 mysql_is_running()
 {
 	# Arguments:
 	#  -f: Force the check, i.e. ignore if it's currently in setup
-	[ -f "$MYSQL_PIDFILE" ] && (! mysql_setup_running || [ "$1" = "-f" ])
+	[ -f "$MYSQL_PIDFILE" ] && [ -S "$MYSQL_SOCKET" ] && (! mysql_setup_running || [ "$1" = "-f" ])
 }
 
 wait_for_mysql()
