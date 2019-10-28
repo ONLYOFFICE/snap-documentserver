@@ -28,7 +28,7 @@ sudo apt install snapd
 Now the editors can be easily installed using the following command:
 
 ```
-snap install onlyoffice-ds --beta
+snap install onlyoffice-ds
 ```
 
 ## Running ONLYOFFICE Document Server
