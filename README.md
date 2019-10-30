@@ -21,14 +21,14 @@ ONLYOFFICE Document Server is available in [Snapcraft store](https://snapcraft.i
 For example, to install snapd under Ubuntu you need to run the commands:
 
 ```
-sudo apt update
-sudo apt install snapd
+# apt update
+# apt install snapd
 ```
 
 Now the editors can be easily installed using the following command:
 
 ```
-snap install onlyoffice-ds
+# snap install onlyoffice-ds
 ```
 
 ## Running ONLYOFFICE Document Server
@@ -42,7 +42,7 @@ You can check status of ONLYOFFICE Document Server [here](http://localhost/welco
 To remove the snap containing ONLYOFFICE editors use the following command:
 
 ```
-snap remove onlyoffice-ds
+# snap remove onlyoffice-ds
 ```
 
 ## Configuration
@@ -52,7 +52,7 @@ snap remove onlyoffice-ds
 By default, the snap will listen on port 80. If you'd like to change the HTTP port (say, to port 8888), run:
 
 ```
-sudo snap set onlyoffice-ds onlyoffice.ds-port=8888
+# snap set onlyoffice-ds onlyoffice.ds-port=8888
 ```
 
 ### MySQL port configuration
@@ -60,7 +60,7 @@ sudo snap set onlyoffice-ds onlyoffice.ds-port=8888
 By default, MySQL uses port 3306. You can also change the database port, using the command:
 
 ```
-sudo snap set onlyoffice-ds onlyoffice.db-port=3307
+# snap set onlyoffice-ds onlyoffice.db-port=3307
 ```
 
 ### Running ONLYOFFICE Document Server using HTTPS
@@ -80,20 +80,20 @@ Generation of self-signed SSL certificates involves a simple 3 step procedure.
 
 **STEP 1**: Create the server private key
 
-```bash
-openssl genrsa -out onlyoffice.key 2048
+```
+$ openssl genrsa -out onlyoffice.key 2048
 ```
 
 **STEP 2**: Create the certificate signing request (CSR)
 
-```bash
-openssl req -new -key onlyoffice.key -out onlyoffice.csr
+```
+$ openssl req -new -key onlyoffice.key -out onlyoffice.csr
 ```
 
 **STEP 3**: Sign the certificate using the private key and CSR
 
-```bash
-openssl x509 -req -days 365 -in onlyoffice.csr -signkey onlyoffice.key -out onlyoffice.crt
+```
+$ openssl x509 -req -days 365 -in onlyoffice.csr -signkey onlyoffice.key -out onlyoffice.crt
 ```
 
 You have now generated an SSL certificate that's valid for 365 days.
@@ -103,8 +103,8 @@ You have now generated an SSL certificate that's valid for 365 days.
 This section provides you with instructions to [strengthen your server security](https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html).
 To achieve this you need to generate stronger DHE parameters.
 
-```bash
-openssl dhparam -out dhparam.pem 2048
+```
+$ openssl dhparam -out dhparam.pem 2048
 ```
 
 #### Installation of the SSL Certificates
@@ -115,26 +115,26 @@ The default path that the onlyoffice application is configured to look for the S
 
 The `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/` path is the path of the data store, which means that you have to copy the files into it.
 
-```bash
-sudo cp onlyoffice.key /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
-sudo cp onlyoffice.crt /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
-sudo cp dhparam.pem /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+```
+# cp onlyoffice.key /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+# cp onlyoffice.crt /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
+# cp dhparam.pem /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
 ```
 
 Then you must restart ONLYOFFICE Document Server to work on ssl, run:
 
-```bash
-sudo snap restart onlyoffice-ds
+```
+# snap restart onlyoffice-ds
 ```
 
 You are now just one step away from having our application secured.
 
 If you want to return ONLYOFFICE Document Server to work on HTTP, delete files from the `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs` and restart ONLYOFFICE Document Server.
 
-```bash
-sudo rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/onlyoffice.*
-sudo rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/dhparam.pem
-sudo snap restart onlyoffice-ds
+```
+# rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/onlyoffice.*
+# rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/dhparam.pem
+# snap restart onlyoffice-ds
 ```
 
 #### JSON Web Token
@@ -146,7 +146,7 @@ sudo snap restart onlyoffice-ds
 If you'd like to change the JSON Web Token parameters, run:
 
 ```
-sudo snap set onlyoffice-ds onlyoffice.key=value
+# snap set onlyoffice-ds onlyoffice.key=value
 ```
 
 ## Project Information
