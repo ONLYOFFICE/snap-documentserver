@@ -2,6 +2,7 @@
 
 cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
 DEFAULT_HTTP_PORT="80"
+DEFAULT_HTTPS_PORT="443"
 DEFAULT_DB_PORT="3306"
 DEFAULT_JWT_ENABLED="false"
 DEFAULT_JWT_SECRET="secret"
@@ -13,12 +14,20 @@ nginx_onlyoffice_http_port()
 	onlyoffice_http_port="$(onlyoffice_http_port)"
 	previous_onlyoffice_http_port="$(previous_onlyoffice_http_port)"
 
+	onlyoffice_https_port="$(onlyoffice_https_port)"
+	previous_onlyoffice_https_port="$(previous_onlyoffice_https_port)"
+
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_http_port" = "$previous_onlyoffice_http_port" ]; then
+	if [ "$onlyoffice_http_port" = "$previous_onlyoffice_http_port" && "$onlyoffice_https_port" = "$previous_onlyoffice_https_port" ]; then
 		return 0
 	fi
+
 	set_onlyoffice_http_port "$onlyoffice_http_port"
 	set_previous_onlyoffice_http_port $onlyoffice_http_port
+
+	set_onlyoffice_https_port "$onlyoffice_https_port"
+	set_previous_onlyoffice_https_port $onlyoffice_https_port
+
 	snapctl restart onlyoffice-ds.nginx
 }
 
@@ -49,7 +58,32 @@ set_previous_onlyoffice_http_port()
 	snapctl set private.onlyoffice.ds-port="$1"
 }
 
+set_onlyoffice_https_port()
+{
+	snapctl set onlyoffice.dss-port="$1"
+}
 
+onlyoffice_https_port()
+{
+	sport="$(snapctl get onlyoffice.dss-port)"
+	if [ -z "$sport" ]; then
+		sport="$DEFAULT_HTTPS_PORT"
+		set_onlyoffice_https_port $sport
+		set_previous_onlyoffice_https_port $sport
+	fi
+
+	echo "$sport"
+}
+
+previous_onlyoffice_https_port()
+{
+	snapctl get private.onlyoffice.dss-port
+}
+
+set_previous_onlyoffice_https_port()
+{
+	snapctl set private.onlyoffice.dss-port="$1"
+}
 
 
 db_onlyoffice_db_port()

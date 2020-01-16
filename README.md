@@ -137,6 +137,14 @@ If you want to return ONLYOFFICE Document Server to work on HTTP, delete files f
 # snap restart onlyoffice-ds
 ```
 
+#### Running ONLYOFFICE Document Server on Different SSL Port
+
+By default, HTTPS SSL port is 443. If you'd like to change it (say, to port 444), run:
+
+```
+# snap set onlyoffice-ds onlyoffice.dss-port=444
+```
+
 #### JSON Web Token
 
 - **jwt-enabled**: Specifies the enabling the JSON Web Token validation by the ONLYOFFICE Document Server. Defaults to `false`.
