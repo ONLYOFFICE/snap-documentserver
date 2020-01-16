@@ -60,12 +60,12 @@ set_previous_onlyoffice_http_port()
 
 set_onlyoffice_https_port()
 {
-	snapctl set onlyoffice.dss-port="$1"
+	snapctl set onlyoffice.ds-ssl-port="$1"
 }
 
 onlyoffice_https_port()
 {
-	sport="$(snapctl get onlyoffice.dss-port)"
+	sport="$(snapctl get onlyoffice.ds-ssl-port)"
 	if [ -z "$sport" ]; then
 		sport="$DEFAULT_HTTPS_PORT"
 		set_onlyoffice_https_port $sport
@@ -77,12 +77,12 @@ onlyoffice_https_port()
 
 previous_onlyoffice_https_port()
 {
-	snapctl get private.onlyoffice.dss-port
+	snapctl get private.onlyoffice.ds-ssl-port
 }
 
 set_previous_onlyoffice_https_port()
 {
-	snapctl set private.onlyoffice.dss-port="$1"
+	snapctl set private.onlyoffice.ds-ssl-port="$1"
 }
 
 
