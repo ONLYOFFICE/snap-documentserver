@@ -1,5 +1,5 @@
 name: onlyoffice-ds
-version: "5.4.2"
+version: "5.5.1"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
 icon: snap/icons/asc-de-256.png
@@ -68,6 +68,14 @@ parts:
       # rabbitmq-server
       sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
+
+  server:
+    plugin: dump
+    source: http://file-st10.karelia.ru/23t4t4/9db77ec52d3a73aa412bbb915f29b6aa/3db16b31274f11a7029da09735963f31/server-r2.tar.gz
+    override-build: |
+      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/sites-enabled
+      mkdir -p $SNAPCRAFT_PART_INSTALL/server
+      cp -r * $SNAPCRAFT_PART_INSTALL/server
 
   onlyoffice-ds:
     plugin: dump
@@ -285,6 +293,7 @@ parts:
       production-linux.json: etc/onlyoffice/documentserver/production-linux.json
       nginx.conf: etc/nginx/nginx.conf
       local.json: etc/onlyoffice/documentserver/local.json
+      onlyoffice-documentserver: etc/nginx/sites-available/onlyoffice-documentserver
 
   bin:
     plugin: dump

@@ -25,4 +25,18 @@ touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
 
-$SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
+cp $SNAP_DATA/etc/nginx/sites-available/onlyoffice-documentserver $SNAP_DATA/etc/nginx/sites-enabled
+
+LD_LIBRARY_PATH=$SNAP_DATA/bin \
+NODE_ENV=production-linux \
+NODE_CONFIG_DIR=$SNAP_DATA/server/Common/config \
+node --max_old_space_size=4096 $SNAP_DATA/server/FileConverter/sources/convertermaster.js
+
+NODE_ENV=production-linux \
+NODE_CONFIG_DIR=$SNAP_DATA/server/Common/config \
+node $SNAP_DATA/server/SpellChecker/sources/server.js
+
+NODE_ENV=production-linux \
+NODE_CONFIG_DIR=$SNAP_DATA/server/Common/config \
+node --max_old_space_size=4096 $SNAP_DATA/server/DocService/sources/server.js
+
