@@ -2,7 +2,7 @@
 
 mkdir -p $SNAP_DATA/var/log/supervisor/
 mkdir -p $SNAP_DATA/var/run/
-touch $SNAP_DATA/var/log/supervisor/supervisord.log
+#touch $SNAP_DATA/var/log/supervisor/supervisord.log
 touch $SNAP_DATA/var/run/supervisord.pid
 
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/
