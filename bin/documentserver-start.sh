@@ -2,7 +2,7 @@
 
 mkdir -p $SNAP_DATA/var/log/supervisor/
 mkdir -p $SNAP_DATA/var/run/
-#touch $SNAP_DATA/var/log/supervisor/supervisord.log
+touch $SNAP_DATA/var/log/supervisor/supervisord.log
 touch $SNAP_DATA/var/run/supervisord.pid
 
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/
@@ -25,5 +25,5 @@ touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
 
-$SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
+$SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf > test_supervisorlog.txt 2>test_errorlog.txt
 
