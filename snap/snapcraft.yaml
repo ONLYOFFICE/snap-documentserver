@@ -122,7 +122,7 @@ parts:
       sed -i -e 's/var\/www/snap\/onlyoffice-ds\/current\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
       sed -i -e 's/var\/lib/var\/snap\/onlyoffice-ds\/common\/var\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
       # editing documentserver && documentserver-example
-      mv $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json-old
+      #mv $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json-old
       # copy lib
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/*.so $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicuuc.so.58 $SNAPCRAFT_PART_INSTALL/lib/
@@ -292,7 +292,6 @@ parts:
     plugin: dump
     source: ./config/
     organize:
-      production-linux.json: etc/onlyoffice/documentserver/production-linux.json
       nginx.conf: etc/nginx/nginx.conf
       local.json: etc/onlyoffice/documentserver/local.json
       ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
