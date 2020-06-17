@@ -26,4 +26,3 @@ touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
 
 $SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
-
