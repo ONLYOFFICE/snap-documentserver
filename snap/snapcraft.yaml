@@ -1,5 +1,5 @@
 name: onlyoffice-ds
-version: "5.5.1"
+version: "5.5.3"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
 icon: snap/icons/asc-de-256.png
@@ -71,7 +71,7 @@ parts:
 
   server:
     plugin: dump
-    source: http://file-st10.karelia.ru/23t4t4/9db77ec52d3a73aa412bbb915f29b6aa/3db16b31274f11a7029da09735963f31/server-r2.tar.gz
+    source: http://file-st10.karelia.ru/528j8t/83d3c890ee2338dea83a3189a6cc69aa/8a05c4ed076f28eead4a241219e6ef03/server-r3.tar.gz
     override-build: |
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server
       cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server
@@ -109,11 +109,11 @@ parts:
       rm -f lib/libgraphics.so
       snapcraftctl build
       # editing supervisor/* && /supervisord.conf
-      sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i '4d' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
+      #sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
+      #sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
+      #sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
+      #sed -i '4d' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
+      #sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
       # editing etc/onlyoffice/documentserver/nginx/ds...
       sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
@@ -132,14 +132,14 @@ parts:
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
       "$DIR/server/tools/allthemesgen" --converter-dir="$DIR/server/FileConverter/bin" --src="$DIR/sdkjs/slide/themes" --output="$DIR/sdkjs/common/Images"
-      # add
+      # remove server content to replace
       rm -r $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server
       rm $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*.conf
       rm $SNAPCRAFT_PART_INSTALL/etc/supervisor/conf.d/*
 
   node:
     plugin: dump
-    source: https://nodejs.org/dist/v8.12.0/node-v8.12.0-linux-x64.tar.gz
+    source: https://nodejs.org/dist/v10.16.0/node-v10.16.0-linux-x64.tar.gz
     override-build: |
       snapcraftctl build
       rm -f $SNAPCRAFT_PART_INSTALL/README.md
