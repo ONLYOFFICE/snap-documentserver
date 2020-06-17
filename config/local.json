@@ -73,7 +73,7 @@
 	  }
 	},
 	"license": {
-	  "license_file": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/../Data/license.lic",
+	  "license_file": "/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/license.lic",
 	  "warning_limit_percents": "70"
 	},
 	"FileConverter": {
