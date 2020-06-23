@@ -1,5 +1,5 @@
 name: onlyoffice-ds
-version: "5.5.3"
+version: "5.5.4"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
 icon: snap/icons/asc-de-256.png
@@ -71,51 +71,15 @@ parts:
 
   server:
     plugin: dump
-    source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-5.5.3.tar.gz
+    #source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-5.5.3.tar.gz
+    source: http://file-st10.karelia.ru/w8k6k6/d6eaca6d2595faec81773f53d280d5aa/af7863260eca1ab1df555b13c3aa4eb5/documentserver-r3.tar.gz
     override-build: |
-      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server
-      cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server
-
-  onlyoffice-ds:
-    plugin: dump
-    source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver_amd64.deb
-    source-type: deb
-    stage-packages:
-      - libxml2
-      - fonts-dejavu
-      - fonts-liberation
-      - ttf-mscorefonts-installer
-      - fonts-crosextra-carlito
-      - fonts-takao-gothic
-      - fonts-opensymbol
-      - create-resources
-      - libreadline-dev
-      - libc-bin
-      - locales-all
-      - locales
-      - libc6
-    override-build: |
-      rm -f lib/libicuuc.so.58
-      rm -f lib/libPdfWriter.so
-      rm -f lib/libdoctrenderer.so
-      rm -f lib/libHtmlFile.so
-      rm -f lib/libHtmlRenderer.so
-      rm -f lib/libPdfReader.so
-      rm -f lib/libkernel.so
-      rm -f lib/libXpsFile.so
-      rm -f lib/libDjVuFile.so
-      rm -f lib/libUnicodeConverter.so
-      rm -f lib/libicudata.so.58
-      rm -f lib/libgraphics.so
-      snapcraftctl build
-      # editing etc/onlyoffice/documentserver/nginx/ds...
-      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf
-      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
-      cp $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/ds.conf
-      sed -i -e 's/\(var\/log\/onlyoffice\/documentserver\/nginx.error.log\)/var\/snap\/onlyoffice-ds\/current\/\1/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-common.conf
-      sed -i -e 's/var\/www/snap\/onlyoffice-ds\/current\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
-      sed -i -e 's/var\/lib/var\/snap\/onlyoffice-ds\/common\/var\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
+      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
+      cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
+      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      cp -r ./server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
       # copy lib
+      mkdir -p $SNAPCRAFT_PART_INSTALL/lib
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/*.so $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicuuc.so.58 $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicudata.so.58 $SNAPCRAFT_PART_INSTALL/lib/
@@ -124,14 +88,10 @@ parts:
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
       "$DIR/server/tools/allthemesgen" --converter-dir="$DIR/server/FileConverter/bin" --src="$DIR/sdkjs/slide/themes" --output="$DIR/sdkjs/common/Images"
-      # remove server content to replace
-      rm -r $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server
-      rm $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*.conf
-      rm $SNAPCRAFT_PART_INSTALL/etc/supervisor/conf.d/*
 
   node:
     plugin: dump
-    source: https://nodejs.org/dist/v10.16.0/node-v10.16.0-linux-x64.tar.gz
+    source: https://nodejs.org/dist/v10.21.0/node-v10.21.0-linux-x64.tar.gz
     override-build: |
       snapcraftctl build
       rm -f $SNAPCRAFT_PART_INSTALL/README.md
@@ -298,3 +258,13 @@ parts:
       documentserver-start.sh: usr/sbin/documentserver-start.sh
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
+
+  nginx-conf:
+    plugin: dump
+    source: ./nginx-conf/
+    organize:
+      ds.conf: etc/nginx/conf.d/ds.conf
+      ds-common.conf: etc/nginx/includes/ds-common.conf
+      ds-docservice.conf: etc/nginx/includes/ds-docservice.conf
+      ds-spellchecker.conf: etc/nginx/includes/ds-spellchecker.conf
+      http-common.conf: etc/nginx/includes/http-common.conf
