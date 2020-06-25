@@ -73,7 +73,22 @@ parts:
     plugin: dump
     #source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-5.5.3.tar.gz
     source: http://file-st10.karelia.ru/w8k6k6/d6eaca6d2595faec81773f53d280d5aa/af7863260eca1ab1df555b13c3aa4eb5/documentserver-r3.tar.gz
+    stage-packages:
+      - libxml2
+      - fonts-dejavu
+      - fonts-liberation
+      - ttf-mscorefonts-installer
+      - fonts-crosextra-carlito
+      - fonts-takao-gothic
+      - fonts-opensymbol
+      - create-resources
+      - libreadline-dev
+      - libc-bin
+      - locales-all
+      - locales
+      - libc6
     override-build: |
+      snapcraftctl build
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
       cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
@@ -250,6 +265,7 @@ parts:
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
       ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
+      onlyoffice-documentserver: etc/nginx/sites-available/onlyoffice-documentserver
 
   bin:
     plugin: dump
@@ -259,12 +275,3 @@ parts:
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
 
-  nginx-conf:
-    plugin: dump
-    source: ./nginx-conf/
-    organize:
-      ds.conf: etc/nginx/conf.d/ds.conf
-      ds-common.conf: etc/nginx/includes/ds-common.conf
-      ds-docservice.conf: etc/nginx/includes/ds-docservice.conf
-      ds-spellchecker.conf: etc/nginx/includes/ds-spellchecker.conf
-      http-common.conf: etc/nginx/includes/http-common.conf
