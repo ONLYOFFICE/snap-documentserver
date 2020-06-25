@@ -265,7 +265,7 @@ parts:
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
       ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
-      onlyoffice-documentserver: etc/nginx/sites-available/onlyoffice-documentserver
+      onlyoffice-documentserver.conf: etc/nginx/conf.d/onlyoffice-documentserver.conf
 
   bin:
     plugin: dump

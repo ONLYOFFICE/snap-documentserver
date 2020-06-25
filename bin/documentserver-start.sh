@@ -25,7 +25,4 @@ touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
 
-mkdir -p $SNAP/etc/nginx/sites-enabled
-ln -s $SNAP/etc/nginx/sites-available/onlyoffice-documentserver $SNAP/etc/nginx/sites-enabled/onlyoffice-documentserver
-
 $SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
