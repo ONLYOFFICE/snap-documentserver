@@ -92,7 +92,7 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
       cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
-      cp -r ./server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      mv ./server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
       # copy lib
       mkdir -p $SNAPCRAFT_PART_INSTALL/lib
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/*.so $SNAPCRAFT_PART_INSTALL/lib/
@@ -266,6 +266,7 @@ parts:
       ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
       onlyoffice-documentserver.conf: etc/nginx/conf.d/onlyoffice-documentserver.conf
+      nginx-ssl.conf: etc/nginx/conf.d/nginx-ssl.conf
 
   bin:
     plugin: dump

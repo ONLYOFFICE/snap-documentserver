@@ -71,5 +71,26 @@ configure_ds_port(){
   cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
 }
 
+private_key=server.key
+certificate_request=server.csr
+certificate=server.crt
+certificate_private_key=server.pem
+
+openssl genrsa -out ${private_key} 2048
+openssl req \
+  -new \
+  -subj "/C=US/ST=Denial/L=Springfield/O=Dis/CN=www.example.com" \
+  -key ${private_key} \
+  -out ${certificate_request}
+openssl x509 -req -days 365 -in ${certificate_request} -signkey ${private_key} -out ${certificate}
+
+# Create combined file for haproxy 
+cat ${certificate} ${private_key} > ${certificate_private_key}
+
+# Change config
+sed 's,{{SSL_CERTIFICATE_PATH}},'"${ssl_path}/certs/${certificate}"',' -i ${config}
+sed 's,{{SSL_KEY_PATH}},'"${ssl_path}/private/${private_key}"',' -i ${config}
+sed 's,{{SSL_CERTIFICATE_KEY_PATH}},'"${ssl_path}/certs/${certificate_private_key}"',' -i ${config}
+
 update_nginx_settings && \
 $SNAP/bin/nginx
