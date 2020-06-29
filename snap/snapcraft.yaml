@@ -1,5 +1,5 @@
 name: onlyoffice-ds
-version: "5.5.4"
+version: "5.5.3"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
 icon: snap/icons/asc-de-256.png
@@ -71,8 +71,7 @@ parts:
 
   server:
     plugin: dump
-    #source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-5.5.3.tar.gz
-    source: http://file-st10.karelia.ru/w8k6k6/d6eaca6d2595faec81773f53d280d5aa/af7863260eca1ab1df555b13c3aa4eb5/documentserver-r3.tar.gz
+    source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-5.5.3.tar.gz    
     stage-packages:
       - libxml2
       - fonts-dejavu
