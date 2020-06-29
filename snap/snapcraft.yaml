@@ -1,5 +1,5 @@
 name: onlyoffice-ds
-version: "5.4.2"
+version: "5.5.3"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
 icon: snap/icons/asc-de-256.png
@@ -69,10 +69,9 @@ parts:
       sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
-  onlyoffice-ds:
+  server:
     plugin: dump
-    source: http://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver_amd64.deb
-    source-type: deb
+    source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-5.5.3.tar.gz    
     stage-packages:
       - libxml2
       - fonts-dejavu
@@ -88,35 +87,13 @@ parts:
       - locales
       - libc6
     override-build: |
-      rm -f lib/libicuuc.so.58
-      rm -f lib/libPdfWriter.so
-      rm -f lib/libdoctrenderer.so
-      rm -f lib/libHtmlFile.so
-      rm -f lib/libHtmlRenderer.so
-      rm -f lib/libPdfReader.so
-      rm -f lib/libkernel.so
-      rm -f lib/libXpsFile.so
-      rm -f lib/libDjVuFile.so
-      rm -f lib/libUnicodeConverter.so
-      rm -f lib/libicudata.so.58
-      rm -f lib/libgraphics.so
       snapcraftctl build
-      # editing supervisor/* && /supervisord.conf
-      sed -i -e 's/\/var\/www/%(ENV_SNAP)s\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/\/var\/log/%(ENV_SNAP_DATA)s\/var\/log/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i '4d' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      sed -i -e 's/user=ds/;user=ds/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/supervisor/*
-      # editing etc/onlyoffice/documentserver/nginx/ds...
-      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf
-      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
-      cp $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/ds.conf $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d/ds.conf
-      sed -i -e 's/\(var\/log\/onlyoffice\/documentserver\/nginx.error.log\)/var\/snap\/onlyoffice-ds\/current\/\1/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-common.conf
-      sed -i -e 's/var\/www/snap\/onlyoffice-ds\/current\/var\/www/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
-      sed -i -e 's/var\/lib/var\/snap\/onlyoffice-ds\/common\/var\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx/includes/ds-docservice.conf
-      # editing documentserver && documentserver-example
-      mv $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/production-linux.json-old
+      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
+      cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
+      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      mv ./server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
       # copy lib
+      mkdir -p $SNAPCRAFT_PART_INSTALL/lib
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/*.so $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicuuc.so.58 $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicudata.so.58 $SNAPCRAFT_PART_INSTALL/lib/
@@ -126,10 +103,9 @@ parts:
       "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
       "$DIR/server/tools/allthemesgen" --converter-dir="$DIR/server/FileConverter/bin" --src="$DIR/sdkjs/slide/themes" --output="$DIR/sdkjs/common/Images"
 
-
   node:
     plugin: dump
-    source: https://nodejs.org/dist/v8.12.0/node-v8.12.0-linux-x64.tar.gz
+    source: https://nodejs.org/dist/v10.21.0/node-v10.21.0-linux-x64.tar.gz
     override-build: |
       snapcraftctl build
       rm -f $SNAPCRAFT_PART_INSTALL/README.md
@@ -282,9 +258,14 @@ parts:
     plugin: dump
     source: ./config/
     organize:
-      production-linux.json: etc/onlyoffice/documentserver/production-linux.json
       nginx.conf: etc/nginx/nginx.conf
       local.json: etc/onlyoffice/documentserver/local.json
+      ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
+      ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
+      ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
+      ds.conf: etc/supervisor/conf.d/ds.conf
+      ds.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds.conf.tmpl
+      ds-ssl.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds-ssl.conf.tmpl
 
   bin:
     plugin: dump
@@ -293,3 +274,4 @@ parts:
       documentserver-start.sh: usr/sbin/documentserver-start.sh
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
+
