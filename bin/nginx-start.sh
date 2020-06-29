@@ -23,7 +23,7 @@ update_nginx_settings(){
 
   # setup HTTPS
   if [ -f "${SSL_CERTIFICATE_PATH}" -a -f "${SSL_KEY_PATH}" ]; then
-    cp -f ${NGINX_ONLYOFFICE_PATH}/onlyoffice-documentserver-ssl.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
+    cp -f ${NGINX_ONLYOFFICE_PATH}/ds-ssl.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
 
     # configure nginx
     sed 's,{{SSL_CERTIFICATE_PATH}},'"${SSL_CERTIFICATE_PATH}"',' -i ${NGINX_ONLYOFFICE_CONF}
@@ -52,7 +52,7 @@ update_nginx_settings(){
     fi
   configure_ds_port
   else
-    cp -f ${NGINX_ONLYOFFICE_PATH}/onlyoffice-documentserver.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
+    cp -f ${NGINX_ONLYOFFICE_PATH}/ds.conf.tmpl ${NGINX_ONLYOFFICE_CONF}
     configure_ds_port
   fi
 
