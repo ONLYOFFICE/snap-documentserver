@@ -30,11 +30,6 @@ apps:
     daemon: simple
     plugs: [network, network-bind, removable-media]
 
-  redis:
-    command: redis-server
-    daemon: simple
-    plugs: [network, network-bind, removable-media]
-
   # MySQL daemon
   mysql:
     command: start_mysql
@@ -117,7 +112,6 @@ parts:
     source-tag: release-1.13.6_snap-fix
     stage-packages:
       - supervisor
-      - redis-server
     override-build: |
       snapcraftctl build
       wget https://www.zlib.net/fossils/zlib-1.2.11.tar.gz
