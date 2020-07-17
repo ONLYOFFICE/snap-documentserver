@@ -66,8 +66,8 @@ configure_ds_port(){
   sed -i -e "s#\/etc\/nginx#${SNAP_DATA}\/etc\/nginx#g" ${NGINX_ONLYOFFICE_CONF}
   DS_PORT=$(snapctl get onlyoffice.ds-port)
   DSS_PORT=$(snapctl get onlyoffice.ds-ssl-port)
-  sed -i "s/80/"${DS_PORT}"/g"  $SNAP_DATA/etc/onlyoffice/documentserver/nginx/ds.conf
-  sed -i "s/443/"${DSS_PORT}"/g"  $SNAP_DATA/etc/onlyoffice/documentserver/nginx/ds.conf
+  sed -i "s/DS_PORT/"${DS_PORT}"/g"  $SNAP_DATA/etc/onlyoffice/documentserver/nginx/ds.conf
+  sed -i "s/DSS_PORT/"${DSS_PORT}"/g"  $SNAP_DATA/etc/onlyoffice/documentserver/nginx/ds.conf
   cp -f ${NGINX_ONLYOFFICE_CONF} $SNAP_DATA/etc/nginx/conf.d/ds.conf
 }
 

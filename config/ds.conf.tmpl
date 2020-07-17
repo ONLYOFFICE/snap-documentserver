@@ -20,8 +20,8 @@ proxy_set_header Connection $proxy_connection;
 proxy_set_header X-Forwarded-Host $the_host;
 proxy_set_header X-Forwarded-Proto $the_scheme;
 server {
-  listen 0.0.0.0:80;
-  listen [::]:80 default_server;
+  listen 0.0.0.0:DS_PORT;
+  listen [::]:DS_PORT default_server;
   server_tokens off;
   rewrite ^/$ $the_scheme://$the_host/welcome/ redirect;
   location / {
