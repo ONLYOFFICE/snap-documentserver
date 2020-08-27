@@ -77,9 +77,9 @@ server {
     proxy_pass http://localhost:8000;
     proxy_http_version 1.1;
   }
-  location ~ ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?\/(web-apps\/apps\/api\/documents\/api\.js)$ {
+  location ~ ^(.*)?\/(web-apps|sdkjs|sdkjs-plugins|fonts)(\/.*)$ {
     expires -1;
-    alias  /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/$2;
+    alias  /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/$2$3;
   }
   location /spellchecker/ {
     proxy_pass http://localhost:8080/;
