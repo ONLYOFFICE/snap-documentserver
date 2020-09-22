@@ -87,6 +87,11 @@
 	},
 	"FileStorage": {
 	  "directory": "/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver/App_Data"
+	},
+	"SpellChecker": {
+	  "server": {
+		"dictDir": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/SpellChecker/dictionaries"
+	  }
 	}
 }
     
