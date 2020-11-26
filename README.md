@@ -159,7 +159,7 @@ If you'd like to change the JSON Web Token parameters, run:
 
 ### Enabling the Example
 
-By default, example is not enabled. You can enable the example, using the command:
+By default, example is not enabled. You can enable the example, using the commands:
 
 ```
 # snap set onlyoffice-ds onlyoffice.example-enabled=true
