@@ -84,9 +84,17 @@ parts:
     override-build: |
       snapcraftctl build
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
+      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver-example
+      rm -r ./server/welcome
+      mv ./example/* $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver-example
+      rm -r ./example
       cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
-      mv ./server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      mv $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      #example
+      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example
+      sed -i -e 's/\/var\/lib\/onlyoffice/\/var\/snap\/onlyoffice-ds\/current\/var\/lib\/onlyoffice/' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver-example/nodejs/config/production-linux.json
+      mv $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver-example/nodejs/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver-example
       # copy lib
       mkdir -p $SNAPCRAFT_PART_INSTALL/lib
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/*.so $SNAPCRAFT_PART_INSTALL/lib/
@@ -97,6 +105,12 @@ parts:
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
       "$DIR/server/tools/allthemesgen" --converter-dir="$DIR/server/FileConverter/bin" --src="$DIR/sdkjs/slide/themes" --output="$DIR/sdkjs/common/Images"
+      rm -r $SNAPCRAFT_PART_INSTALL/core-fonts
+      rm -r $SNAPCRAFT_PART_INSTALL/example
+      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs
+      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
+      rm -r $SNAPCRAFT_PART_INSTALL/server
+      rm -r $SNAPCRAFT_PART_INSTALL/web-apps
 
   node:
     plugin: dump
@@ -257,6 +271,7 @@ parts:
       ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
       ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
+      ds-example.conf: etc/supervisor/conf.d/ds-example.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
       ds.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds.conf.tmpl
       ds-ssl.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds-ssl.conf.tmpl
@@ -269,3 +284,12 @@ parts:
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
 
+  welcome:
+    plugin: dump
+    source: ./welcome/
+    organize:
+      index.html: var/www/onlyoffice/documentserver/server/welcome/index.html
+      css/favicon.ico: var/www/onlyoffice/documentserver/server/welcome/css/favicon.ico
+      css/logo.png: var/www/onlyoffice/documentserver/server/welcome/css/logo.png
+      css/logo@2x.png: var/www/onlyoffice/documentserver/server/welcome/css/logo@2x.png
+      css/stylesheet.css: var/www/onlyoffice/documentserver/server/welcome/css/stylesheet.css
