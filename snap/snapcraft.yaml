@@ -88,12 +88,12 @@ parts:
       rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
       rm -r $SNAPCRAFT_PART_INSTALL/server
       rm -r $SNAPCRAFT_PART_INSTALL/web-apps
-      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
-      cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
-      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
-      mv $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
-      # documentserver-generate-allfonts.sh
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
+      mkdir -p $DIR
+      cp -r * $DIR
+      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      mv $DIR/server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      # documentserver-generate-allfonts.sh
       OUTDIR="/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver"
       #fonts
       ln -s -f $OUTDIR/server/FileConverter/bin/AllFonts.js $DIR/server/FileConverter/bin/AllFonts.js
