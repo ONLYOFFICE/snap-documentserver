@@ -93,10 +93,20 @@ parts:
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicuuc.so.58 $SNAPCRAFT_PART_INSTALL/lib/
       cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicudata.so.58 $SNAPCRAFT_PART_INSTALL/lib/
       # documentserver-generate-allfonts.sh
-      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/fonts
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
-      "$DIR/server/tools/allfontsgen" --input="$DIR/core-fonts"  --allfonts-web="$DIR/sdkjs/common/AllFonts.js"  --allfonts="$DIR/server/FileConverter/bin/AllFonts.js"  --images="$DIR/sdkjs/common/Images"   --selection="$DIR/server/FileConverter/bin/font_selection.bin"  --output-web="$DIR/fonts"  --use-system="false"
-      "$DIR/server/tools/allthemesgen" --converter-dir="$DIR/server/FileConverter/bin" --src="$DIR/sdkjs/slide/themes" --output="$DIR/sdkjs/common/Images"
+      OUTDIR="/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver"
+      #fonts
+      ln -s -f $OUTDIR/server/FileConverter/bin/AllFonts.js $DIR/server/FileConverter/bin/AllFonts.js
+      ln -s -f $OUTDIR/server/FileConverter/bin/font_selection.bin $DIR/server/FileConverter/bin/font_selection.bin
+      ln -s -f $OUTDIR/fonts $DIR/fonts
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail.png $DIR/sdkjs/common/Images/fonts_thumbnail.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@2x.png $DIR/sdkjs/common/Images/fonts_thumbnail@2x.png
+      ln -s -f $OUTDIR/sdkjs/common/AllFonts.js $DIR/sdkjs/common/AllFonts.js
+      #themes
+      mv $DIR/sdkjs/slide/themes $DIR/sdkjs/slide/themes_backup
+      ln -s -f $OUTDIR/sdkjs/slide/themes $DIR/sdkjs/slide/themes
+      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail.png $DIR/sdkjs/common/Images/themes_thumbnail.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail@2x.png $DIR/sdkjs/common/Images/themes_thumbnail@2x.png
 
   node:
     plugin: dump
