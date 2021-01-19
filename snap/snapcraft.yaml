@@ -83,17 +83,17 @@ parts:
       - libc6
     override-build: |
       snapcraftctl build
-      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
-      cp -r * $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver
-      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
-      mv ./server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
-      # copy lib
-      mkdir -p $SNAPCRAFT_PART_INSTALL/lib
-      cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/*.so $SNAPCRAFT_PART_INSTALL/lib/
-      cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicuuc.so.58 $SNAPCRAFT_PART_INSTALL/lib/
-      cp $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/FileConverter/bin/libicudata.so.58 $SNAPCRAFT_PART_INSTALL/lib/
-      # documentserver-generate-allfonts.sh
+      rm -r $SNAPCRAFT_PART_INSTALL/core-fonts
+      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs
+      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
+      rm -r $SNAPCRAFT_PART_INSTALL/server
+      rm -r $SNAPCRAFT_PART_INSTALL/web-apps
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
+      mkdir -p $DIR
+      cp -r * $DIR
+      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      mv $DIR/server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      # documentserver-generate-allfonts.sh
       OUTDIR="/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver"
       #fonts
       ln -s -f $OUTDIR/server/FileConverter/bin/AllFonts.js $DIR/server/FileConverter/bin/AllFonts.js
