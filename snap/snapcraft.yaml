@@ -71,7 +71,6 @@ parts:
       - libxml2
       - fonts-dejavu
       - fonts-liberation
-      - ttf-mscorefonts-installer
       - fonts-crosextra-carlito
       - fonts-takao-gothic
       - fonts-opensymbol
@@ -81,8 +80,13 @@ parts:
       - locales-all
       - locales
       - libc6
+      - libcurl4
     override-build: |
       snapcraftctl build
+      # msttcorefonts
+      echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
+      apt-get -yq install ttf-mscorefonts-installer
+      cp -r /usr/share/fonts/truetype/msttcorefonts $SNAPCRAFT_PART_INSTALL/usr/share/fonts/truetype
       rm -r $SNAPCRAFT_PART_INSTALL/core-fonts
       rm -r $SNAPCRAFT_PART_INSTALL/sdkjs
       rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
