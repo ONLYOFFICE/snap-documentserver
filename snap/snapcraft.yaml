@@ -51,6 +51,9 @@ hooks:
   configure:
     plugs: [network, network-bind, account-control, gpg-keys, accounts-service, system-observe] #system-files, 
 
+  install:
+    plugs: [desktop, unity7]
+
 parts:
   rabbitmq:
     plugin: dump
