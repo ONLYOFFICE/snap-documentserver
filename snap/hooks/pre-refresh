@@ -1,0 +1,4 @@
+#!/bin/sh
+
+echo "$SNAP_VERSION" > $SNAP_DATA/version
+echo "$SNAP_REVISION" > $SNAP_DATA/revision

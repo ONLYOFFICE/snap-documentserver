@@ -1,0 +1,6 @@
+#!/bin/sh
+
+rm -R $SNAP_DATA/etc
+cp -R $SNAP/etc $SNAP_DATA/
+
+$SNAP/usr/sbin/generate-all-fonts.sh
