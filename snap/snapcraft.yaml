@@ -289,4 +289,5 @@ parts:
       documentserver-start.sh: usr/sbin/documentserver-start.sh
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
+      generate-all-fonts.sh: usr/sbin/generate-all-fonts.sh
 
