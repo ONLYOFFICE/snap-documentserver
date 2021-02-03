@@ -1,6 +1,8 @@
 #!/bin/sh
 
 rm -R $SNAP_DATA/etc
+rm -R $SNAP_DATA/mysql
+rm -R $SNAP_DATA/var
 cp -R $SNAP/etc $SNAP_DATA/
 
 $SNAP/usr/sbin/generate-all-fonts.sh
