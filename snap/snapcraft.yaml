@@ -54,6 +54,9 @@ hooks:
   install:
     plugs: [desktop, unity7]
 
+  post-refresh:
+    plugs: [desktop, unity7]
+
 parts:
   rabbitmq:
     plugin: dump
