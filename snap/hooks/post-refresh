@@ -2,7 +2,10 @@
 
 rm -R $SNAP_DATA/etc
 rm -R $SNAP_DATA/mysql
+mv $SNAP_DATA/var/www/onlyoffice/Data/certs $SNAP_DATA
 rm -R $SNAP_DATA/var
+mkdir -p $SNAP_DATA/var/www/onlyoffice/Data
+mv $SNAP_DATA/certs $SNAP_DATA/var/www/onlyoffice/Data
 cp -R $SNAP/etc $SNAP_DATA/
 
 $SNAP/usr/sbin/generate-all-fonts.sh
