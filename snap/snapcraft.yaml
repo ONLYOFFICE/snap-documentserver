@@ -102,11 +102,21 @@ parts:
       rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
       rm -r $SNAPCRAFT_PART_INSTALL/server
       rm -r $SNAPCRAFT_PART_INSTALL/web-apps
+      rm -r $SNAPCRAFT_PART_INSTALL/example
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       mkdir -p $DIR
+      mkdir -p $DIR-example
+      rm -r ./server/welcome
+      mv ./example/* $DIR-example
+      rm -r ./example
       cp -r * $DIR
-      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
-      mv $DIR/server/Common/config/* $SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver
+      DIR-ETC="$SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver"
+      mkdir -p $DIR-ETC
+      mv $DIR/server/Common/config/* $DIR-ETC
+      #example
+      mkdir -p $DIR-ETC-example
+      sed -i -e 's/\/var\/lib\/onlyoffice/\/var\/snap\/onlyoffice-ds\/current\/var\/lib\/onlyoffice/' $DIR-example/nodejs/config/production-linux.json
+      mv $DIR-example/nodejs/config/* $DIR-ETC-example
       # documentserver-generate-allfonts.sh
       OUTDIR="/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver"
       #fonts
@@ -281,6 +291,7 @@ parts:
       ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
       ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
+      ds-example.conf: etc/supervisor/conf.d/ds-example.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
       ds.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds.conf.tmpl
       ds-ssl.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds-ssl.conf.tmpl
@@ -293,4 +304,14 @@ parts:
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
       generate-all-fonts.sh: usr/sbin/generate-all-fonts.sh
+
+  welcome:
+    plugin: dump
+    source: ./welcome/
+    organize:
+      index.html: var/www/onlyoffice/documentserver/server/welcome/index.html
+      css/favicon.ico: var/www/onlyoffice/documentserver/server/welcome/css/favicon.ico
+      css/logo.png: var/www/onlyoffice/documentserver/server/welcome/css/logo.png
+      css/logo@2x.png: var/www/onlyoffice/documentserver/server/welcome/css/logo@2x.png
+      css/stylesheet.css: var/www/onlyoffice/documentserver/server/welcome/css/stylesheet.css
 
