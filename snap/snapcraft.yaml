@@ -110,13 +110,13 @@ parts:
       mv ./example/* $DIR-example
       rm -r ./example
       cp -r * $DIR
-      DIR-ETC="$SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver"
-      mkdir -p $DIR-ETC
-      mv $DIR/server/Common/config/* $DIR-ETC
+      DIR_ETC="$SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver"
+      mkdir -p $DIR_ETC
+      mv $DIR/server/Common/config/* $DIR_ETC
       #example
-      mkdir -p $DIR-ETC-example
+      mkdir -p $DIR_ETC-example
       sed -i -e 's/\/var\/lib\/onlyoffice/\/var\/snap\/onlyoffice-ds\/current\/var\/lib\/onlyoffice/' $DIR-example/nodejs/config/production-linux.json
-      mv $DIR-example/nodejs/config/* $DIR-ETC-example
+      mv $DIR-example/nodejs/config/* $DIR_ETC-example
       # documentserver-generate-allfonts.sh
       OUTDIR="/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver"
       #fonts
