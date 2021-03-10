@@ -11,6 +11,7 @@ mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/gc/
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/metrics/
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver-example/
+mkdir -p $SNAP_DATA/var/lib/onlyoffice/documentserver-example/files/
 
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/docservice/err.log
@@ -24,5 +25,12 @@ touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver/spellchecker/err.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/out.log
 touch $SNAP_DATA/var/log/onlyoffice/documentserver-example/err.log
+
+EXAMPLE_ENABLED=$(snapctl get onlyoffice.example-enabled)
+if [ "${EXAMPLE_ENABLED}" == "true" ]; then
+    sed -i -e 's/autostart=false/autostart=true/'  $SNAP_DATA/etc/supervisor/conf.d/ds-example.conf
+else
+    sed -i -e 's/autostart=true/autostart=false/'  $SNAP_DATA/etc/supervisor/conf.d/ds-example.conf
+fi
 
 $SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf

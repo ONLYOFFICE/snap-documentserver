@@ -3,9 +3,16 @@
 rm -R $SNAP_DATA/etc
 rm -R $SNAP_DATA/mysql
 mv $SNAP_DATA/var/www/onlyoffice/Data/certs $SNAP_DATA
+if [ -d $SNAP_DATA/var/lib/onlyoffice/documentserver-example/files ]; then
+  mv $SNAP_DATA/var/lib/onlyoffice/documentserver-example/files $SNAP_DATA
+fi
 rm -R $SNAP_DATA/var
 mkdir -p $SNAP_DATA/var/www/onlyoffice/Data
 mv $SNAP_DATA/certs $SNAP_DATA/var/www/onlyoffice/Data
+if [ -d $SNAP_DATA/files ]; then
+  mkdir -p $SNAP_DATA/var/lib/onlyoffice/documentserver-example
+  mv $SNAP_DATA/files $SNAP_DATA/var/lib/onlyoffice/documentserver-example
+fi
 cp -R $SNAP/etc $SNAP_DATA/
 
 $SNAP/usr/sbin/generate-all-fonts.sh

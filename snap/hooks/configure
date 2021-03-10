@@ -7,6 +7,7 @@ DEFAULT_DB_PORT="3306"
 DEFAULT_JWT_ENABLED="false"
 DEFAULT_JWT_SECRET="secret"
 DEFAULT_JWT_HEADER="Authorization"
+DEFAULT_EXAMPLE_ENABLED="false"
 
 
 nginx_onlyoffice_http_port()
@@ -268,6 +269,46 @@ set_previous_onlyoffice_jwt_header()
 	snapctl set private.onlyoffice.jwt-header="$1"
 }
 
+onlyoffice_example_enabled()
+{
+	onlyoffice_example_enabled="$(onlyoffice_example_enabled)"
+	previous_onlyoffice_example_enabled="$(previous_onlyoffice_example_enabled)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_example_enabled" = "$previous_onlyoffice_example_enabled" ]; then
+		return 0
+	fi
+	set_onlyoffice_example_enabled "$onlyoffice_example_enabled"
+	set_previous_onlyoffice_example_enabled $onlyoffice_example_enabled
+}
+
+set_onlyoffice_example_enabled()
+{
+	snapctl set onlyoffice.example-enabled="$1"
+}
+
+onlyoffice_example_enabled()
+{
+	port="$(snapctl get onlyoffice.example-enabled)"
+	if [ -z "$port" ]; then
+		port="$DEFAULT_EXAMPLE_ENABLED"
+		set_onlyoffice_example_enabled $port
+		set_previous_onlyoffice_example_enabled $port
+	fi
+
+	echo "$port"
+}
+
+previous_onlyoffice_example_enabled()
+{
+	snapctl get private.onlyoffice.example-enabled
+}
+
+set_previous_onlyoffice_example_enabled()
+{
+	snapctl set private.onlyoffice.example-enabled="$1"
+}
+
 
 
 
@@ -275,4 +316,5 @@ nginx_onlyoffice_http_port && \
 db_onlyoffice_db_port && \
 token_onlyoffice_jwt_enabled && \
 token_onlyoffice_jwt_secret && \
-token_onlyoffice_jwt_header
+token_onlyoffice_jwt_header && \
+onlyoffice_example_enabled

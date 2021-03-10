@@ -157,6 +157,14 @@ If you'd like to change the JSON Web Token parameters, run:
 # snap set onlyoffice-ds onlyoffice.key=value
 ```
 
+### Enabling the Example
+
+By default, example is not enabled. You can enable the example, using the command:
+
+```
+# snap set onlyoffice-ds onlyoffice.example-enabled=true
+```
+
 ## Project Information
 
 Official website: [https://www.onlyoffice.com/apps.aspx](https://www.onlyoffice.com/apps.aspx/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnap)
