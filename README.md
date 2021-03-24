@@ -107,6 +107,14 @@ To achieve this you need to generate stronger DHE parameters.
 $ openssl dhparam -out dhparam.pem 2048
 ```
 
+#### Allow document server to use self-signed SSL certificates
+
+To allow document server to use self-signed SSL certificates just run:
+
+```
+# sed -i -e 's/"rejectUnauthorized": true/"rejectUnauthorized": false/' /var/snap/onlyoffice-ds/current/etc/onlyoffice/documentserver/local.json
+```
+
 #### Installation of the SSL Certificates
 
 Out of the four files generated above, you need to install the `onlyoffice.key`, `onlyoffice.crt` and `dhparam.pem` files at the onlyoffice server. The CSR file is not needed, but do make sure you safely backup the file (in case you ever need it again).

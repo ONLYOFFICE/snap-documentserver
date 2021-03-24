@@ -71,7 +71,7 @@
 			}
 		},
 		"requestDefaults": {
-			"rejectUnauthorized": false
+			"rejectUnauthorized": true
 		}
 	  }
 	},
