@@ -149,7 +149,7 @@ By default, HTTPS SSL port is 443. If you'd like to change it (say, to port 444)
 
 #### Allow document server to use unauthorized storage
 
-By default, document server is prevent to use unauthorized storage. To allow it, run:
+By default, document server is prevented from using an unauthorized storage. To allow it, run:
 
 ```
 # snap set onlyoffice-ds onlyoffice.use-unautorized-storage=true
