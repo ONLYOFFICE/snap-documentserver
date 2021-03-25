@@ -98,7 +98,7 @@ $ openssl x509 -req -days 365 -in onlyoffice.csr -signkey onlyoffice.key -out on
 
 You have now generated an SSL certificate that's valid for 365 days.
 
-If you'd like to use Example with Self Signed Certificates then you need to [allow to use unautorized storage](#allow-document-server-to-use-unautorized-storage).
+If you'd like to use Example with Self Signed Certificates then you need to [allow to use unauthorized storage](#allow-document-server-to-use-unauthorized-storage).
 
 #### Strengthening the server security
 
@@ -147,7 +147,7 @@ By default, HTTPS SSL port is 443. If you'd like to change it (say, to port 444)
 # snap set onlyoffice-ds onlyoffice.ds-ssl-port=444
 ```
 
-#### Allow document server to use unautorized storage
+#### Allow document server to use unauthorized storage
 
 By default, document server is prevent to use unauthorized storage. To allow it, run:
 
