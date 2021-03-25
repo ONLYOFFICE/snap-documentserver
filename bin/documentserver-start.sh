@@ -33,7 +33,7 @@ else
     sed -i -e 's/autostart=true/autostart=false/'  $SNAP_DATA/etc/supervisor/conf.d/ds-example.conf
 fi
 
-USE_UNAUTHORIZED_STORAGE_ENABLED=$(snapctl get onlyoffice.use-unautorized-storage-enabled)
+USE_UNAUTHORIZED_STORAGE_ENABLED=$(snapctl get onlyoffice.use-unautorized-storage)
 if [ "${USE_UNAUTHORIZED_STORAGE_ENABLED}" == "true" ]; then
     sed -i -e 's/"rejectUnauthorized": true/"rejectUnauthorized": false/' /var/snap/onlyoffice-ds/current/etc/onlyoffice/documentserver/local.json
 else

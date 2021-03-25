@@ -8,7 +8,7 @@ DEFAULT_JWT_ENABLED="false"
 DEFAULT_JWT_SECRET="secret"
 DEFAULT_JWT_HEADER="Authorization"
 DEFAULT_EXAMPLE_ENABLED="false"
-DEFAULT_USE_UNAUTHORIZED_STORAGE_ENABLED="false"
+DEFAULT_USE_UNAUTHORIZED_STORAGE="false"
 
 
 nginx_onlyoffice_http_port()
@@ -310,44 +310,44 @@ set_previous_onlyoffice_example_enabled()
 	snapctl set private.onlyoffice.example-enabled="$1"
 }
 
-onlyoffice_use_unautorized_storage_enabled()
+onlyoffice_use_unautorized_storage()
 {
-	onlyoffice_use_unautorized_storage_enabled="$(onlyoffice_use_unautorized_storage_enabled)"
-	previous_onlyoffice_use_unautorized_storage_enabled="$(previous_onlyoffice_use_unautorized_storage_enabled)"
+	onlyoffice_use_unautorized_storage="$(onlyoffice_use_unautorized_storage)"
+	previous_onlyoffice_use_unautorized_storage="$(previous_onlyoffice_use_unautorized_storage)"
 
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_use_unautorized_storage_enabled" = "$previous_onlyoffice_use_unautorized_storage_enabled" ]; then
+	if [ "$onlyoffice_use_unautorized_storage" = "$previous_onlyoffice_use_unautorized_storage" ]; then
 		return 0
 	fi
-	set_onlyoffice_use_unautorized_storage_enabled "$onlyoffice_use_unautorized_storage_enabled"
-	set_previous_onlyoffice_use_unautorized_storage_enabled $onlyoffice_use_unautorized_storage_enabled
+	set_onlyoffice_use_unautorized_storage "$onlyoffice_use_unautorized_storage"
+	set_previous_onlyoffice_use_unautorized_storage $onlyoffice_use_unautorized_storage
 }
 
-set_onlyoffice_use_unautorized_storage_enabled()
+set_onlyoffice_use_unautorized_storage()
 {
-	snapctl set onlyoffice.use-unautorized-storage-enabled="$1"
+	snapctl set onlyoffice.use-unautorized-storage="$1"
 }
 
-onlyoffice_use_unautorized_storage_enabled()
+onlyoffice_use_unautorized_storage()
 {
-	port="$(snapctl get onlyoffice.use-unautorized-storage-enabled)"
+	port="$(snapctl get onlyoffice.use-unautorized-storage)"
 	if [ -z "$port" ]; then
-		port="$DEFAULT_USE_UNAUTHORIZED_STORAGE_ENABLED"
-		set_onlyoffice_use_unautorized_storage_enabled $port
-		set_previous_onlyoffice_use_unautorized_storage_enabled $port
+		port="$DEFAULT_USE_UNAUTHORIZED_STORAGE"
+		set_onlyoffice_use_unautorized_storage $port
+		set_previous_onlyoffice_use_unautorized_storage $port
 	fi
 
 	echo "$port"
 }
 
-previous_onlyoffice_use_unautorized_storage_enabled()
+previous_onlyoffice_use_unautorized_storage()
 {
-	snapctl get private.onlyoffice.use-unautorized-storage-enabled
+	snapctl get private.onlyoffice.use-unautorized-storage
 }
 
-set_previous_onlyoffice_use_unautorized_storage_enabled()
+set_previous_onlyoffice_use_unautorized_storage()
 {
-	snapctl set private.onlyoffice.use-unautorized-storage-enabled="$1"
+	snapctl set private.onlyoffice.use-unautorized-storage="$1"
 }
 
 
@@ -359,4 +359,4 @@ token_onlyoffice_jwt_enabled && \
 token_onlyoffice_jwt_secret && \
 token_onlyoffice_jwt_header && \
 onlyoffice_example_enabled && \
-onlyoffice_use_unautorized_storage_enabled
+onlyoffice_use_unautorized_storage
