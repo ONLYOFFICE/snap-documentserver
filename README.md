@@ -107,12 +107,12 @@ To achieve this you need to generate stronger DHE parameters.
 $ openssl dhparam -out dhparam.pem 2048
 ```
 
-#### Allow document server to use self-signed SSL certificates
+#### Allow document server to use unautorized storage
 
-To allow document server to use self-signed SSL certificates just run:
+To allow document server to use self-signed SSL certificates you need to enable to use unautorized storage:
 
 ```
-# sed -i -e 's/"rejectUnauthorized": true/"rejectUnauthorized": false/' /var/snap/onlyoffice-ds/current/etc/onlyoffice/documentserver/local.json
+# snap set onlyoffice-ds onlyoffice.use-unautorized-storage-enabled=true
 ```
 
 #### Installation of the SSL Certificates
