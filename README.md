@@ -97,6 +97,7 @@ $ openssl x509 -req -days 365 -in onlyoffice.csr -signkey onlyoffice.key -out on
 ```
 
 You have now generated an SSL certificate that's valid for 365 days.
+
 If you'd like to use Example with Self Signed Certificates then you need to [allow to use unautorized storage](#allow-document-server-to-use-unautorized-storage).
 
 #### Strengthening the server security
