@@ -32,6 +32,103 @@ server {
   rewrite ^ https://$host$request_uri? permanent;
 }
 
+#HTTP host for internal services
+server {
+  listen 127.0.0.1:80;
+  listen [::1]:80;
+  server_name localhost;
+  server_tokens off;
+
+  client_max_body_size 100m;
+
+  gzip on;
+  gzip_vary on;
+  gzip_types  text/plain
+              text/xml
+              text/css
+              text/csv
+              font/ttf
+              application/xml
+              application/javascript
+              application/x-javascript
+              application/json
+              application/octet-stream
+              application/x-font-ttf
+              application/rtf
+              application/wasm;
+
+  #welcome page
+  rewrite ^/$ $the_scheme://$the_host/welcome/ redirect;
+
+  #support old version
+  rewrite ^\/OfficeWeb(\/apps\/.*)$ $the_scheme://$the_host/0.0.0-0/web-apps$1 redirect;
+
+  #script caching protection
+  rewrite ^(\/web-apps\/apps\/(?!api\/).*)$ $the_scheme://$the_host/0.0.0-0$1 redirect;
+
+  #disable caching for api.js
+  location ~ ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?\/(web-apps\/apps\/api\/documents\/api\.js)$ {
+    expires -1;
+    # gzip_static on;
+    alias  /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/$2;
+  }
+
+  #suppress logging the unsupported locale error in web-apps
+  location ~ ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?\/(web-apps)(\/.*\.json)$ {
+    expires 365d;
+    error_log /dev/null crit;
+    # gzip_static on;
+    alias /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/$2$3;
+  }
+
+  #suppress logging the unsupported locale error in plugins
+  location ~ ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?\/(sdkjs-plugins)(\/.*\.json)$ {
+    expires 365d;
+    error_log /dev/null crit;
+    # gzip_static on;
+    alias /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/$2$3;
+  }
+
+  location ~ ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?\/(web-apps|sdkjs|sdkjs-plugins|fonts)(\/.*)$ {
+    expires 365d;
+    # gzip_static on;
+    alias /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/$2$3;
+  }
+
+  location ~* ^(\/cache\/files.*)(\/.*) {
+    alias /var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver/App_Data$1;
+    add_header Content-Disposition "$arg_disposition; filename*=UTF-8''$arg_filename";
+
+    set $secret_string verysecretstring;
+    secure_link $arg_md5,$arg_expires;
+    secure_link_md5 "$secure_link_expires$uri$secret_string";
+
+    if ($secure_link = "") {
+      return 403;
+    }
+
+    if ($secure_link = "0") {
+      return 410;
+    }
+  }
+
+  # Allow internal service only from 127.0.0.1
+  location ~* ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?\/(info|internal)(\/.*)$ {
+    allow 127.0.0.1;
+    deny all;
+    proxy_pass http://localhost:8000/$2$3;
+  }
+
+  location / {
+    proxy_pass http://localhost:8000;
+  }
+
+  location ~ ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?(\/doc\/.*) {
+    proxy_pass http://localhost:8000$2;
+    proxy_http_version 1.1;
+  }
+}
+
 server {
   listen 0.0.0.0:DSS_PORT ssl;
   listen [::]:DSS_PORT ssl default_server;
