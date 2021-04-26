@@ -13,7 +13,7 @@ apps:
   documentserver:
     command: usr/sbin/documentserver-start.sh
     daemon: simple
-    plugs: [network, network-bind, removable-media]
+    plugs: [network, network-bind, removable-media, desktop, unity7]
 
   node:
     command: bin/node
