@@ -1,5 +1,6 @@
 #!/bin/sh
 
+mv $SNAP_DATA/etc/onlyoffice/documentserver/local.json $SNAP_DATA
 rm -R $SNAP_DATA/etc
 rm -R $SNAP_DATA/mysql
 mv $SNAP_DATA/var/www/onlyoffice/Data/certs $SNAP_DATA
@@ -14,5 +15,6 @@ if [ -d $SNAP_DATA/files ]; then
   mv $SNAP_DATA/files $SNAP_DATA/var/lib/onlyoffice/documentserver-example
 fi
 cp -R $SNAP/etc $SNAP_DATA/
+mv $SNAP_DATA/local.json $SNAP_DATA/etc/onlyoffice/documentserver/
 
 $SNAP/usr/sbin/generate-all-fonts.sh
