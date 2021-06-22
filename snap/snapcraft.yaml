@@ -279,7 +279,6 @@ parts:
       local.json: etc/onlyoffice/documentserver/local.json
       ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
-      ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
       ds-example.conf: etc/supervisor/conf.d/ds-example.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
       ds.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds.conf.tmpl
