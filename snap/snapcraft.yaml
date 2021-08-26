@@ -1,5 +1,5 @@
 name: onlyoffice-ds
-version: "6.3.2"
+version: "6.4.0"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
 icon: snap/icons/asc-de-256.png
@@ -72,7 +72,7 @@ parts:
 
   server:
     plugin: dump
-    source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-6.3.2.tar.gz
+    source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-6.4.0.tar.gz
     stage-packages:
       - libxml2
       - fonts-dejavu
@@ -97,19 +97,8 @@ parts:
         /usr/lib/update-notifier/package-data-downloader
       fi
       cp -r /usr/share/fonts/truetype/msttcorefonts $SNAPCRAFT_PART_INSTALL/usr/share/fonts/truetype
-      rm -r $SNAPCRAFT_PART_INSTALL/core-fonts
-      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs
-      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
-      rm -r $SNAPCRAFT_PART_INSTALL/server
-      rm -r $SNAPCRAFT_PART_INSTALL/web-apps
-      rm -r $SNAPCRAFT_PART_INSTALL/example
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
-      mkdir -p $DIR
-      mkdir -p $DIR-example
-      rm -r ./server/welcome
-      mv ./example/* $DIR-example
-      rm -r ./example
-      cp -r * $DIR
+      rm -r $DIR/server/welcome
       DIR_ETC="$SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver"
       mkdir -p $DIR_ETC
       mv $DIR/server/Common/config/* $DIR_ETC
@@ -290,7 +279,6 @@ parts:
       local.json: etc/onlyoffice/documentserver/local.json
       ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
-      ds-spellchecker.conf: etc/supervisor/conf.d/ds-spellchecker.conf
       ds-example.conf: etc/supervisor/conf.d/ds-example.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
       ds.conf.tmpl: etc/onlyoffice/documentserver/nginx/ds.conf.tmpl
