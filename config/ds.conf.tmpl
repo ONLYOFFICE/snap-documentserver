@@ -38,6 +38,10 @@ server {
     proxy_set_header X-Forwarded-Proto $the_scheme;
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
   }
+  location ~ ^(\/[\d]+\.[\d]+\.[\d]+[\.|-][\d]+)?\/(dictionaries)(\/.*)$ {
+    expires 365d;
+    alias /snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/$2$3;
+  }
   client_max_body_size 100m;
 }
 

@@ -93,7 +93,7 @@
 	},
 	"SpellChecker": {
 	  "server": {
-		"dictDir": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/dictionaries"
+		"dictDir": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/dictionaries"
 	  }
 	}
 }
