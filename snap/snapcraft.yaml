@@ -270,6 +270,21 @@ parts:
     plugin: dump
     source: src/common/
 
+  ds-package:
+    plugin: nil
+    source: https://github.com/ONLYOFFICE/document-server-package.git
+    source-type: git
+    override-build: |
+      snapcraftctl build
+      #welcome page
+      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
+      cp -r common/documentserver-example/welcome/css $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
+      cp common/documentserver-example/welcome/linux.html $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/{{OFFICIAL_PRODUCT_NAME}}/Community Edition/' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/sudo supervisorctl start ds:example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e '/<h3>Add it to the autostart/d' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e '/<pre>sudo sed/d' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+
 
   starter:
     plugin: dump
@@ -292,14 +307,3 @@ parts:
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
       generate-all-fonts.sh: usr/sbin/generate-all-fonts.sh
-
-  welcome:
-    plugin: dump
-    source: ./welcome/
-    organize:
-      index.html: var/www/onlyoffice/documentserver/server/welcome/index.html
-      css/favicon.ico: var/www/onlyoffice/documentserver/server/welcome/css/favicon.ico
-      css/logo.png: var/www/onlyoffice/documentserver/server/welcome/css/logo.png
-      css/logo@2x.png: var/www/onlyoffice/documentserver/server/welcome/css/logo@2x.png
-      css/stylesheet.css: var/www/onlyoffice/documentserver/server/welcome/css/stylesheet.css
-
