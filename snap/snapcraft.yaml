@@ -97,6 +97,14 @@ parts:
         /usr/lib/update-notifier/package-data-downloader
       fi
       cp -r /usr/share/fonts/truetype/msttcorefonts $SNAPCRAFT_PART_INSTALL/usr/share/fonts/truetype
+      #temprary
+      rm -r $SNAPCRAFT_PART_INSTALL/core-fonts
+      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs
+      rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
+      rm -r $SNAPCRAFT_PART_INSTALL/server
+      rm -r $SNAPCRAFT_PART_INSTALL/web-apps
+      rm -r $SNAPCRAFT_PART_INSTALL/example
+      #
       DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       rm -r $DIR/server/welcome
       DIR_ETC="$SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver"
