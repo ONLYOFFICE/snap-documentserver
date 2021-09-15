@@ -97,7 +97,7 @@ parts:
         /usr/lib/update-notifier/package-data-downloader
       fi
       cp -r /usr/share/fonts/truetype/msttcorefonts $SNAPCRAFT_PART_INSTALL/usr/share/fonts/truetype
-      #temprary
+      #temporary
       rm -r $SNAPCRAFT_PART_INSTALL/core-fonts
       rm -r $SNAPCRAFT_PART_INSTALL/sdkjs
       rm -r $SNAPCRAFT_PART_INSTALL/sdkjs-plugins
