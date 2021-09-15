@@ -128,6 +128,10 @@ parts:
       ln -s -f $OUTDIR/sdkjs/slide/themes $DIR/sdkjs/slide/themes
       ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail.png $DIR/sdkjs/common/Images/themes_thumbnail.png
       ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail@2x.png $DIR/sdkjs/common/Images/themes_thumbnail@2x.png
+      #package version
+      BUILD_VERSION=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildVersion" | grep -o "[0-9.]*"`
+      BUILD_NUMBER=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildNumber" | grep -o "[0-9]*"`
+      echo $BUILD_VERSION-$BUILD_NUMBER > $SNAPCRAFT_STAGE/version
 
   node:
     plugin: dump
@@ -279,11 +283,14 @@ parts:
     source: src/common/
 
   ds-package:
+    after:
+      - server
     plugin: nil
     source: https://github.com/ONLYOFFICE/document-server-package.git
     source-type: git
     override-build: |
       snapcraftctl build
+      PACKAGE_VERSION=`cat $SNAPCRAFT_STAGE/version`
       #welcome page
       mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
       cp -r common/documentserver-example/welcome/css $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
@@ -310,7 +317,7 @@ parts:
       ##ds-docservice.conf
       cp common/documentserver/nginx/includes/ds-docservice.conf.m4 $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's/M4_DS_ROOT/\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver/' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's/M4_PACKAGE_VERSION/0.0.0-0/' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e "s/M4_PACKAGE_VERSION/$PACKAGE_VERSION/" $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's/M4_DEV_NULL/\/dev\/null/' $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's/M4_DS_FILES/\/var\/snap\/onlyoffice-ds\/common\/var\/lib\/onlyoffice\/documentserver/' $NGINX_DIR/includes/ds-docservice.conf
       ##http-common.conf
