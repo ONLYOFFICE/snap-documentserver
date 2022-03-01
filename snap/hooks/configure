@@ -1,6 +1,8 @@
 #!/bin/sh
 
-cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
+if [ ! -f $SNAP_DATA/mysql/my.cnf ]; then
+	cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
+fi
 DEFAULT_HTTP_PORT="80"
 DEFAULT_HTTPS_PORT="443"
 DEFAULT_DB_PORT="3306"
@@ -100,8 +102,8 @@ db_onlyoffice_db_port()
 	set_onlyoffice_db_port "$onlyoffice_db_port"
 	set_previous_onlyoffice_db_port $onlyoffice_db_port
 	sed -i "/dbPort/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	sed -i "/port/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/mysql/root.ini
-	snapctl restart onlyoffice-ds
+	sed -i "s/port=.*/port="${onlyoffice_db_port}"/g" $SNAP_DATA/mysql/my.cnf
+	snapctl restart onlyoffice-ds.mysql
 }
 
 set_onlyoffice_db_port()
