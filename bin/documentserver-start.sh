@@ -40,15 +40,15 @@ fi
 LOOPBACK_ENABLED=$(snapctl get onlyoffice.loopback)
 NGINX_CONF_PATH="$SNAP_DATA/etc/onlyoffice/documentserver/nginx"
 if [ "${LOOPBACK_ENABLED}" == "true" ]; then
-    sed -i -e 's/#allow/allow/' $NGINX_CONF_PATH/ds.conf.tmpl
-    sed -i -e 's/#deny/deny/' $NGINX_CONF_PATH/ds.conf.tmpl
-    sed -i -e 's/#allow/allow/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
-    sed -i -e 's/#deny/deny/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
+    sed -i -e 's/ #allow/ allow/' $NGINX_CONF_PATH/ds.conf.tmpl
+    sed -i -e 's/ #deny/ deny/' $NGINX_CONF_PATH/ds.conf.tmpl
+    sed -i -e 's/ #allow/ allow/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
+    sed -i -e 's/ #deny/ deny/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
 else
-    sed -i -e 's/allow/#allow/' $NGINX_CONF_PATH/ds.conf.tmpl
-    sed -i -e 's/deny/#deny/' $NGINX_CONF_PATH/ds.conf.tmpl
-    sed -i -e 's/allow/#allow/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
-    sed -i -e 's/deny/#deny/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
+    sed -i -e 's/ allow/ #allow/' $NGINX_CONF_PATH/ds.conf.tmpl
+    sed -i -e 's/ deny/ #deny/' $NGINX_CONF_PATH/ds.conf.tmpl
+    sed -i -e 's/ allow/ #allow/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
+    sed -i -e 's/ deny/ #deny/' $NGINX_CONF_PATH/ds-ssl.conf.tmpl
 fi
 
 export LC_ALL=C.UTF-8

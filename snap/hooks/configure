@@ -364,6 +364,8 @@ token_onlyoffice_loopback()
 	fi
 	set_onlyoffice_loopback "$onlyoffice_loopback"
 	set_previous_onlyoffice_loopback "$onlyoffice_loopback"
+
+	snapctl restart onlyoffice-ds.nginx
 }
 
 set_onlyoffice_loopback()
@@ -375,7 +377,7 @@ onlyoffice_loopback()
 {
 	param="$(snapctl get onlyoffice.loopback)"
 	if [ -z "$param" ]; then
-		port="$DEFAULT_LOOPBACK"
+		param="$DEFAULT_LOOPBACK"
 		set_onlyoffice_loopback $param
 		set_previous_onlyoffice_loopback $param
 	fi

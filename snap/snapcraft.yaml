@@ -298,14 +298,12 @@ parts:
       cp common/documentserver/nginx/ds.conf.tmpl.m4 $NGINX_DIR/ds.conf.tmpl
       sed -i -e 's/M4_NGINX_CONF/\/snap\/onlyoffice-ds\/current\/etc\/onlyoffice\/documentserver\/nginx\/includes/' $NGINX_DIR/ds.conf.tmpl
       sed -i -e 's/80/DS_PORT/' $NGINX_DIR/ds.conf.tmpl
-      #add loopback option to nginx confs
       sed -i -e 's/server_tokens off;/server_tokens off;\n  #loopback\n  #allow 127.0.0.1;\n  #deny all;/' $NGINX_DIR/ds.conf.tmpl
       ##ds-ssl.conf.tmpl
       cp common/documentserver/nginx/ds-ssl.conf.tmpl.m4 $NGINX_DIR/ds-ssl.conf.tmpl
       sed -i -e 's/M4_NGINX_CONF/\/snap\/onlyoffice-ds\/current\/etc\/onlyoffice\/documentserver\/nginx\/includes/' $NGINX_DIR/ds-ssl.conf.tmpl
       sed -i -e 's/80/DS_PORT/' $NGINX_DIR/ds-ssl.conf.tmpl
       sed -i -e 's/443/DSS_PORT/' $NGINX_DIR/ds-ssl.conf.tmpl
-      #add loopback option to nginx confs
       sed -i -e 's/server_tokens off;/server_tokens off;\n  #loopback\n  #allow 127.0.0.1;\n  #deny all;/' $NGINX_DIR/ds-ssl.conf.tmpl
       ##ds-common.conf
       cp common/documentserver/nginx/includes/ds-common.conf.m4 $NGINX_DIR/includes/ds-common.conf
