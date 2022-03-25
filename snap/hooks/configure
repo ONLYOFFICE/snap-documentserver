@@ -11,6 +11,7 @@ DEFAULT_JWT_SECRET="secret"
 DEFAULT_JWT_HEADER="Authorization"
 DEFAULT_EXAMPLE_ENABLED="false"
 DEFAULT_USE_UNAUTHORIZED_STORAGE="false"
+DEFAULT_LOOPBACK="false"
 
 
 nginx_onlyoffice_http_port()
@@ -352,6 +353,45 @@ set_previous_onlyoffice_use_unautorized_storage()
 	snapctl set private.onlyoffice.use-unautorized-storage="$1"
 }
 
+token_onlyoffice_loopback()
+{
+	onlyoffice_loopback="$(onlyoffice_loopback)"
+	previous_onlyoffice_loopback="$(previous_loopback)"
+
+	# If no changes were requested, then there's nothing to do here.
+	if [ "$onlyoffice_loopback" = "$previous_onlyoffice_loopback" ]; then
+		return 0
+	fi
+	set_onlyoffice_loopback "$onlyoffice_loopback"
+	set_previous_onlyoffice_loopback "$onlyoffice_loopback"
+}
+
+set_onlyoffice_loopback()
+{
+	snapctl set onlyoffice.loopback="$1"
+}
+
+onlyoffice_loopback()
+{
+	param="$(snapctl get onlyoffice.loopback)"
+	if [ -z "$param" ]; then
+		port="$DEFAULT_LOOPBACK"
+		set_onlyoffice_loopback $param
+		set_previous_onlyoffice_loopback $param
+	fi
+
+	echo "$param"
+}
+
+previous_onlyoffice_loopback()
+{
+	snapctl get private.onlyoffice.loopback
+}
+
+set_previous_onlyoffice_loopback()
+{
+	snapctl set private.onlyoffice.loopback="$1"
+}
 
 
 
@@ -361,4 +401,5 @@ token_onlyoffice_jwt_enabled && \
 token_onlyoffice_jwt_secret && \
 token_onlyoffice_jwt_header && \
 onlyoffice_example_enabled && \
-onlyoffice_use_unautorized_storage
+onlyoffice_use_unautorized_storage && \
+token_onlyoffice_loopback
