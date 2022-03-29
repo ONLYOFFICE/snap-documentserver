@@ -155,6 +155,14 @@ By default, document server is prevented from using an unauthorized storage. To 
 # snap set onlyoffice-ds onlyoffice.use-unautorized-storage=true
 ```
 
+#### Set document server to run on loopback interface
+
+By default, document server do not run on loopback interface. To set it, run:
+
+```
+# snap set onlyoffice-ds onlyoffice.loopback=true
+```
+
 #### JSON Web Token
 
 - **jwt-enabled**: Specifies the enabling the JSON Web Token validation by the ONLYOFFICE Document Server. Defaults to `false`.
