@@ -9,6 +9,12 @@ base: core18
 architectures:
   - amd64
 
+layout:
+  /etc/my.cnf:
+    bind-file: $SNAP_DATA/etc/my.cnf
+  /etc/my.cnf.d:
+    bind: $SNAP_DATA/etc/my.cnf.d
+
 apps:
   documentserver:
     command: usr/sbin/documentserver-start.sh
