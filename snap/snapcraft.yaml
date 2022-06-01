@@ -133,7 +133,7 @@ parts:
 
   node:
     plugin: dump
-    source: https://nodejs.org/dist/v10.21.0/node-v10.21.0-linux-x64.tar.gz
+    source: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz
     override-build: |
       snapcraftctl build
       rm -f $SNAPCRAFT_PART_INSTALL/README.md
