@@ -13,6 +13,10 @@ DEFAULT_EXAMPLE_ENABLED="false"
 DEFAULT_USE_UNAUTHORIZED_STORAGE="false"
 DEFAULT_LOOPBACK="false"
 
+RESTART_NGINX="false"
+RESTART_MYSQL="false"
+RESTART_DOCSERVER="false"
+
 
 nginx_onlyoffice_http_port()
 {
@@ -33,7 +37,7 @@ nginx_onlyoffice_http_port()
 	set_onlyoffice_https_port "$onlyoffice_https_port"
 	set_previous_onlyoffice_https_port $onlyoffice_https_port
 
-	snapctl restart onlyoffice-ds.nginx
+	RESTART_NGINX="true"
 }
 
 set_onlyoffice_http_port()
@@ -104,7 +108,8 @@ db_onlyoffice_db_port()
 	set_previous_onlyoffice_db_port $onlyoffice_db_port
 	sed -i "/dbPort/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "s/port=.*/port="${onlyoffice_db_port}"/g" $SNAP_DATA/mysql/my.cnf
-	snapctl restart onlyoffice-ds.mysql
+
+	RESTART_MYSQL="true"
 }
 
 set_onlyoffice_db_port()
@@ -149,7 +154,8 @@ token_onlyoffice_jwt_enabled()
 	set_onlyoffice_jwt_enabled "$onlyoffice_jwt_enabled"
 	set_previous_onlyoffice_jwt_enabled $onlyoffice_jwt_enabled
 	update_jwt_enabled_settings
-	snapctl restart onlyoffice-ds.documentserver
+
+	RESTART_DOCSERVER="true"
 }
 
 set_onlyoffice_jwt_enabled()
@@ -203,7 +209,8 @@ token_onlyoffice_jwt_secret()
 	sed -i "/inbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/outbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/session/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
+
+	RESTART_DOCSERVER="true"
 }
 
 set_onlyoffice_jwt_secret()
@@ -243,7 +250,8 @@ token_onlyoffice_jwt_header()
 	set_onlyoffice_jwt_header "$onlyoffice_jwt_header"
 	set_previous_onlyoffice_jwt_header $onlyoffice_jwt_header
 	sed -i "/header/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	snapctl restart onlyoffice-ds.documentserver
+
+	RESTART_DOCSERVER="true"
 }
 
 set_onlyoffice_jwt_header()
@@ -365,7 +373,7 @@ token_onlyoffice_loopback()
 	set_onlyoffice_loopback "$onlyoffice_loopback"
 	set_previous_onlyoffice_loopback "$onlyoffice_loopback"
 
-	snapctl restart onlyoffice-ds.nginx
+	RESTART_NGINX="true"
 }
 
 set_onlyoffice_loopback()
@@ -405,3 +413,14 @@ token_onlyoffice_jwt_header && \
 onlyoffice_example_enabled && \
 onlyoffice_use_unautorized_storage && \
 token_onlyoffice_loopback
+
+
+if [ "$RESTART_NGINX" = "true" ]; then
+	snapctl restart onlyoffice-ds.nginx
+fi
+if [ "$RESTART_MYSQL" = "true" ]; then
+	snapctl restart onlyoffice-ds.mysql
+fi
+if [ "$RESTART_DOCSERVER" = "true" ]; then
+	snapctl restart onlyoffice-ds.documentserver
+fi
