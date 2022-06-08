@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ ! -f $SNAP_DATA/mysql/my.cnf ]; then
 	cp $SNAP/my.cnf $SNAP_DATA/mysql/my.cnf
@@ -13,10 +13,19 @@ DEFAULT_EXAMPLE_ENABLED="false"
 DEFAULT_USE_UNAUTHORIZED_STORAGE="false"
 DEFAULT_LOOPBACK="false"
 
-RESTART_NGINX="false"
-RESTART_MYSQL="false"
-RESTART_DOCSERVER="false"
+SERVICES_TO_RESTART=()
 
+
+add_service_to_restart()
+{
+	for i in ${SERVICES_TO_RESTART[@]}; do
+		if [ "$1" = "$i" ]; then
+			return 0
+		fi
+	done
+
+	SERVICES_TO_RESTART+=("$1")
+}
 
 nginx_onlyoffice_http_port()
 {
@@ -37,7 +46,7 @@ nginx_onlyoffice_http_port()
 	set_onlyoffice_https_port "$onlyoffice_https_port"
 	set_previous_onlyoffice_https_port $onlyoffice_https_port
 
-	RESTART_NGINX="true"
+	add_service_to_restart "nginx"
 }
 
 set_onlyoffice_http_port()
@@ -109,7 +118,7 @@ db_onlyoffice_db_port()
 	sed -i "/dbPort/s/"${previous_onlyoffice_db_port}"/"${onlyoffice_db_port}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "s/port=.*/port="${onlyoffice_db_port}"/g" $SNAP_DATA/mysql/my.cnf
 
-	RESTART_MYSQL="true"
+	add_service_to_restart "mysql"
 }
 
 set_onlyoffice_db_port()
@@ -155,7 +164,7 @@ token_onlyoffice_jwt_enabled()
 	set_previous_onlyoffice_jwt_enabled $onlyoffice_jwt_enabled
 	update_jwt_enabled_settings
 
-	RESTART_DOCSERVER="true"
+	add_service_to_restart "documentserver"
 }
 
 set_onlyoffice_jwt_enabled()
@@ -210,7 +219,7 @@ token_onlyoffice_jwt_secret()
 	sed -i "/outbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/session/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 
-	RESTART_DOCSERVER="true"
+	add_service_to_restart "documentserver"
 }
 
 set_onlyoffice_jwt_secret()
@@ -251,7 +260,7 @@ token_onlyoffice_jwt_header()
 	set_previous_onlyoffice_jwt_header $onlyoffice_jwt_header
 	sed -i "/header/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 
-	RESTART_DOCSERVER="true"
+	add_service_to_restart "documentserver"
 }
 
 set_onlyoffice_jwt_header()
@@ -373,7 +382,7 @@ token_onlyoffice_loopback()
 	set_onlyoffice_loopback "$onlyoffice_loopback"
 	set_previous_onlyoffice_loopback "$onlyoffice_loopback"
 
-	RESTART_NGINX="true"
+	add_service_to_restart "nginx"
 }
 
 set_onlyoffice_loopback()
@@ -415,12 +424,7 @@ onlyoffice_use_unautorized_storage && \
 token_onlyoffice_loopback
 
 
-if [ "$RESTART_NGINX" = "true" ]; then
-	snapctl restart onlyoffice-ds.nginx
-fi
-if [ "$RESTART_MYSQL" = "true" ]; then
-	snapctl restart onlyoffice-ds.mysql
-fi
-if [ "$RESTART_DOCSERVER" = "true" ]; then
-	snapctl restart onlyoffice-ds.documentserver
-fi
+#restart necessary services
+for i in ${SERVICES_TO_RESTART[@]}; do
+	snapctl restart onlyoffice-ds.$i
+done
