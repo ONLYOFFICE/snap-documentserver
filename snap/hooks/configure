@@ -356,7 +356,7 @@ set_previous_onlyoffice_use_unautorized_storage()
 token_onlyoffice_loopback()
 {
 	onlyoffice_loopback="$(onlyoffice_loopback)"
-	previous_onlyoffice_loopback="$(previous_loopback)"
+	previous_onlyoffice_loopback="$(previous_onlyoffice_loopback)"
 
 	# If no changes were requested, then there's nothing to do here.
 	if [ "$onlyoffice_loopback" = "$previous_onlyoffice_loopback" ]; then
