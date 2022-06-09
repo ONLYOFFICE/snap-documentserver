@@ -23,7 +23,7 @@ nginx_onlyoffice_http_port()
 	previous_onlyoffice_https_port="$(previous_onlyoffice_https_port)"
 
 	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_http_port" = "$previous_onlyoffice_http_port" && "$onlyoffice_https_port" = "$previous_onlyoffice_https_port" ]; then
+	if [ "$onlyoffice_http_port" = "$previous_onlyoffice_http_port" -a "$onlyoffice_https_port" = "$previous_onlyoffice_https_port" ]; then
 		return 0
 	fi
 
