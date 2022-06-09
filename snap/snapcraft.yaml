@@ -7,7 +7,8 @@ grade: stable
 confinement: strict
 base: core18
 architectures:
-  - amd64
+  - build-on: amd64
+  - build-on: arm64
 
 layout:
   /etc/my.cnf:
@@ -78,7 +79,9 @@ parts:
 
   server:
     plugin: dump
-    source: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-7.1.0_x86_64.tar.gz
+    source:
+      - on amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-7.1.0_x86_64.tar.gz
+      - on arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-7.1.0_aarch64.tar.gz
     stage-packages:
       - libxml2
       - fonts-dejavu
@@ -133,7 +136,9 @@ parts:
 
   node:
     plugin: dump
-    source: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz
+    source:
+      - on amd64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz
+      - on arm64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-arm64.tar.gz
     override-build: |
       snapcraftctl build
       rm -f $SNAPCRAFT_PART_INSTALL/README.md
