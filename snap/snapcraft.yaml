@@ -121,14 +121,35 @@ parts:
       ln -s -f $OUTDIR/server/FileConverter/bin/AllFonts.js $DIR/server/FileConverter/bin/AllFonts.js
       ln -s -f $OUTDIR/server/FileConverter/bin/font_selection.bin $DIR/server/FileConverter/bin/font_selection.bin
       ln -s -f $OUTDIR/fonts $DIR/fonts
-      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail.png $DIR/sdkjs/common/Images/fonts_thumbnail.png
-      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@2x.png $DIR/sdkjs/common/Images/fonts_thumbnail@2x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail.png              $DIR/sdkjs/common/Images/fonts_thumbnail.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@1.25x.png        $DIR/sdkjs/common/Images/fonts_thumbnail@1.25x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@1.5x.png         $DIR/sdkjs/common/Images/fonts_thumbnail@1.5x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@1.75x.png        $DIR/sdkjs/common/Images/fonts_thumbnail@1.75x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@2x.png           $DIR/sdkjs/common/Images/fonts_thumbnail@2x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea.png           $DIR/sdkjs/common/Images/fonts_thumbnail_ea.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@1.25x.png     $DIR/sdkjs/common/Images/fonts_thumbnail_ea@1.25x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@1.5x.png      $DIR/sdkjs/common/Images/fonts_thumbnail_ea@1.5x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@1.75x.png     $DIR/sdkjs/common/Images/fonts_thumbnail_ea@1.75x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@2x.png        $DIR/sdkjs/common/Images/fonts_thumbnail_ea@2x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail.png.bin          $DIR/sdkjs/common/Images/fonts_thumbnail.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@1.25x.png.bin    $DIR/sdkjs/common/Images/fonts_thumbnail@1.25x.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@1.5x.png.bin     $DIR/sdkjs/common/Images/fonts_thumbnail@1.5x.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@1.75x.png.bin    $DIR/sdkjs/common/Images/fonts_thumbnail@1.75x.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail@2x.png.bin       $DIR/sdkjs/common/Images/fonts_thumbnail@2x.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea.png.bin       $DIR/sdkjs/common/Images/fonts_thumbnail_ea.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@1.25x.png.bin $DIR/sdkjs/common/Images/fonts_thumbnail_ea@1.25x.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@1.5x.png.bin  $DIR/sdkjs/common/Images/fonts_thumbnail_ea@1.5x.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@1.75x.png.bin $DIR/sdkjs/common/Images/fonts_thumbnail_ea@1.75x.png.bin
+      ln -s -f $OUTDIR/sdkjs/common/Images/fonts_thumbnail_ea@2x.png.bin    $DIR/sdkjs/common/Images/fonts_thumbnail_ea@2x.png.bin
       ln -s -f $OUTDIR/sdkjs/common/AllFonts.js $DIR/sdkjs/common/AllFonts.js
       #themes
       mv $DIR/sdkjs/slide/themes $DIR/sdkjs/slide/themes_backup
       ln -s -f $OUTDIR/sdkjs/slide/themes $DIR/sdkjs/slide/themes
-      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail.png $DIR/sdkjs/common/Images/themes_thumbnail.png
-      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail@2x.png $DIR/sdkjs/common/Images/themes_thumbnail@2x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail.png       $DIR/sdkjs/common/Images/themes_thumbnail.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail@1.25x.png $DIR/sdkjs/common/Images/themes_thumbnail@1.25x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail@1.5x.png  $DIR/sdkjs/common/Images/themes_thumbnail@1.5x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail@1.75x.png $DIR/sdkjs/common/Images/themes_thumbnail@1.75x.png
+      ln -s -f $OUTDIR/sdkjs/common/Images/themes_thumbnail@2x.png    $DIR/sdkjs/common/Images/themes_thumbnail@2x.png
       #package version
       BUILD_VERSION=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildVersion" | grep -o "[0-9.]*"`
       BUILD_NUMBER=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildNumber" | grep -o "[0-9]*"`
