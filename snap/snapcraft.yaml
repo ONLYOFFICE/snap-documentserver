@@ -1,8 +1,8 @@
 name: onlyoffice-ds
-version: "7.1.1"
+version: "7.2.0"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
-icon: snap/icons/asc-de-256.png
+icon: icons/asc-de-256.png
 grade: stable
 confinement: strict
 base: core18
@@ -15,6 +15,9 @@ layout:
     bind-file: $SNAP_DATA/etc/my.cnf
   /etc/my.cnf.d:
     bind: $SNAP_DATA/etc/my.cnf.d
+
+environment:
+  HOME: $SNAP_DATA
 
 apps:
   documentserver:
@@ -67,21 +70,21 @@ hooks:
 parts:
   rabbitmq:
     plugin: dump
-    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_15/rabbitmq-server_3.6.15-1_all.deb
+    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.10.5/rabbitmq-server_3.10.5-1_all.deb
     source-type: deb
     stage-packages:
       - erlang
     override-build: |
       snapcraftctl build
       # rabbitmq-server
-      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
+      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.10.5/sbin/rabbitmq-server
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
   server:
     plugin: dump
     source:
-      - on amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-7.1.1_x86_64.tar.gz
-      - on arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-7.1.1_aarch64.tar.gz
+      - on amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-7.2.0_x86_64.tar.gz
+      - on arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-7.2.0_aarch64.tar.gz
     stage-packages:
       - libxml2
       - fonts-dejavu
@@ -95,6 +98,9 @@ parts:
       - locales-all
       - locales
       - libc6
+      - python
+      - python3
+      - python-setuptools
     override-build: |
       snapcraftctl build
       # msttcorefonts
@@ -166,19 +172,19 @@ parts:
 
   nginx:
     plugin: dump
-    source: https://github.com/seanlano/nginx.git
+    source: https://github.com/nginx/nginx.git
     source-type: git
-    source-tag: release-1.13.6_snap-fix
+    source-tag: release-1.23.0
     stage-packages:
       - supervisor
     override-build: |
       snapcraftctl build
       wget https://www.zlib.net/fossils/zlib-1.2.11.tar.gz
-      wget https://www.openssl.org/source/openssl-1.0.2t.tar.gz
+      wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz
       mkdir zlib
       mkdir openssl
       tar xvf zlib-1.2.11.tar.gz --strip-components 1 -C zlib/
-      tar xvf openssl-1.0.2t.tar.gz --strip-components 1 -C openssl/
+      tar xvf openssl-1.1.1p.tar.gz --strip-components 1 -C openssl/
       wget https://osdn.net/projects/sfnet_pcre/downloads/pcre/8.41/pcre-8.41.tar.gz -O pcre.tar.gz
       mkdir pcre
       tar xvf pcre.tar.gz --strip-components 1 -C pcre/
@@ -231,7 +237,7 @@ parts:
   mysql:
     plugin: cmake
     source: https://github.com/mysql/mysql-server.git
-    source-tag: mysql-5.7.27
+    source-tag: mysql-5.7.39
     source-depth: 1
     override-pull: |
       snapcraftctl pull
