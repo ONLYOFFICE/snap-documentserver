@@ -53,4 +53,4 @@ fi
 
 export LC_ALL=C.UTF-8
 
-$SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
+$SNAP/usr/bin/python2 $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
