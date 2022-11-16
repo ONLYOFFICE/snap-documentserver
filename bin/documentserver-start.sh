@@ -63,8 +63,7 @@ if [ "${FONTS_HASH_NEW}" != "${FONTS_HASH_OLD}" ]; then
 fi
 
 JWT_SECRET=$(snapctl get onlyoffice.jwt-secret)
-if [ "${JWT_SECRET}" == "secret" ]; then
-    #RANDOM_STRING=$($RANDOM | md5sum | head -c 10)
+if [ "${JWT_SECRET}" == "default-jwt-secret" ]; then
     RANDOM_STRING=$(od -An -N4 -i < /dev/urandom | md5sum | head -c 10)
     snapctl set onlyoffice.jwt-secret=$RANDOM_STRING
 fi
