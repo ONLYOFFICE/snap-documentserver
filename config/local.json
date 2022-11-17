@@ -59,16 +59,16 @@
 		},
 		"secret": {
 			"browser": {"string": "secret", "file": "", "tenants": {}},
-			"inbox": {"string": "secret", "file": "", "tenants": {}},
-			"outbox": {"string": "secret", "file": ""},
-			"session": {"string": "secret", "file": ""}
+			"inbox": {"string": "default-jwt-secret", "file": "", "tenants": {}},
+			"outbox": {"string": "default-jwt-secret", "file": ""},
+			"session": {"string": "default-jwt-secret", "file": ""}
 		},
 		"token": {
 			"enable": {
-				"browser": false,
+				"browser": true,
 				"request": {
-					"inbox": false,
-					"outbox": false
+					"inbox": true,
+					"outbox": true
 				}
 			},
 			"inbox": {

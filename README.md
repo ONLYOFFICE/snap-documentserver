@@ -165,8 +165,8 @@ By default, document server do not run on loopback interface. To set it, run:
 
 #### JSON Web Token
 
-- **jwt-enabled**: Specifies the enabling the JSON Web Token validation by the ONLYOFFICE Document Server. Defaults to `false`.
-- **jwt-secret**: Defines the secret key to validate the JSON Web Token in the request to the ONLYOFFICE Document Server. Defaults to `secret`.
+- **jwt-enabled**: Specifies the enabling the JSON Web Token validation by the ONLYOFFICE Document Server. Defaults to `true`.
+- **jwt-secret**: Defines the secret key to validate the JSON Web Token in the request to the ONLYOFFICE Document Server. Random string by default.
 - **jwt-header**: Defines the http header that will be used to send the JSON Web Token. Defaults to `Authorization`.
 
 If you'd like to change the JSON Web Token parameters, run:

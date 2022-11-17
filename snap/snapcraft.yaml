@@ -325,6 +325,8 @@ parts:
       cp common/documentserver-example/welcome/linux.html $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e 's/{{OFFICIAL_PRODUCT_NAME}}/Community Edition/' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e 's/sudo supervisorctl start ds:example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/The secret.*parameter./The secret is available by <em>sudo snap get onlyoffice-ds onlyoffice.jwt-secret<\/em> command./' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/read the .*<\/a>/just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key<\/em> command./' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e '/<h3>Add it to the autostart/d' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e '/<pre>sudo sed/d' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       #nginx configs

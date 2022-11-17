@@ -62,4 +62,10 @@ if [ "${FONTS_HASH_NEW}" != "${FONTS_HASH_OLD}" ]; then
     $SNAP/usr/sbin/generate-all-fonts.sh
 fi
 
+JWT_SECRET=$(snapctl get onlyoffice.jwt-secret)
+if [ "${JWT_SECRET}" == "default-jwt-secret" ]; then
+    RANDOM_STRING=$(od -An -N4 -i < /dev/urandom | md5sum | head -c 10)
+    snapctl set onlyoffice.jwt-secret=$RANDOM_STRING
+fi
+
 $SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
