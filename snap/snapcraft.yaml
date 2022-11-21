@@ -15,6 +15,8 @@ layout:
     bind-file: $SNAP_DATA/etc/my.cnf
   /etc/my.cnf.d:
     bind: $SNAP_DATA/etc/my.cnf.d
+  /usr/bin/python:
+    bind-file: $SNAP/usr/bin/python2.7
 
 environment:
   HOME: $SNAP_DATA
@@ -176,13 +178,27 @@ parts:
       craftctl default
       rm -f $CRAFT_PART_INSTALL/README.md
 
+  supervisor:
+    plugin: dump
+    source: http://archive.ubuntu.com/ubuntu/pool/universe/s/supervisor/supervisor_3.3.1-1.1_all.deb
+    source-type: deb
+    stage-packages:
+      - python2
+    override-build: |
+      craftctl default
+      sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i '3,5d' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
+
   nginx:
     plugin: dump
     source: https://github.com/nginx/nginx.git
     source-type: git
     source-tag: release-1.23.1
     stage-packages:
-      - supervisor
       - python-setuptools
       - python3-setuptools
     override-build: |
@@ -209,15 +225,6 @@ parts:
       mkdir -p $CRAFT_PART_INSTALL/etc/nginx/conf.d
       rm -f etc/nginx/modules
       rm $CRAFT_PART_INSTALL/etc/nginx/nginx.conf
-      #test
-      #?
-      #
-      sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i '3,5d' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
     build-packages:
       - libc6
       - libgd3
