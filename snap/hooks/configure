@@ -184,6 +184,8 @@ update_jwt_enabled_settings()
 	sed -i "/browser/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/inbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/outbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+
+	sed -i "/enable/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $SNAP_DATA/etc/onlyoffice/documentserver-example/local.json
 }
 
 
@@ -203,6 +205,9 @@ token_onlyoffice_jwt_secret()
 	sed -i "/inbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/outbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 	sed -i "/session/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+
+	sed -i "/secret/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver-example/local.json
+
 	snapctl restart onlyoffice-ds.documentserver
 }
 

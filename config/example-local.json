@@ -1,0 +1,9 @@
+{
+  "server": {
+    "token": {
+      "enable": true,
+      "secret": "default-jwt-secret",
+      "authorizationHeader": "Authorization"
+    }
+  }
+}
