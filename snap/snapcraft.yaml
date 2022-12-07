@@ -367,6 +367,7 @@ parts:
     organize:
       nginx.conf: etc/nginx/nginx.conf
       local.json: etc/onlyoffice/documentserver/local.json
+      example-local.json: etc/onlyoffice/documentserver-example/local.json
       ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
       ds-example.conf: etc/supervisor/conf.d/ds-example.conf
