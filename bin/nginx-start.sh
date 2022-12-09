@@ -12,6 +12,20 @@ SSL_DHPARAM_PATH="$SSL_CERTIFICATES_DIR/dhparam.pem"
 SSL_CERTIFICATE_PATH="$SSL_CERTIFICATES_DIR/onlyoffice.crt"
 SSL_KEY_PATH="$SSL_CERTIFICATES_DIR/onlyoffice.key"
 
+#check loopback
+LOOPBACK_ENABLED=$(snapctl get onlyoffice.loopback)
+if [ "${LOOPBACK_ENABLED}" == "true" ]; then
+    sed -i -r 's/ #(allow)/ \1/' \
+        $NGINX_ONLYOFFICE_PATH/ds.conf.tmpl $NGINX_ONLYOFFICE_PATH/ds-ssl.conf.tmpl
+    sed -i -r 's/ #(deny)/ \1/' \
+        $NGINX_ONLYOFFICE_PATH/ds.conf.tmpl $NGINX_ONLYOFFICE_PATH/ds-ssl.conf.tmpl
+else
+    sed -i -r 's/ (allow)/ #\1/' \
+        $NGINX_ONLYOFFICE_PATH/ds.conf.tmpl $NGINX_ONLYOFFICE_PATH/ds-ssl.conf.tmpl
+    sed -i -r 's/ (deny)/ #\1/' \
+        $NGINX_ONLYOFFICE_PATH/ds.conf.tmpl $NGINX_ONLYOFFICE_PATH/ds-ssl.conf.tmpl
+fi
+
 mkdir -p $SNAP_DATA/var/log/nginx/
 mkdir -p $SNAP_DATA/var/cache/nginx/client_temp
 mkdir -p $SNAP_DATA/var/log/onlyoffice/documentserver
