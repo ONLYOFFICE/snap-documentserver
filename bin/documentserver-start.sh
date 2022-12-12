@@ -52,6 +52,8 @@ JWT_SECRET=$(snapctl get onlyoffice.jwt-secret)
 if [ "${JWT_SECRET}" == "default-jwt-secret" ]; then
     RANDOM_STRING=$(od -An -N4 -i < /dev/urandom | md5sum | head -c 10)
     snapctl set onlyoffice.jwt-secret=$RANDOM_STRING
+
+    echo "JWT is enabled by default. A random secret is generated automatically. Run the command \"sudo snap get onlyoffice-ds onlyoffice.jwt-secret\" to get information about JWT."
 fi
 
 $SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
