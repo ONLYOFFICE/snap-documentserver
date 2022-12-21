@@ -202,7 +202,7 @@ parts:
       - python-setuptools
       - python3-setuptools
     override-build: |
-      craftctl default
+      snapcraftctl build
       wget https://www.zlib.net/fossils/zlib-1.2.11.tar.gz
       wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz
       mkdir zlib
@@ -257,7 +257,7 @@ parts:
     source-tag: mysql-5.7.27
     source-depth: 1
     override-pull: |
-      snapcraftctl build
+      snapcraftctl pull
       git apply $SNAPCRAFT_STAGE/mysql-support-compile-time-disabling-of-setpriority.patch
     after: [boost, patches]
     cmake-parameters:
@@ -273,7 +273,7 @@ parts:
       - -DWITH_BLACKHOLE_STORAGE_ENGINE=OFF
       - -DWITH_FEDERATED_STORAGE_ENGINE=OFF
       - -DWITH_PARTITION_STORAGE_ENGINE=OFF
-      - -DINSTALL_MYSQLTESTDIR=0
+      - -DINSTALL_MYSQLTESTDIR=
     stage-packages:
       - libaio1
     build-packages:
