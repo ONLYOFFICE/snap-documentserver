@@ -56,4 +56,4 @@ if [ "${JWT_SECRET}" == "default-jwt-secret" ]; then
     echo "JWT is enabled by default. A random secret is generated automatically. Run the command \"sudo snap get onlyoffice-ds onlyoffice.jwt-secret\" to get information about JWT."
 fi
 
-$SNAP/usr/bin/python $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
+$SNAP/usr/bin/python2 $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf

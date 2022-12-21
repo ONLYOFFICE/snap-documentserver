@@ -2,10 +2,10 @@ name: onlyoffice-ds
 version: "7.2.2"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
-icon: snap/icons/asc-de-256.png
+icon: icons/asc-de-256.png
 grade: stable
 confinement: strict
-base: core18
+base: core20
 architectures:
   - build-on: amd64
   - build-on: arm64
@@ -15,6 +15,11 @@ layout:
     bind-file: $SNAP_DATA/etc/my.cnf
   /etc/my.cnf.d:
     bind: $SNAP_DATA/etc/my.cnf.d
+  /usr/bin/python:
+    bind-file: $SNAP/usr/bin/python2.7
+
+environment:
+  HOME: $SNAP_DATA
 
 apps:
   documentserver:
@@ -39,7 +44,7 @@ apps:
 
   # MySQL daemon
   mysql:
-    command: start_mysql
+    command: bin/start_mysql
     stop-command: support-files/mysql.server stop
     daemon: simple
     restart-condition: always
@@ -47,11 +52,11 @@ apps:
   
   # MySQL client
   mysql-client:
-    command: run-mysql
+    command: bin/run-mysql
     plugs: [network, network-bind]
 
   mysqldump:
-    command: mysqldump --defaults-file=$SNAP_DATA/mysql/root.ini --lock-tables onlyoffice
+    command: bin/mysqldump --lock-tables onlyoffice
     plugs: [network, network-bind]
 
   generate-all-fonts:
@@ -71,15 +76,22 @@ hooks:
 parts:
   rabbitmq:
     plugin: dump
-    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_15/rabbitmq-server_3.6.15-1_all.deb
+    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.11.0/rabbitmq-server-generic-unix-3.11.0.tar.xz
     source-type: deb
     stage-packages:
       - erlang
     override-build: |
       snapcraftctl build
-      # rabbitmq-server
-      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
+      RABBITMQDIR=$SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server
+      rm -r -f $RABBITMQDIR
+      mkdir -p $RABBITMQDIR
+      cp * -r $RABBITMQDIR
+      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $RABBITMQDIR/sbin/rabbitmq-server
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
+      mkdir -p $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/bin
+      ln -s -f ../lib/rabbitmq_server/sbin/rabbitmq-server $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/bin/rabbitmq-server
+      #temp
+      rm $SNAPCRAFT_PART_INSTALL/LICENSE*
 
   server:
     plugin: dump
@@ -99,6 +111,9 @@ parts:
       - locales-all
       - locales
       - libc6
+      - python2
+      - python3
+      - python-setuptools
     override-build: |
       snapcraftctl build
       # msttcorefonts
@@ -168,21 +183,37 @@ parts:
       snapcraftctl build
       rm -f $SNAPCRAFT_PART_INSTALL/README.md
 
+  supervisor:
+    plugin: dump
+    source: http://archive.ubuntu.com/ubuntu/pool/universe/s/supervisor/supervisor_3.3.1-1.1_all.deb
+    source-type: deb
+    stage-packages:
+      - python2
+    override-build: |
+      snapcraftctl build
+      sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i '3,5d' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
+
   nginx:
     plugin: dump
-    source: https://github.com/seanlano/nginx.git
+    source: https://github.com/nginx/nginx.git
     source-type: git
-    source-tag: release-1.13.6_snap-fix
+    source-tag: release-1.23.1
     stage-packages:
-      - supervisor
+      - python-setuptools
+      - python3-setuptools
     override-build: |
       snapcraftctl build
       wget https://www.zlib.net/fossils/zlib-1.2.11.tar.gz
-      wget https://www.openssl.org/source/openssl-1.0.2t.tar.gz
+      wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz
       mkdir zlib
       mkdir openssl
       tar xvf zlib-1.2.11.tar.gz --strip-components 1 -C zlib/
-      tar xvf openssl-1.0.2t.tar.gz --strip-components 1 -C openssl/
+      tar xvf openssl-1.1.1p.tar.gz --strip-components 1 -C openssl/
       wget https://osdn.net/projects/sfnet_pcre/downloads/pcre/8.41/pcre-8.41.tar.gz -O pcre.tar.gz
       mkdir pcre
       tar xvf pcre.tar.gz --strip-components 1 -C pcre/
@@ -199,17 +230,11 @@ parts:
       mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
       rm -f etc/nginx/modules
       rm $SNAPCRAFT_PART_INSTALL/etc/nginx/nginx.conf
-      sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i '3,5d' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
     build-packages:
       - libc6
       - libgd3
       - libgeoip1
-      - libssl1.0.0
+      - libssl1.1
       - libxml2
       - libxslt1.1
       - build-essential
@@ -219,7 +244,6 @@ parts:
       - libtool
       - libpcre3-dev
       - libpcre++-dev
-      - zlibc 
       - zlib1g
       - zlib1g-dev
       - wget
@@ -241,7 +265,7 @@ parts:
       snapcraftctl pull
       git apply $SNAPCRAFT_STAGE/mysql-support-compile-time-disabling-of-setpriority.patch
     after: [boost, patches]
-    configflags:
+    cmake-parameters:
       - -WITH_LIBWRAP=ON
       - -DMYSQL_TCP_PORT=3306
       - -DWITH_BOOST=$SNAPCRAFT_STAGE
