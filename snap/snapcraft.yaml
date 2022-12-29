@@ -17,6 +17,10 @@ layout:
     bind: $SNAP_DATA/etc/my.cnf.d
   /usr/bin/python:
     bind-file: $SNAP/usr/bin/python2.7
+  /var/lib/rabbitmq/mnesia:
+    bind: $SNAP_DATA/var/lib/rabbitmq/mnesia
+  /var/log/rabbitmq:
+    bind: $SNAP_DATA/var/log/rabbitmq
 
 environment:
   HOME: $SNAP_DATA
@@ -72,21 +76,15 @@ hooks:
 parts:
   rabbitmq:
     plugin: dump
-    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.11.0/rabbitmq-server-generic-unix-3.11.0.tar.xz
+    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.9.13/rabbitmq-server_3.9.13-1_all.deb
+    source-type: deb
     stage-packages:
       - erlang
     override-build: |
-      craftctl default
-      RABBITMQDIR=$CRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server
-      rm -r -f $RABBITMQDIR
-      mkdir -p $RABBITMQDIR
-      cp * -r $RABBITMQDIR
-      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $RABBITMQDIR/sbin/rabbitmq-server
-      sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $CRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
-      mkdir -p $CRAFT_PART_INSTALL/usr/lib/rabbitmq/bin
-      ln -s -f ../lib/rabbitmq_server/sbin/rabbitmq-server $CRAFT_PART_INSTALL/usr/lib/rabbitmq/bin/rabbitmq-server
-      #temp
-      rm $CRAFT_PART_INSTALL/LICENSE*
+      snapcraftctl build
+      # rabbitmq-server
+      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.9.13/sbin/rabbitmq-server
+      sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
   server:
     plugin: dump
