@@ -1,5 +1,7 @@
 #!/bin/bash
 
+export LD_LIBRARY_PATH=$SNAP/var/www/onlyoffice/documentserver/server/FileConverter/bin:$LD_LIBRARY_PATH
+
 TOOLDIR="$SNAP/var/www/onlyoffice/documentserver/server/tools"
 INDIR="$SNAP/var/www/onlyoffice/documentserver"
 OUTDIR="$SNAP_DATA/var/www/onlyoffice/documentserver"
