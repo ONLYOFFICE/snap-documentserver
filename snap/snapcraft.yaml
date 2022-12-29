@@ -2,10 +2,10 @@ name: onlyoffice-ds
 version: "7.2.2"
 summary: "An online office suite that allowing to create, view and edit documents."
 description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
-icon: snap/icons/asc-de-256.png
+icon: icons/asc-de-256.png
 grade: stable
 confinement: strict
-base: core18
+base: core22
 architectures:
   - build-on: amd64
   - build-on: arm64
@@ -15,6 +15,15 @@ layout:
     bind-file: $SNAP_DATA/etc/my.cnf
   /etc/my.cnf.d:
     bind: $SNAP_DATA/etc/my.cnf.d
+  /usr/bin/python:
+    bind-file: $SNAP/usr/bin/python2.7
+  /var/lib/rabbitmq/mnesia:
+    bind: $SNAP_DATA/var/lib/rabbitmq/mnesia
+  /var/log/rabbitmq:
+    bind: $SNAP_DATA/var/log/rabbitmq
+
+environment:
+  HOME: $SNAP_DATA
 
 apps:
   documentserver:
@@ -39,7 +48,7 @@ apps:
 
   # MySQL daemon
   mysql:
-    command: start_mysql
+    command: bin/start_mysql
     stop-command: support-files/mysql.server stop
     daemon: simple
     restart-condition: always
@@ -47,11 +56,11 @@ apps:
   
   # MySQL client
   mysql-client:
-    command: run-mysql
+    command: bin/run-mysql
     plugs: [network, network-bind]
 
   mysqldump:
-    command: mysqldump --defaults-file=$SNAP_DATA/mysql/root.ini --lock-tables onlyoffice
+    command: bin/mysqldump --lock-tables onlyoffice
     plugs: [network, network-bind]
 
   generate-all-fonts:
@@ -71,14 +80,14 @@ hooks:
 parts:
   rabbitmq:
     plugin: dump
-    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/rabbitmq_v3_6_15/rabbitmq-server_3.6.15-1_all.deb
+    source: https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.9.13/rabbitmq-server_3.9.13-1_all.deb
     source-type: deb
     stage-packages:
       - erlang
     override-build: |
-      snapcraftctl build
+      craftctl default
       # rabbitmq-server
-      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.6.15/sbin/rabbitmq-server
+      sed -i -e 's/rabbitmq-env/rabbitmq-env-start.sh/g' $SNAPCRAFT_PART_INSTALL/usr/lib/rabbitmq/lib/rabbitmq_server-3.9.13/sbin/rabbitmq-server
       sed -i -e 's/ROOTDIR=/ROOTDIR=$SNAP/g' $SNAPCRAFT_PART_INSTALL/usr/lib/erlang/bin/erl
 
   server:
@@ -99,8 +108,11 @@ parts:
       - locales-all
       - locales
       - libc6
+      - python2
+      - python3
+      - python-setuptools
     override-build: |
-      snapcraftctl build
+      craftctl default
       # msttcorefonts
       echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections
       apt-get -yq install ttf-mscorefonts-installer
@@ -109,10 +121,10 @@ parts:
         sed -i -e 's|http://downloads.sourceforge.net/corefonts/|https://netcologne.dl.sourceforge.net/project/corefonts/the%20fonts/final/|g' /usr/share/package-data-downloads/ttf-mscorefonts-installer
         /usr/lib/update-notifier/package-data-downloader
       fi
-      cp -r /usr/share/fonts/truetype/msttcorefonts $SNAPCRAFT_PART_INSTALL/usr/share/fonts/truetype
-      DIR="$SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
+      cp -r /usr/share/fonts/truetype/msttcorefonts $CRAFT_PART_INSTALL/usr/share/fonts/truetype
+      DIR="$CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver"
       rm -r $DIR/server/welcome
-      DIR_ETC="$SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver"
+      DIR_ETC="$CRAFT_PART_INSTALL/etc/onlyoffice/documentserver"
       mkdir -p $DIR_ETC
       mv $DIR/server/Common/config/* $DIR_ETC
       #example
@@ -157,7 +169,7 @@ parts:
       #package version
       BUILD_VERSION=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildVersion" | grep -o "[0-9.]*"`
       BUILD_NUMBER=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildNumber" | grep -o "[0-9]*"`
-      echo $BUILD_VERSION-$BUILD_NUMBER > $SNAPCRAFT_STAGE/version
+      echo $BUILD_VERSION-$BUILD_NUMBER > $CRAFT_STAGE/version
 
   node:
     plugin: dump
@@ -165,24 +177,40 @@ parts:
       - on amd64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz
       - on arm64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-arm64.tar.gz
     override-build: |
-      snapcraftctl build
-      rm -f $SNAPCRAFT_PART_INSTALL/README.md
+      craftctl default
+      rm -f $CRAFT_PART_INSTALL/README.md
+
+  supervisor:
+    plugin: dump
+    source: http://archive.ubuntu.com/ubuntu/pool/universe/s/supervisor/supervisor_3.3.1-1.1_all.deb
+    source-type: deb
+    stage-packages:
+      - python2
+    override-build: |
+      craftctl default
+      sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i '3,5d' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
+      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
+      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
 
   nginx:
     plugin: dump
-    source: https://github.com/seanlano/nginx.git
+    source: https://github.com/nginx/nginx.git
     source-type: git
-    source-tag: release-1.13.6_snap-fix
+    source-tag: release-1.23.1
     stage-packages:
-      - supervisor
+      - python-setuptools
+      - python3-setuptools
     override-build: |
-      snapcraftctl build
+      craftctl default
       wget https://www.zlib.net/fossils/zlib-1.2.11.tar.gz
-      wget https://www.openssl.org/source/openssl-1.0.2t.tar.gz
+      wget https://www.openssl.org/source/openssl-1.1.1p.tar.gz
       mkdir zlib
       mkdir openssl
       tar xvf zlib-1.2.11.tar.gz --strip-components 1 -C zlib/
-      tar xvf openssl-1.0.2t.tar.gz --strip-components 1 -C openssl/
+      tar xvf openssl-1.1.1p.tar.gz --strip-components 1 -C openssl/
       wget https://osdn.net/projects/sfnet_pcre/downloads/pcre/8.41/pcre-8.41.tar.gz -O pcre.tar.gz
       mkdir pcre
       tar xvf pcre.tar.gz --strip-components 1 -C pcre/
@@ -192,24 +220,18 @@ parts:
       --http-fastcgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/fastcgi_temp --http-uwsgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/uwsgi_temp --http-scgi-temp-path=/var/snap/onlyoffice-ds/current/var/cache/nginx/scgi_temp \
       --with-http_secure_link_module --with-http_ssl_module --with-mail_ssl_module --with-openssl=openssl --with-http_v2_module
       make
-      mkdir -p $SNAPCRAFT_PART_INSTALL/bin
-      cp objs/nginx $SNAPCRAFT_PART_INSTALL/bin/nginx
-      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx
-      cp conf/* $SNAPCRAFT_PART_INSTALL/etc/nginx
-      mkdir -p $SNAPCRAFT_PART_INSTALL/etc/nginx/conf.d
+      mkdir -p $CRAFT_PART_INSTALL/bin
+      cp objs/nginx $CRAFT_PART_INSTALL/bin/nginx
+      mkdir -p $CRAFT_PART_INSTALL/etc/nginx
+      cp conf/* $CRAFT_PART_INSTALL/etc/nginx
+      mkdir -p $CRAFT_PART_INSTALL/etc/nginx/conf.d
       rm -f etc/nginx/modules
-      rm $SNAPCRAFT_PART_INSTALL/etc/nginx/nginx.conf
-      sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i '3,5d' $SNAPCRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $SNAPCRAFT_PART_INSTALL/etc/init.d/supervisor
+      rm $CRAFT_PART_INSTALL/etc/nginx/nginx.conf
     build-packages:
       - libc6
       - libgd3
       - libgeoip1
-      - libssl1.0.0
+      - libssl3
       - libxml2
       - libxslt1.1
       - build-essential
@@ -219,7 +241,6 @@ parts:
       - libtool
       - libpcre3-dev
       - libpcre++-dev
-      - zlibc 
       - zlib1g
       - zlib1g-dev
       - wget
@@ -238,13 +259,12 @@ parts:
     source-tag: mysql-5.7.27
     source-depth: 1
     override-pull: |
-      snapcraftctl pull
-      git apply $SNAPCRAFT_STAGE/mysql-support-compile-time-disabling-of-setpriority.patch
+      craftctl default
     after: [boost, patches]
-    configflags:
+    cmake-parameters:
       - -WITH_LIBWRAP=ON
       - -DMYSQL_TCP_PORT=3306
-      - -DWITH_BOOST=$SNAPCRAFT_STAGE
+      - -DWITH_BOOST=$CRAFT_STAGE
       - -DWITH_INNODB_PAGE_CLEANER_PRIORITY=OFF
       - -DCMAKE_INSTALL_PREFIX=/
       - -DBUILD_CONFIG=mysql_release
@@ -317,20 +337,20 @@ parts:
     source: https://github.com/ONLYOFFICE/document-server-package.git
     source-type: git
     override-build: |
-      snapcraftctl build
-      PACKAGE_VERSION=`cat $SNAPCRAFT_STAGE/version`
+      craftctl default
+      PACKAGE_VERSION=`cat $CRAFT_STAGE/version`
       #welcome page
-      mkdir -p $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
-      cp -r common/documentserver-example/welcome/css $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
-      cp common/documentserver-example/welcome/linux.html $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/{{OFFICIAL_PRODUCT_NAME}}/Community Edition/' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/sudo supervisorctl start ds:example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/The secret.*parameter./The secret is available by <em>sudo snap get onlyoffice-ds onlyoffice.jwt-secret<\/em> command./' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/read the .*<\/a>/just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key<\/em> command./' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e '/<h3>Add it to the autostart/d' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e '/<pre>sudo sed/d' $SNAPCRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      mkdir -p $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
+      cp -r common/documentserver-example/welcome/css $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
+      cp common/documentserver-example/welcome/linux.html $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/{{OFFICIAL_PRODUCT_NAME}}/Community Edition/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/sudo supervisorctl start ds:example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/The secret.*parameter./The secret is available by <em>sudo snap get onlyoffice-ds onlyoffice.jwt-secret<\/em> command./' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/read the .*<\/a>/just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key<\/em> command./' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e '/<h3>Add it to the autostart/d' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e '/<pre>sudo sed/d' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       #nginx configs
-      NGINX_DIR=$SNAPCRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx
+      NGINX_DIR=$CRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx
       mkdir -p $NGINX_DIR/includes
       ##ds.conf.tmpl
       cp common/documentserver/nginx/ds.conf.tmpl.m4 $NGINX_DIR/ds.conf.tmpl
