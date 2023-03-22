@@ -344,11 +344,12 @@ parts:
       cp -r common/documentserver-example/welcome/css $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
       cp common/documentserver-example/welcome/linux.html $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e 's/{{OFFICIAL_PRODUCT_NAME}}/Community Edition/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/sudo supervisorctl start ds:example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/{{year}}/2023/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e 's/sudo systemctl start ds-example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e 's/The secret.*parameter./The secret is available by <em>sudo snap get onlyoffice-ds onlyoffice.jwt-secret<\/em> command./' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e 's/read the .*<\/a>/just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key<\/em> command./' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       sed -i -e '/<h3>Add it to the autostart/d' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e '/<pre>sudo sed/d' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      sed -i -e '/<pre>sudo systemctl enable/d' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
       #nginx configs
       NGINX_DIR=$CRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx
       mkdir -p $NGINX_DIR/includes
