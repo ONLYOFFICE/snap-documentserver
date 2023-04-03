@@ -17,10 +17,6 @@ layout:
     bind: $SNAP_DATA/etc/my.cnf.d
   /usr/bin/python:
     bind-file: $SNAP/usr/bin/python2.7
-  /var/lib/rabbitmq/mnesia:
-    bind: $SNAP_DATA/var/lib/rabbitmq/mnesia
-  /var/log/rabbitmq:
-    bind: $SNAP_DATA/var/log/rabbitmq
 
 environment:
   HOME: $SNAP_DATA
