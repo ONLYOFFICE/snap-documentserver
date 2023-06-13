@@ -2,7 +2,7 @@
 
 tmp_mode="$(ls -ld /tmp | grep drwxrwxrwt | wc -l)"
 if [ "$tmp_mode" = "0" ]; then
-	chmod 777 /tmp
+    chmod 777 /tmp
     chmod o+t /tmp
     rm -r /tmp
 fi
