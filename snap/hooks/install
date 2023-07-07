@@ -4,3 +4,5 @@ cp  -R $SNAP/etc $SNAP_DATA/
 mkdir -p $SNAP_DATA/var/www/onlyoffice/Data/certs
 
 $SNAP/usr/sbin/generate-all-fonts.sh
+
+$SNAP/usr/sbin/load-plugins.sh
