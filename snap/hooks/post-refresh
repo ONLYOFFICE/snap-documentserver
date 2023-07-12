@@ -35,4 +35,4 @@ sed -i "/sdkjs-plugins/s/\"\/snap/\"\/var\/snap/g" $SNAP_DATA/etc/onlyoffice/doc
 
 $SNAP/usr/sbin/generate-all-fonts.sh
 
-$SNAP/usr/sbin/load-plugins.sh
+$SNAP/usr/sbin/documentserver-pluginsmanager.sh

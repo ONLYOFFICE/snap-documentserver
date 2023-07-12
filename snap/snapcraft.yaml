@@ -69,8 +69,8 @@ apps:
     command: usr/sbin/generate-all-fonts.sh
     plugs: [desktop, unity7]
 
-  load-plugins:
-    command: usr/sbin/load-plugins.sh
+  pluginsmanager:
+    command: usr/sbin/documentserver-pluginsmanager.sh
     plugs: [network, network-bind, removable-media, desktop, unity7]
 
 hooks:
@@ -395,18 +395,18 @@ parts:
       cp common/documentserver-example/nginx/includes/ds-example.conf.m4 $NGINX_DIR/includes/ds-example.conf
       sed -i -e 's/M4_PLATFORM/index/' $NGINX_DIR/includes/ds-example.conf
       sed -i -e 's/M4_DS_EXAMLE/\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver\/server/' $NGINX_DIR/includes/ds-example.conf
-      #load-plugins.sh
+      #documentserver-pluginsmanager.sh
       mkdir -p $CRAFT_PART_INSTALL/usr/sbin
-      cp common/documentserver/bin/documentserver-pluginsmanager.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      chmod +x $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e "s/M4_DS_PREFIX/onlyoffice\/documentserver/" $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e "s/PLUGIN_MANAGER=\"/PLUGIN_MANAGER=\"\$SNAP/" $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e "s/PLUGIN_DIR=\"/PLUGIN_DIR=\"\$SNAP_DATA/" $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e "s/\$RESTART_CONDITION/false/" $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e "s/sdkjs-plugins\/\"/sdkjs-plugins\/\"\n\nif \[ ! -d \${PLUGIN_DIR} \]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP\/var\/www\/onlyoffice\/documentserver\/sdkjs-plugins \${PLUGIN_DIR}\/..\nfi/" $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e "s/done/done\n\nexport LD_LIBRARY_PATH=\$SNAP\/var\/www\/onlyoffice\/documentserver\/server\/FileConverter\/bin:\$LD_LIBRARY_PATH/" $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
-      sed -i -e "s/\"\${args\[@\]}\"/--update=\"\${PLUGIN_DIR}\/plugin-list-default.json\"/" $CRAFT_PART_INSTALL/usr/sbin/load-plugins.sh
+      cp common/documentserver/bin/documentserver-pluginsmanager.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/M4_DS_PREFIX/onlyoffice\/documentserver/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/PLUGIN_MANAGER=\"/PLUGIN_MANAGER=\"\$SNAP/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/PLUGIN_DIR=\"/PLUGIN_DIR=\"\$SNAP_DATA/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/\$RESTART_CONDITION/false/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/sdkjs-plugins\/\"/sdkjs-plugins\/\"\n\nif \[ ! -d \${PLUGIN_DIR} \]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP\/var\/www\/onlyoffice\/documentserver\/sdkjs-plugins \${PLUGIN_DIR}\/..\nfi/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/done/done\n\nexport LD_LIBRARY_PATH=\$SNAP\/var\/www\/onlyoffice\/documentserver\/server\/FileConverter\/bin:\$LD_LIBRARY_PATH/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/\"\${args\[@\]}\"/--update=\"\${PLUGIN_DIR}\/plugin-list-default.json\"/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
 
   starter:
     plugin: dump
