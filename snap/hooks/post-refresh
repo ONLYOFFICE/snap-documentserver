@@ -30,5 +30,9 @@ else
   JWT_ENABLED=$(snapctl get onlyoffice.jwt-enabled)
   sed -i "/enable/s/true/$JWT_ENABLED/g" $SNAP_DATA/etc/onlyoffice/documentserver-example/local.json
 fi
+#fix sdkjs-plugins path if needed
+sed -i "/sdkjs-plugins/s/\"\/snap/\"\/var\/snap/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 
 $SNAP/usr/sbin/generate-all-fonts.sh
+
+$SNAP/usr/sbin/documentserver-pluginsmanager.sh

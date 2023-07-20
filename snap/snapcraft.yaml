@@ -17,6 +17,12 @@ layout:
     bind: $SNAP_DATA/etc/my.cnf.d
   /usr/bin/python:
     bind-file: $SNAP/usr/bin/python2.7
+  /usr/bin/wget:
+    bind-file: $SNAP/usr/bin/wget
+  /usr/lib/x86_64-linux-gnu/libpsl.so.5:
+    bind-file: $SNAP/usr/lib/x86_64-linux-gnu/libpsl.so.5.3.2
+  /etc/wgetrc:
+    bind-file: $SNAP/etc/wgetrc
 
 environment:
   HOME: $SNAP_DATA
@@ -63,15 +69,19 @@ apps:
     command: usr/sbin/generate-all-fonts.sh
     plugs: [desktop, unity7]
 
+  pluginsmanager:
+    command: usr/sbin/documentserver-pluginsmanager.sh
+    plugs: [network, network-bind, removable-media, desktop, unity7]
+
 hooks:
   configure:
     plugs: [network, network-bind, account-control, gpg-keys, accounts-service, system-observe] #system-files, 
 
   install:
-    plugs: [desktop, unity7]
+    plugs: [network, network-bind, removable-media, desktop, unity7]
 
   post-refresh:
-    plugs: [desktop, unity7]
+    plugs: [network, network-bind, removable-media, desktop, unity7]
 
 parts:
   rabbitmq:
@@ -107,6 +117,7 @@ parts:
       - python2
       - python3
       - python-setuptools
+      - wget
     override-build: |
       craftctl default
       # msttcorefonts
@@ -367,6 +378,13 @@ parts:
       sed -i -e 's/M4_NGINX_LOG/\/var\/snap\/onlyoffice-ds\/current\/var\/log\/nginx/' $NGINX_DIR/includes/ds-common.conf
       ##ds-docservice.conf
       cp common/documentserver/nginx/includes/ds-docservice.conf.m4 $NGINX_DIR/includes/ds-docservice.conf
+      if [ $(grep -n "M4_DS_ROOT" $NGINX_DIR/includes/ds-docservice.conf | grep 27 | wc -l) -ne 1 ]; then
+        echo "Incorrect ds-docservice.conf file"
+        exit 1
+      fi
+      sed -i -e '27 s/M4_DS_ROOT/\/var\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver/' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's/#welcome page/location ~ ^(\/[\\d]+\\.[\\d]+\\.[\\d]+[\\.|-][\\d]+)?\/(sdkjs-plugins)(\/.*)$ {\n  expires 365d;\n  alias \/var\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver\/$2$3;\n}\n\n#welcome page/' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's/|sdkjs-plugins//' $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's/M4_DS_ROOT/\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver/' $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e "s/M4_PACKAGE_VERSION/$PACKAGE_VERSION/" $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's/M4_DEV_NULL/\/dev\/null/' $NGINX_DIR/includes/ds-docservice.conf
@@ -377,6 +395,18 @@ parts:
       cp common/documentserver-example/nginx/includes/ds-example.conf.m4 $NGINX_DIR/includes/ds-example.conf
       sed -i -e 's/M4_PLATFORM/index/' $NGINX_DIR/includes/ds-example.conf
       sed -i -e 's/M4_DS_EXAMLE/\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver\/server/' $NGINX_DIR/includes/ds-example.conf
+      #documentserver-pluginsmanager.sh
+      mkdir -p $CRAFT_PART_INSTALL/usr/sbin
+      cp common/documentserver/bin/documentserver-pluginsmanager.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/M4_DS_PREFIX/onlyoffice\/documentserver/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/PLUGIN_MANAGER=\"/PLUGIN_MANAGER=\"\$SNAP/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/PLUGIN_DIR=\"/PLUGIN_DIR=\"\$SNAP_DATA/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/\$RESTART_CONDITION/false/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/sdkjs-plugins\/\"/sdkjs-plugins\/\"\n\nif \[ ! -d \${PLUGIN_DIR} \]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP\/var\/www\/onlyoffice\/documentserver\/sdkjs-plugins \${PLUGIN_DIR}\/..\nfi/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/done/done\n\nexport LD_LIBRARY_PATH=\$SNAP\/var\/www\/onlyoffice\/documentserver\/server\/FileConverter\/bin:\$LD_LIBRARY_PATH/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s/\"\${args\[@\]}\"/--update=\"\${PLUGIN_DIR}\/plugin-list-default.json\"/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
 
   starter:
     plugin: dump

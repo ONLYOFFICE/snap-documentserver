@@ -36,7 +36,7 @@
 			  "options": {"maxAge": "7d"}
 			},
 			"/sdkjs-plugins": {
-			  "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/sdkjs-plugins",
+			  "path": "/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/sdkjs-plugins",
 			  "options": {"maxAge": "7d"}
 			},
 			"/dictionaries": {
