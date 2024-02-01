@@ -177,6 +177,7 @@ parts:
       BUILD_VERSION=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildVersion" | grep -o "[0-9.]*"`
       BUILD_NUMBER=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildNumber" | grep -o "[0-9]*"`
       echo $BUILD_VERSION-$BUILD_NUMBER > $CRAFT_STAGE/version
+      cp -r $DIR/server/Common/node_modules/ms $DIR/server/FileConverter/node_modules/
 
   node:
     plugin: dump
