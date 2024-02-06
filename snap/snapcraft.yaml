@@ -26,6 +26,7 @@ layout:
 
 environment:
   HOME: $SNAP_DATA
+  OPENSSL_CONF: /dev/null
 
 apps:
   documentserver:
