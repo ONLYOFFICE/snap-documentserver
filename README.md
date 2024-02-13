@@ -1,4 +1,5 @@
-[![License](https://img.shields.io/badge/License-GNU%20AGPL%20V3-green.svg?style=flat)](https://www.gnu.org/licenses/agpl-3.0.en.html) [![Snap Status](https://build.snapcraft.io/badge/ONLYOFFICE/snap-documentserver.svg)](https://build.snapcraft.io/user/ONLYOFFICE/snap-documentserver)
+[![License](https://img.shields.io/badge/License-GNU%20AGPL%20V3-green.svg?style=flat)](https://www.gnu.org/licenses/agpl-3.0.en.html)
+[![ONLYOFFICE Docs](https://snapcraft.io/onlyoffice-ds/badge.svg)](https://snapcraft.io/onlyoffice-ds)
 
 ## Overview
 
