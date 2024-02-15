@@ -176,6 +176,14 @@ If you'd like to change the JSON Web Token parameters, run:
 # snap set onlyoffice-ds onlyoffice.key=value
 ```
 
+#### Allow document server to use WOPI protocol
+
+By default, document server is prevented from using a WOPI protocol. To allow it, run:
+
+```
+# snap set onlyoffice-ds onlyoffice.wopi=true
+```
+
 ### Enabling the Example
 
 By default, example is not enabled. You can enable the example, using the command:

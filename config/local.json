@@ -8,6 +8,7 @@
 	  }
 	},
 	"wopi": {
+	  "enable": false,
 	  "htmlTemplate" : "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/web-apps/apps/api/wopi"
 	},
 	"services": {
@@ -107,4 +108,3 @@
 	  }
 	}
 }
-    
