@@ -184,6 +184,8 @@ parts:
       BUILD_NUMBER=`cat var/www/onlyoffice/documentserver/server/Common/sources/commondefines.js | grep "const buildNumber" | grep -o "[0-9]*"`
       echo $BUILD_VERSION-$BUILD_NUMBER > $CRAFT_STAGE/version
       cp -r $DIR/server/Common/node_modules/ms $DIR/server/FileConverter/node_modules/
+      #fix wopi enable page
+      sed -i -e '/wopi.enable/c <br />Set the <b>onlyoffice.wopi</b> parameter in the Document Server snap configuration to <b>true</b>.' $DIR-example/nodejs/views/wopiIndex.ejs
 
   node:
     plugin: dump

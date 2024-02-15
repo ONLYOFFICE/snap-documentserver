@@ -34,6 +34,13 @@ else
     sed -i -e 's/"rejectUnauthorized": false/"rejectUnauthorized": true/' $DS_CONF_DIR/local.json
 fi
 
+WOPI_ENABLED=$(snapctl get onlyoffice.wopi)
+if [ "${WOPI_ENABLED}" == "true" ]; then
+    sed -i -e 's/"enable": false/"enable": true/' $DS_CONF_DIR/local.json
+else
+    sed -i -e 's/"enable": true/"enable": false/' $DS_CONF_DIR/local.json
+fi
+
 export LC_ALL=C.UTF-8
 
 #check fonts

@@ -13,6 +13,8 @@ DEFAULT_JWT_HEADER="Authorization"
 DEFAULT_EXAMPLE_ENABLED="false"
 DEFAULT_USE_UNAUTHORIZED_STORAGE="false"
 DEFAULT_LOOPBACK="false"
+DEFAULT_WOPI="false"
+
 
 # onlyoffice.ds-port
 # onlyoffice.ds-ssl-port
@@ -418,6 +420,50 @@ set_previous_onlyoffice_loopback()
 }
 
 
+# onlyoffice.wopi
+
+token_onlyoffice_wopi()
+{
+	onlyoffice_wopi="$(onlyoffice_wopi)"
+	previous_onlyoffice_wopi="$(previous_onlyoffice_wopi)"
+
+	if [ "$onlyoffice_wopi" = "$previous_onlyoffice_wopi" ]; then
+		return 0
+	fi
+	set_onlyoffice_wopi "$onlyoffice_wopi"
+	set_previous_onlyoffice_wopi "$onlyoffice_wopi"
+
+	snapctl restart onlyoffice-ds.nginx
+	snapctl restart onlyoffice-ds.documentserver
+}
+
+set_onlyoffice_wopi()
+{
+	snapctl set onlyoffice.wopi="$1"
+}
+
+onlyoffice_wopi()
+{
+	param="$(snapctl get onlyoffice.wopi)"
+	if [ -z "$param" ]; then
+		param="$DEFAULT_WOPI"
+		set_onlyoffice_wopi $param
+		set_previous_onlyoffice_wopi $param
+	fi
+
+	echo "$param"
+}
+
+previous_onlyoffice_wopi()
+{
+	snapctl get private.onlyoffice.wopi
+}
+
+set_previous_onlyoffice_wopi()
+{
+	snapctl set private.onlyoffice.wopi="$1"
+}
+
 
 nginx_onlyoffice_http_port && \
 db_onlyoffice_db_port && \
@@ -426,4 +472,6 @@ token_onlyoffice_jwt_secret && \
 token_onlyoffice_jwt_header && \
 onlyoffice_example_enabled && \
 onlyoffice_use_unautorized_storage && \
-token_onlyoffice_loopback
+token_onlyoffice_loopback && \
+token_onlyoffice_wopi
+
