@@ -24,6 +24,10 @@ layout:
   /etc/wgetrc:
     bind-file: $SNAP/etc/wgetrc
 
+lint:
+  ignore:
+    - classic
+
 environment:
   HOME: $SNAP_DATA
   OPENSSL_CONF: /dev/null
