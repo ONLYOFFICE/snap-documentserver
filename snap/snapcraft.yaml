@@ -142,7 +142,7 @@ parts:
       mv $DIR/server/Common/config/* $DIR_ETC
       #example
       mkdir -p $DIR_ETC-example
-      sed -i -e 's/\/var\/lib\/onlyoffice/\/var\/snap\/onlyoffice-ds\/current\/var\/lib\/onlyoffice/' $DIR-example/nodejs/config/production-linux.json
+      sed -i -e 's|/var/lib/onlyoffice/|var/snap/onlyoffice-ds/current/var/lib/onlyoffice|' $DIR-example/nodejs/config/production-linux.json
       mv $DIR-example/nodejs/config/* $DIR_ETC-example
       # documentserver-generate-allfonts.sh
       OUTDIR="/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver"
@@ -204,12 +204,14 @@ parts:
       - python2
     override-build: |
       craftctl default
-      sed -i -e 's/\/var/%(ENV_SNAP_DATA)s\/var/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/\/etc/%(ENV_SNAP_DATA)s\/etc/g' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i '3,5d' $CRAFT_PART_INSTALL/etc/supervisor/supervisord.conf
-      sed -i -e 's/usr\/sbin\/nginx/snap\/onlyoffice-ds\/current\/usr\/sbin\/nginx/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/etc/snap\/onlyoffice-ds\/current\/etc/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
-      sed -i -e 's/lib/snap\/onlyoffice-ds\/current\/lib/g' $CRAFT_PART_INSTALL/etc/init.d/supervisor
+      SUPERVISOR_DIR=$CRAFT_PART_INSTALL/etc/supervisor
+      INIT_D_DIR=CRAFT_PART_INSTALL/etc/init.d
+      sed -i -e 's|/var|%(ENV_SNAP_DATA)s/var|g' $SUPERVISOR_DIR/supervisord.conf
+      sed -i -e 's|/etc|%(ENV_SNAP_DATA)s/etc|g' $SUPERVISOR_DIR/supervisord.conf
+      sed -i '3,5d' $SUPERVISOR_DIR/supervisord.conf
+      sed -i -e 's|usr/sbin/nginx|snap/onlyoffice-ds/current/usr/sbin/nginx|g' $INIT_D_DIR/supervisor
+      sed -i -e 's|etc|snap/onlyoffice-ds/current/etc|g' $INIT_D_DIR/supervisor
+      sed -i -e 's|lib|snap/onlyoffice-ds/current/lib|g' $INIT_D_DIR/supervisor
 
   nginx:
     plugin: dump
@@ -354,68 +356,73 @@ parts:
     source-type: git
     override-build: |
       craftctl default
+      SNAP_DATA_DIR=/var/snap/onlyoffice-ds/current
+      SNAP_DIR=/snap/onlyoffice-ds/current
       PACKAGE_VERSION=`cat $CRAFT_STAGE/version`
       #welcome page
-      mkdir -p $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
-      cp -r common/documentserver-example/welcome/css $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
-      cp common/documentserver-example/welcome/linux.html $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/{{OFFICIAL_PRODUCT_NAME}}/Community Edition/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/{{year}}/2023/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/sudo systemctl start ds-example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/The secret.*parameter./The secret is available by <em>sudo snap get onlyoffice-ds onlyoffice.jwt-secret<\/em> command./' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e 's/read the .*<\/a>/just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key<\/em> command./' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e '/<h3>Add it to the autostart/d' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
-      sed -i -e '/<pre>sudo systemctl enable/d' $CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome/index.html
+      WECLOME_DIR=$CRAFT_PART_INSTALL/var/www/onlyoffice/documentserver/server/welcome
+      WECLOME_HTML=$WECLOME_DIR/index.html
+      mkdir -p $WECLOME_DIR
+      cp -r common/documentserver-example/welcome/css $WECLOME_DIR
+      cp common/documentserver-example/welcome/linux.html $WECLOME_HTML
+      sed -i -e 's/{{OFFICIAL_PRODUCT_NAME}}/Community Edition/' $WECLOME_HTML
+      sed -i -e 's/{{year}}/2023/' $WECLOME_HTML
+      sed -i -e 's/sudo systemctl start ds-example/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $WECLOME_HTML
+      sed -i -e 's|The secret.*parameter.|The secret is available by <em>sudo snap get onlyoffice-ds onlyoffice.jwt-secret</em> command.|' $WECLOME_HTML
+      sed -i -e 's|read the .*</a>|just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key</em> command.|' $WECLOME_HTML
+      sed -i -e '/<h3>Add it to the autostart/d' $WECLOME_HTML
+      sed -i -e '/<pre>sudo systemctl enable/d' $WECLOME_HTML
       #nginx configs
       NGINX_DIR=$CRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx
       mkdir -p $NGINX_DIR/includes
       ##ds.conf.tmpl
+      NGINX_INCLUDES_DIR=$SNAP_DATA_DIR/etc/onlyoffice/documentserver/nginx/includes
       cp common/documentserver/nginx/ds.conf.tmpl.m4 $NGINX_DIR/ds.conf.tmpl
-      sed -i -e 's/M4_NGINX_CONF/\/var\/snap\/onlyoffice-ds\/current\/etc\/onlyoffice\/documentserver\/nginx\/includes/' $NGINX_DIR/ds.conf.tmpl
+      sed -i -e 's|M4_NGINX_CONF|$NGINX_INCLUDES_DIR|' $NGINX_DIR/ds.conf.tmpl
       sed -i -e 's/80/DS_PORT/' $NGINX_DIR/ds.conf.tmpl
       sed -i -r 's/(server_tokens off;)/\1\n #allow 127.0.0.1;\n #deny all;/' \
         $NGINX_DIR/ds.conf.tmpl
       ##ds-ssl.conf.tmpl
       cp common/documentserver/nginx/ds-ssl.conf.tmpl.m4 $NGINX_DIR/ds-ssl.conf.tmpl
-      sed -i -e 's/M4_NGINX_CONF/\/var\/snap\/onlyoffice-ds\/current\/etc\/onlyoffice\/documentserver\/nginx\/includes/' $NGINX_DIR/ds-ssl.conf.tmpl
+      sed -i -e 's|M4_NGINX_CONF|$NGINX_INCLUDES_DIR|' $NGINX_DIR/ds-ssl.conf.tmpl
       sed -i -e 's/80/DS_PORT/' $NGINX_DIR/ds-ssl.conf.tmpl
       sed -i -e 's/443/DSS_PORT/' $NGINX_DIR/ds-ssl.conf.tmpl
       sed -i -r 's/(server_tokens off;)/\1\n #allow 127.0.0.1;\n #deny all;/' \
         $NGINX_DIR/ds-ssl.conf.tmpl
       ##ds-common.conf
       cp common/documentserver/nginx/includes/ds-common.conf.m4 $NGINX_DIR/includes/ds-common.conf
-      sed -i -e 's/M4_NGINX_LOG/\/var\/snap\/onlyoffice-ds\/current\/var\/log\/nginx/' $NGINX_DIR/includes/ds-common.conf
+      sed -i -e 's|M4_NGINX_LOG|$SNAP_DATA_DIR/var/log/nginx|' $NGINX_DIR/includes/ds-common.conf
       ##ds-docservice.conf
       cp common/documentserver/nginx/includes/ds-docservice.conf.m4 $NGINX_DIR/includes/ds-docservice.conf
       if [ $(grep -n "M4_DS_ROOT" $NGINX_DIR/includes/ds-docservice.conf | grep 27 | wc -l) -ne 1 ]; then
         echo "Incorrect ds-docservice.conf file"
         exit 1
       fi
-      sed -i -e '27 s/M4_DS_ROOT/\/var\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver/' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's/#welcome page/location ~ ^(\/[\\d]+\\.[\\d]+\\.[\\d]+[\\.|-][\\d]+)?\/(sdkjs-plugins)(\/.*)$ {\n  expires 365d;\n  alias \/var\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver\/$2$3;\n}\n\n#welcome page/' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e '27 s|M4_DS_ROOT|$SNAP_DATA_DIR/var/www/onlyoffice/documentserver|' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's|#welcome page|location ~ ^(/[\\d]+\\.[\\d]+\\.[\\d]+[\\.\|-][\\d]+)?/(sdkjs-plugins)(/.*)$ {\n  expires 365d;\n  alias $SNAP_DATA_DIR/var/www/onlyoffice/documentserver/$2$3;\n}\n\n#welcome page|' $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's/|sdkjs-plugins//' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's/M4_DS_ROOT/\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver/' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's|M4_DS_ROOT|$SNAP_DIR/var/www/onlyoffice/documentserver|' $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e "s/M4_PACKAGE_VERSION/$PACKAGE_VERSION/" $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's/M4_DEV_NULL/\/dev\/null/' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's/M4_DS_FILES/\/var\/snap\/onlyoffice-ds\/common\/var\/lib\/onlyoffice\/documentserver/' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's|M4_DEV_NULL|/dev/null|' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's|M4_DS_FILES|/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver|' $NGINX_DIR/includes/ds-docservice.conf
       ##http-common.conf
       cp common/documentserver/nginx/includes/http-common.conf.m4 $NGINX_DIR/includes/http-common.conf
       ##ds-example.conf
       cp common/documentserver-example/nginx/includes/ds-example.conf.m4 $NGINX_DIR/includes/ds-example.conf
       sed -i -e 's/M4_PLATFORM/index/' $NGINX_DIR/includes/ds-example.conf
-      sed -i -e 's/M4_DS_EXAMLE/\/snap\/onlyoffice-ds\/current\/var\/www\/onlyoffice\/documentserver\/server/' $NGINX_DIR/includes/ds-example.conf
+      sed -i -e 's|M4_DS_EXAMLE|$SNAP_DIR/var/www/onlyoffice/documentserver/server|' $NGINX_DIR/includes/ds-example.conf
       #documentserver-pluginsmanager.sh
       mkdir -p $CRAFT_PART_INSTALL/usr/sbin
       cp common/documentserver/bin/documentserver-pluginsmanager.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s/M4_DS_PREFIX/onlyoffice\/documentserver/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s|M4_DS_PREFIX|onlyoffice/documentserver|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e "s/PLUGIN_MANAGER=\"/PLUGIN_MANAGER=\"\$SNAP/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e "s/PLUGIN_DIR=\"/PLUGIN_DIR=\"\$SNAP_DATA/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s/\$RESTART_CONDITION/false/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s/sdkjs-plugins\/\"/sdkjs-plugins\/\"\n\nif \[ ! -d \${PLUGIN_DIR} \]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP\/var\/www\/onlyoffice\/documentserver\/sdkjs-plugins \${PLUGIN_DIR}\/..\nfi/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s/done/done\n\nexport LD_LIBRARY_PATH=\$SNAP\/var\/www\/onlyoffice\/documentserver\/server\/FileConverter\/bin:\$LD_LIBRARY_PATH/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e 's|\$RESTART_CONDITION|false|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e 's|sdkjs-plugins/"|sdkjs-plugins/"\n\nif [ ! -d \${PLUGIN_DIR} ]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP/var/www/onlyoffice/documentserver/sdkjs-plugins \${PLUGIN_DIR}/..\nfi|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s|done|done\n\nexport LD_LIBRARY_PATH=\$SNAP/var/www/onlyoffice/documentserver/server/FileConverter/bin:\$LD_LIBRARY_PATH|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s/\"\${args\[@\]}\"/--update=\"\${PLUGIN_DIR}\/plugin-list-default.json\"/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e 's|"\${args\[@\]}"|--update="\${PLUGIN_DIR}/plugin-list-default.json"|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
 
   starter:
     plugin: dump
