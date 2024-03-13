@@ -205,7 +205,7 @@ parts:
     override-build: |
       craftctl default
       SUPERVISOR_DIR=$CRAFT_PART_INSTALL/etc/supervisor
-      INIT_D_DIR=CRAFT_PART_INSTALL/etc/init.d
+      INIT_D_DIR=$CRAFT_PART_INSTALL/etc/init.d
       sed -i -e 's|/var|%(ENV_SNAP_DATA)s/var|g' $SUPERVISOR_DIR/supervisord.conf
       sed -i -e 's|/etc|%(ENV_SNAP_DATA)s/etc|g' $SUPERVISOR_DIR/supervisord.conf
       sed -i '3,5d' $SUPERVISOR_DIR/supervisord.conf
