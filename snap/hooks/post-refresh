@@ -7,7 +7,6 @@ if [ -f $EXAMPLE_LOCAL_JSON ]; then
   mv $EXAMPLE_LOCAL_JSON $SNAP_DATA/example-local.json
 fi
 rm -R $SNAP_DATA/etc
-rm -R $SNAP_DATA/mysql
 mv $SNAP_DATA/var/www/onlyoffice/Data/certs $SNAP_DATA
 if [ -d $SNAP_DATA/var/lib/onlyoffice/documentserver-example/files ]; then
   mv $SNAP_DATA/var/lib/onlyoffice/documentserver-example/files $SNAP_DATA
