@@ -474,4 +474,3 @@ onlyoffice_example_enabled && \
 onlyoffice_use_unautorized_storage && \
 token_onlyoffice_loopback && \
 token_onlyoffice_wopi
-
