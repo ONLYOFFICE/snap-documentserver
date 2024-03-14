@@ -10,7 +10,7 @@ touch $SNAP_DATA/var/run/supervisord.pid
 mkdir -p $LOG_DIR/docservice/
 mkdir -p $LOG_DIR/converter/
 mkdir -p $LOG_DIR-example/
-mkdir -p $LOG_DIR-example/files/
+mkdir -p $SNAP_DATA/var/lib/onlyoffice/documentserver-example/files/
 
 touch $LOG_DIR/docservice/out.log
 touch $LOG_DIR/docservice/err.log
