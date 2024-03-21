@@ -258,6 +258,7 @@ token_onlyoffice_jwt_header()
 	set_onlyoffice_jwt_header "$onlyoffice_jwt_header"
 	set_previous_onlyoffice_jwt_header $onlyoffice_jwt_header
 	sed -i "/header/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
+	sed -i "/authorizationHeader/s/"${previous_onlyoffice_jwt_header}"/"${onlyoffice_jwt_header}"/g" $SNAP_DATA/etc/onlyoffice/documentserver-example/local.json
 	snapctl restart onlyoffice-ds.documentserver
 }
 
