@@ -86,6 +86,9 @@ hooks:
   install:
     plugs: [network, network-bind, removable-media, desktop, unity7]
 
+  pre-refresh:
+    plugs: [network, network-bind, removable-media, desktop, unity7]
+
   post-refresh:
     plugs: [network, network-bind, removable-media, desktop, unity7]
 
@@ -108,6 +111,7 @@ parts:
       - on amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-8.0.1_x86_64.tar.gz
       - on arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-8.0.1_aarch64.tar.gz
     stage-packages:
+      - curl
       - libxml2
       - fonts-dejavu
       - fonts-liberation
@@ -424,6 +428,9 @@ parts:
       sed -i -e "s|done|done\n\nexport LD_LIBRARY_PATH=\$SNAP/var/www/onlyoffice/documentserver/server/FileConverter/bin:\$LD_LIBRARY_PATH|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e 's|"\${args\[@\]}"|--update="\${PLUGIN_DIR}/plugin-list-default.json"|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      #documentserver-prepare4shutdown.sh
+      cp common/documentserver/bin/documentserver-prepare4shutdown.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
+      chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
 
   starter:
     plugin: dump
