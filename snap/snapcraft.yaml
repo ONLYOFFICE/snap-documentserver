@@ -428,7 +428,7 @@ parts:
       sed -i -e "s|done|done\n\nexport LD_LIBRARY_PATH=\$SNAP/var/www/onlyoffice/documentserver/server/FileConverter/bin:\$LD_LIBRARY_PATH|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e 's|"\${args\[@\]}"|--update="\${PLUGIN_DIR}/plugin-list-default.json"|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      #documentserver-prepare4shutdown.sh
+      # documentserver-prepare4shutdown.sh
       cp common/documentserver/bin/documentserver-prepare4shutdown.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
       chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
 
