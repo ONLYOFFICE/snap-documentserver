@@ -2,7 +2,10 @@ name: onlyoffice-ds
 title: ONLYOFFICE Docs
 version: "8.2.0"
 summary: "An online office suite that allowing to create, view and edit documents."
-description: "ONLYOFFICE Document Server is an online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time."
+description: |
+  ONLYOFFICE Docs is a free collaborative online office suite comprising viewers and editors for texts, spreadsheets and presentations, forms and PDF, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time.
+
+  ONLYOFFICE Docs can be used as a part of ONLYOFFICE Workspace or with third-party sync&share solutions (e.g. Nextcloud, ownCloud, Seafile) to enable collaborative editing within their interface.
 icon: icons/asc-de-256.png
 grade: stable
 confinement: strict
