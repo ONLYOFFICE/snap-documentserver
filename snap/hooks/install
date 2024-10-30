@@ -3,6 +3,10 @@
 cp  -R $SNAP/etc $SNAP_DATA/
 mkdir -p $SNAP_DATA/var/www/onlyoffice/Data/certs
 
+API_JS_PATH="/var/www/onlyoffice/documentserver/web-apps/apps/api/documents"
+mkdir -p $SNAP_DATA/$API_JS_PATH
+cp $SNAP/$API_JS_PATH/api.js.tpl $SNAP_DATA/$API_JS_PATH/api.js.tpl
+
 $SNAP/usr/sbin/generate-all-fonts.sh
 
 $SNAP/usr/sbin/documentserver-pluginsmanager.sh

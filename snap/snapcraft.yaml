@@ -35,6 +35,8 @@ environment:
 
 apps:
   documentserver:
+    after:
+      - nginx
     command: usr/sbin/documentserver-start.sh
     daemon: simple
     plugs: [network, network-bind, removable-media, desktop, unity7]
@@ -190,6 +192,8 @@ parts:
       cp -r $DIR/server/Common/node_modules/ms $DIR/server/FileConverter/node_modules/
       #fix wopi enable page
       sed -i -e '/wopi.enable/c <br />Set the <b>onlyoffice.wopi</b> parameter in the Document Server snap configuration to <b>true</b>.' $DIR-example/nodejs/views/wopiIndex.ejs
+      #Add symlink for documentserver-flush-cache.sh script
+      ln -s -f $OUTDIR/web-apps/apps/api/documents/api.js $DIR/web-apps/apps/api/documents/api.js
 
   node:
     plugin: dump
@@ -410,6 +414,7 @@ parts:
       sed -i -e "s/M4_PACKAGE_VERSION/$PACKAGE_VERSION/" $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's|M4_DEV_NULL|/dev/null|' $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's|M4_DS_FILES|/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver|' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's|M4_PRODUCT_VERSION|8.2.0|' $NGINX_DIR/includes/ds-docservice.conf
       ##http-common.conf
       cp common/documentserver/nginx/includes/http-common.conf.m4 $NGINX_DIR/includes/http-common.conf
       ##ds-example.conf
@@ -425,12 +430,21 @@ parts:
       sed -i -e "s/PLUGIN_DIR=\"/PLUGIN_DIR=\"\$SNAP_DATA/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e 's|\$RESTART_CONDITION|false|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e 's|sdkjs-plugins/"|sdkjs-plugins/"\n\nif [ ! -d \${PLUGIN_DIR} ]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP/var/www/onlyoffice/documentserver/sdkjs-plugins \${PLUGIN_DIR}/..\nfi|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s|done|done\n\nexport LD_LIBRARY_PATH=\$SNAP/var/www/onlyoffice/documentserver/server/FileConverter/bin:\$LD_LIBRARY_PATH|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      sed -i -e "s|LD_LIBRARY_PATH=|LD_LIBRARY_PATH=\$SNAP|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       sed -i -e 's|"\${args\[@\]}"|--update="\${PLUGIN_DIR}/plugin-list-default.json"|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
       #Add documentserver-prepare4shutdown.sh to snap
       cp common/documentserver/bin/documentserver-prepare4shutdown.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
       chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
+      #Add documentserver-flush-cache.sh to snap
+      SNAP_FLUSH_CACHE_SH=$CRAFT_PART_INSTALL/usr/sbin/documentserver-flush-cache.sh
+      cp common/documentserver/bin/documentserver-flush-cache.sh.m4 $SNAP_FLUSH_CACHE_SH
+      sed -i -e "s|M4_DS_PREFIX|onlyoffice/documentserver|" $SNAP_FLUSH_CACHE_SH
+      sed -i -e "s|/var|\$SNAP_DATA/var|" $SNAP_FLUSH_CACHE_SH
+      sed -i -e "s|/etc|\$SNAP_DATA/etc/onlyoffice/documentserver|" $SNAP_FLUSH_CACHE_SH
+      #sed -i -e '/.tpl/d' $SNAP_FLUSH_CACHE_SH
+      chmod +x $SNAP_FLUSH_CACHE_SH
+
 
   starter:
     plugin: dump
