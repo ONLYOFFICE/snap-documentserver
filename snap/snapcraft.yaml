@@ -401,51 +401,55 @@ parts:
       sed -i -r 's/(server_tokens off;)/\1\n #allow 127.0.0.1;\n #deny all;/' \
         $NGINX_DIR/ds-ssl.conf.tmpl
       ##ds-common.conf
-      cp common/documentserver/nginx/includes/ds-common.conf.m4 $NGINX_DIR/includes/ds-common.conf
-      sed -i -e "s|M4_NGINX_LOG|$SNAP_DATA_DIR/var/log/nginx|" $NGINX_DIR/includes/ds-common.conf
+      SNAP_DS_COMMON_CONF=$NGINX_DIR/includes/ds-common.conf
+      cp common/documentserver/nginx/includes/ds-common.conf.m4 $SNAP_DS_COMMON_CONF
+      sed -i -e "s|M4_NGINX_LOG|$SNAP_DATA_DIR/var/log/nginx|" $SNAP_DS_COMMON_CONF
       ##ds-docservice.conf
-      cp common/documentserver/nginx/includes/ds-docservice.conf.m4 $NGINX_DIR/includes/ds-docservice.conf
-      if [ $(grep -n "M4_DS_ROOT" $NGINX_DIR/includes/ds-docservice.conf | grep 27 | wc -l) -ne 1 ]; then
+      SNAP_DS_DOCSERVICE_CONF=$NGINX_DIR/includes/ds-docservice.conf
+      cp common/documentserver/nginx/includes/ds-docservice.conf.m4 $SNAP_DS_DOCSERVICE_CONF
+      if [ $(grep -n "M4_DS_ROOT" $SNAP_DS_DOCSERVICE_CONF | grep 27 | wc -l) -ne 1 ]; then
         echo "Incorrect ds-docservice.conf file"
         exit 1
       fi
-      sed -i -e "27 s|M4_DS_ROOT|$SNAP_DATA_DIR/var/www/onlyoffice/documentserver|" $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's|#welcome page|location ~ ^(/[\\d]+\\.[\\d]+\\.[\\d]+[\\.\|-][\\d]+)?/(sdkjs-plugins)(/.*)$ {\n#welcome page|' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e "s|#welcome page|  expires 365d;\n  alias $SNAP_DATA_DIR/var/www/onlyoffice/documentserver/\$2\$3;\n}\n\n#welcome page|" $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's/|sdkjs-plugins//' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e "s|M4_DS_ROOT|$SNAP_DIR/var/www/onlyoffice/documentserver|" $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e "s/M4_PACKAGE_VERSION/$PACKAGE_VERSION/" $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's|M4_DEV_NULL|/dev/null|' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's|M4_DS_FILES|/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver|' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's|M4_PRODUCT_VERSION|${SNAPCRAFT_PROJECT_VERSION}|' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e "27 s|M4_DS_ROOT|$SNAP_DATA_DIR/var/www/onlyoffice/documentserver|" $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e 's|#welcome page|location ~ ^(/[\\d]+\\.[\\d]+\\.[\\d]+[\\.\|-][\\d]+)?/(sdkjs-plugins)(/.*)$ {\n#welcome page|' $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e "s|#welcome page|  expires 365d;\n  alias $SNAP_DATA_DIR/var/www/onlyoffice/documentserver/\$2\$3;\n}\n\n#welcome page|" $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e 's/|sdkjs-plugins//' $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e "s|M4_DS_ROOT|$SNAP_DIR/var/www/onlyoffice/documentserver|" $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e "s/M4_PACKAGE_VERSION/$PACKAGE_VERSION/" $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e 's|M4_DEV_NULL|/dev/null|' $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e 's|M4_DS_FILES|/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver|' $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e 's|M4_PRODUCT_VERSION|${SNAPCRAFT_PROJECT_VERSION}|' $SNAP_DS_DOCSERVICE_CONF
       ##http-common.conf
       cp common/documentserver/nginx/includes/http-common.conf.m4 $NGINX_DIR/includes/http-common.conf
       ##ds-example.conf
-      cp common/documentserver-example/nginx/includes/ds-example.conf.m4 $NGINX_DIR/includes/ds-example.conf
-      sed -i -e 's/M4_PLATFORM/index/' $NGINX_DIR/includes/ds-example.conf
-      sed -i -e "s|M4_DS_EXAMLE|$SNAP_DIR/var/www/onlyoffice/documentserver/server|" $NGINX_DIR/includes/ds-example.conf
-      #documentserver-pluginsmanager.sh
+      SNAP_DS_EXAMPLE_CONF=$NGINX_DIR/includes/ds-example.conf
+      cp common/documentserver-example/nginx/includes/ds-example.conf.m4 $SNAP_DS_EXAMPLE_CONF
+      sed -i -e 's/M4_PLATFORM/index/' $SNAP_DS_EXAMPLE_CONF
+      sed -i -e "s|M4_DS_EXAMLE|$SNAP_DIR/var/www/onlyoffice/documentserver/server|" $SNAP_DS_EXAMPLE_CONF
+      #Add documentserver-pluginsmanager.sh to snap
       mkdir -p $CRAFT_PART_INSTALL/usr/sbin
-      cp common/documentserver/bin/documentserver-pluginsmanager.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s|M4_DS_PREFIX|onlyoffice/documentserver|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s/PLUGIN_MANAGER=\"/PLUGIN_MANAGER=\"\$SNAP/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s/PLUGIN_DIR=\"/PLUGIN_DIR=\"\$SNAP_DATA/" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e 's|\$RESTART_CONDITION|false|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e 's|sdkjs-plugins/"|sdkjs-plugins/"\n\nif [ ! -d \${PLUGIN_DIR} ]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP/var/www/onlyoffice/documentserver/sdkjs-plugins \${PLUGIN_DIR}/..\nfi|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e "s|LD_LIBRARY_PATH=|LD_LIBRARY_PATH=\$SNAP|" $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e '/chown/d' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
-      sed -i -e 's|"\${args\[@\]}"|--update="\${PLUGIN_DIR}/plugin-list-default.json"|' $CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      SNAP_PLUGINSMANAGER_SH=$CRAFT_PART_INSTALL/usr/sbin/documentserver-pluginsmanager.sh
+      cp common/documentserver/bin/documentserver-pluginsmanager.sh.m4 $SNAP_PLUGINSMANAGER_SH
+      chmod +x $SNAP_PLUGINSMANAGER_SH
+      sed -i -e "s|M4_DS_PREFIX|onlyoffice/documentserver|" $SNAP_PLUGINSMANAGER_SH
+      sed -i -e "s/PLUGIN_MANAGER=\"/PLUGIN_MANAGER=\"\$SNAP/" $SNAP_PLUGINSMANAGER_SH
+      sed -i -e "s/PLUGIN_DIR=\"/PLUGIN_DIR=\"\$SNAP_DATA/" $SNAP_PLUGINSMANAGER_SH
+      sed -i -e 's|\$RESTART_CONDITION|false|' $SNAP_PLUGINSMANAGER_SH
+      sed -i -e 's|sdkjs-plugins/"|sdkjs-plugins/"\n\nif [ ! -d \${PLUGIN_DIR} ]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP/var/www/onlyoffice/documentserver/sdkjs-plugins \${PLUGIN_DIR}/..\nfi|' $SNAP_PLUGINSMANAGER_SH
+      sed -i -e "s|LD_LIBRARY_PATH=|LD_LIBRARY_PATH=\$SNAP|" $SNAP_PLUGINSMANAGER_SH
+      sed -i -e '/chown/d' $SNAP_PLUGINSMANAGER_SH
+      sed -i -e 's|"\${args\[@\]}"|--update="\${PLUGIN_DIR}/plugin-list-default.json"|' $SNAP_PLUGINSMANAGER_SH
       #Add documentserver-prepare4shutdown.sh to snap
-      cp common/documentserver/bin/documentserver-prepare4shutdown.sh.m4 $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
-      chmod +x $CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
+      SNAP_PREPARE4SHUTDOWN_SH=$CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
+      cp common/documentserver/bin/documentserver-prepare4shutdown.sh.m4 $SNAP_PREPARE4SHUTDOWN_SH
+      chmod +x $SNAP_PREPARE4SHUTDOWN_SH
       #Add documentserver-flush-cache.sh to snap
       SNAP_FLUSH_CACHE_SH=$CRAFT_PART_INSTALL/usr/sbin/documentserver-flush-cache.sh
       cp common/documentserver/bin/documentserver-flush-cache.sh.m4 $SNAP_FLUSH_CACHE_SH
       sed -i -e "s|M4_DS_PREFIX|onlyoffice/documentserver|" $SNAP_FLUSH_CACHE_SH
       sed -i -e "s|/var|\$SNAP_DATA/var|" $SNAP_FLUSH_CACHE_SH
       sed -i -e "s|/etc|\$SNAP_DATA/etc/onlyoffice/documentserver|" $SNAP_FLUSH_CACHE_SH
-      #sed -i -e '/.tpl/d' $SNAP_FLUSH_CACHE_SH
       chmod +x $SNAP_FLUSH_CACHE_SH
 
 
