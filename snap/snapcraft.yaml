@@ -113,8 +113,8 @@ parts:
   server:
     plugin: dump
     source:
-      - on amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-8.2.0_x86_64.tar.gz
-      - on arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-8.2.0_aarch64.tar.gz
+      - on amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-${SNAPCRAFT_PROJECT_VERSION}_x86_64.tar.gz
+      - on arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-${SNAPCRAFT_PROJECT_VERSION}_aarch64.tar.gz
     stage-packages:
       - curl
       - libxml2
@@ -417,7 +417,7 @@ parts:
       sed -i -e "s/M4_PACKAGE_VERSION/$PACKAGE_VERSION/" $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's|M4_DEV_NULL|/dev/null|' $NGINX_DIR/includes/ds-docservice.conf
       sed -i -e 's|M4_DS_FILES|/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver|' $NGINX_DIR/includes/ds-docservice.conf
-      sed -i -e 's|M4_PRODUCT_VERSION|8.2.0|' $NGINX_DIR/includes/ds-docservice.conf
+      sed -i -e 's|M4_PRODUCT_VERSION|${SNAPCRAFT_PROJECT_VERSION}|' $NGINX_DIR/includes/ds-docservice.conf
       ##http-common.conf
       cp common/documentserver/nginx/includes/http-common.conf.m4 $NGINX_DIR/includes/http-common.conf
       ##ds-example.conf
