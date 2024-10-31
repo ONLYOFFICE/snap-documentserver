@@ -33,6 +33,12 @@ fi
 #fix sdkjs-plugins path if needed
 sed -i "/sdkjs-plugins/s/\"\/snap/\"\/var\/snap/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 
+API_JS_PATH="/var/www/onlyoffice/documentserver/web-apps/apps/api/documents"
+if ! [ -f $SNAP_DATA/$API_JS_PATH/api.js.tpl ]; then
+  mkdir -p $SNAP_DATA/$API_JS_PATH
+  cp $SNAP/$API_JS_PATH/api.js.tpl $SNAP_DATA/$API_JS_PATH/api.js.tpl
+fi
+
 $SNAP/usr/sbin/generate-all-fonts.sh
 
 $SNAP/usr/sbin/documentserver-pluginsmanager.sh
