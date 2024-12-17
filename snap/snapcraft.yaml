@@ -196,6 +196,7 @@ parts:
       #fix wopi enable page
       sed -i -e '/wopi.enable/c <br />Set the <b>onlyoffice.wopi</b> parameter in the Document Server snap configuration to <b>true</b>.' $DIR-example/nodejs/views/wopiIndex.ejs
       #Add symlink for documentserver-flush-cache.sh script
+      mv $OUTDIR/web-apps/apps/api/documents/api.js $OUTDIR/web-apps/apps/api/documents/api.js.tpl
       ln -s -f $OUTDIR/web-apps/apps/api/documents/api.js $DIR/web-apps/apps/api/documents/api.js
 
   node:
