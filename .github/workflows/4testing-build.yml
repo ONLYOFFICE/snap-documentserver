@@ -1,0 +1,59 @@
+name: Build and publish SNAP package
+
+run-name: Build ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: 'Version'
+        required: true
+      build:
+        description: 'Build number'
+        type: string
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out Git repository
+      uses: actions/checkout@v4
+
+    - name: Replace Version and Build Number
+      id: repl
+      run: |
+        VERSION=${{ github.event.inputs.version }}
+        BUILD_NUMBER=${{ github.event.inputs.build }}
+        #replace version
+        sed -i -r "/version:/s/([0-9]+).([0-9]+).([0-9]+)/${VERSION}/" ./snap/snapcraft.yaml
+        #replace link to archive to test
+        #x64
+        sed -i -e '/amd64:/s|https://download.onlyoffice.com/install/document|https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/|' ./snap/snapcraft.yaml
+        sed -i -e '/amd64:/s|server/linux/|server/linux/snap/|' ./snap/snapcraft.yaml
+        sed -i -e "/amd64:/s|_x86_64|-${BUILD_NUMBER}-x86_64|" ./snap/snapcraft.yaml
+        #arm
+        sed -i -e '/arm64:/s|https://download.onlyoffice.com/install/document|https://s3.eu-west-1.amazonaws.com/repo-doc-onlyoffice-com/|' ./snap/snapcraft.yaml
+        sed -i -e '/arm64:/s|server/linux/|server/linux/snap/|' ./snap/snapcraft.yaml
+        sed -i -e "/arm64:/s|_aarch64|-${BUILD_NUMBER}-aarch64|" ./snap/snapcraft.yaml
+
+    - name: Build snap
+      uses: snapcore/action-build@v1
+      id: build
+      
+    - name: Publish snap
+      uses: snapcore/action-publish@v1
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+      with:
+        snap: ${{ steps.build.outputs.snap }}
+        release: beta
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}
+        path: ${{ steps.build.outputs.snap }}
+        retention-days: 14
+

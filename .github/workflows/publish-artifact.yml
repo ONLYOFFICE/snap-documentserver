@@ -1,0 +1,46 @@
+name: Publish SNAP arfifact
+
+run-name: Publish ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: 'Version'
+        required: true
+      build:
+        description: 'Build number'
+        type: string
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get artifact
+      run: |
+        VERSION=${{ github.event.inputs.version }}
+        BUILD_NUMBER=${{ github.event.inputs.build }}
+        #
+        jq --version
+        REPO_URL="https://api.github.com/repos/ONLYOFFICE/snap-documentserver/actions/artifacts"
+        QUERY="curl -L $REPO_URL"
+        JQ_QUERY=".artifacts | .[] | select(.name | test(\"$VERSION-$BUILD_NUMBER\"))"
+        ARTIFACT_ID=`$QUERY | jq "$JQ_QUERY | .id"`
+        curl -o package.zip -L \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          $REPO_URL/$ARTIFACT_ID/zip
+        unzip package.zip
+        mv *.snap package.snap
+
+    - name: Publish snap
+      uses: snapcore/action-publish@v1
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+      with:
+        snap: package.snap
+        release: beta
+
