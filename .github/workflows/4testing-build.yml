@@ -42,18 +42,33 @@ jobs:
       uses: snapcore/action-build@v1
       id: build
       
-    - name: Publish snap
+    - name: Publish AMD64 snap
       uses: snapcore/action-publish@v1
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
       with:
-        snap: ${{ steps.build.outputs.snap }}
+        snap: onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap
         release: beta
 
-    - name: Upload Artifact
+    - name: Publish ARM64 snap
+      uses: snapcore/action-publish@v1
+      env:
+        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+      with:
+        snap: onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap
+        release: beta
+
+    - name: Upload AMD64 Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}
-        path: ${{ steps.build.outputs.snap }}
+        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}-amd64
+        path: onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap
+        retention-days: 14
+
+    - name: Upload ARM64 Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}-arm64
+        path: onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap
         retention-days: 14
 
