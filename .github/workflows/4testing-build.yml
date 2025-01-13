@@ -38,37 +38,7 @@ jobs:
         sed -i -e '/arm64:/s|server/linux/|server/linux/snap/|' ./snap/snapcraft.yaml
         sed -i -e "/arm64:/s|_aarch64|-${BUILD_NUMBER}-aarch64|" ./snap/snapcraft.yaml
 
-    - name: Build snap
-      uses: snapcore/action-build@v1
-      id: build
-      
-    - name: Publish AMD64 snap
-      uses: snapcore/action-publish@v1
-      env:
-        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
-      with:
-        snap: onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap
-        release: beta
+        df -h
+        free
 
-    - name: Publish ARM64 snap
-      uses: snapcore/action-publish@v1
-      env:
-        SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
-      with:
-        snap: onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap
-        release: beta
-
-    - name: Upload AMD64 Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}-amd64
-        path: onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap
-        retention-days: 14
-
-    - name: Upload ARM64 Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}-arm64
-        path: onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap
-        retention-days: 14
 
