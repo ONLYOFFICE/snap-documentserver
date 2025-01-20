@@ -61,17 +61,10 @@ jobs:
         snap: onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap
         release: beta
 
-    - name: Upload AMD64 Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}-amd64
-        path: onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap
-        retention-days: 14
-
-    - name: Upload ARM64 Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: ONLYOFFICE_Docs-${{ github.event.inputs.version }}-${{ github.event.inputs.build }}-arm64
-        path: onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap
-        retention-days: 14
+    - name: Notice for revision
+      run: |
+        REVISION=$(cat /home/runner/runners/*/_diag/pages/*.log | grep Revision | awk '{print $3}')
+        for STR in $REVISION; do
+          echo "::notice::Snap published to revision $STR"
+        done
 
