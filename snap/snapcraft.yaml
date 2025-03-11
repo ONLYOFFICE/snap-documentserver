@@ -409,12 +409,13 @@ parts:
       sed -i -e "s|M4_NGINX_LOG|$SNAP_DATA_DIR/var/log/nginx|" $SNAP_DS_COMMON_CONF
       ##ds-docservice.conf
       SNAP_DS_DOCSERVICE_CONF=$NGINX_DIR/includes/ds-docservice.conf
+      LINE_FOR_CHANGE=33
       cp common/documentserver/nginx/includes/ds-docservice.conf.m4 $SNAP_DS_DOCSERVICE_CONF
-      if [ $(grep -n "M4_DS_ROOT" $SNAP_DS_DOCSERVICE_CONF | grep 27 | wc -l) -ne 1 ]; then
+      if [ $(grep -n "M4_DS_ROOT" $SNAP_DS_DOCSERVICE_CONF | grep $LINE_FOR_CHANGE | wc -l) -ne 1 ]; then
         echo "Incorrect ds-docservice.conf file"
         exit 1
       fi
-      sed -i -e "27 s|M4_DS_ROOT|$SNAP_DATA_DIR/var/www/onlyoffice/documentserver|" $SNAP_DS_DOCSERVICE_CONF
+      sed -i -e "$LINE_FOR_CHANGE s|M4_DS_ROOT|$SNAP_DATA_DIR/var/www/onlyoffice/documentserver|" $SNAP_DS_DOCSERVICE_CONF
       sed -i -e 's|#welcome page|location ~ ^(/[\\d]+\\.[\\d]+\\.[\\d]+[\\.\|-][\\d]+)?/(sdkjs-plugins)(/.*)$ {\n#welcome page|' $SNAP_DS_DOCSERVICE_CONF
       sed -i -e "s|#welcome page|  expires 365d;\n  alias $SNAP_DATA_DIR/var/www/onlyoffice/documentserver/\$2\$3;\n}\n\n#welcome page|" $SNAP_DS_DOCSERVICE_CONF
       sed -i -e 's/|sdkjs-plugins//' $SNAP_DS_DOCSERVICE_CONF
