@@ -115,8 +115,8 @@ parts:
   server:
     plugin: dump
     source:
-      - on amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-${SNAPCRAFT_PROJECT_VERSION}_x86_64.tar.gz
-      - on arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-${SNAPCRAFT_PROJECT_VERSION}_aarch64.tar.gz
+      - to amd64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-${SNAPCRAFT_PROJECT_VERSION}_x86_64.tar.gz
+      - to arm64: https://download.onlyoffice.com/install/documentserver/linux/onlyoffice-documentserver-${SNAPCRAFT_PROJECT_VERSION}_aarch64.tar.gz
     stage-packages:
       - curl
       - libxml2
@@ -204,8 +204,8 @@ parts:
   node:
     plugin: dump
     source:
-      - on amd64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz
-      - on arm64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-arm64.tar.gz
+      - to amd64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz
+      - to arm64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-arm64.tar.gz
     override-build: |
       craftctl default
       rm -f $CRAFT_PART_INSTALL/README.md
