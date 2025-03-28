@@ -9,11 +9,13 @@ description: |
 icon: icons/asc-de-256.png
 grade: stable
 confinement: strict
-base: core22
-architectures:
-  - build-on: [amd64]
+base: core24
+platforms:
+  amd64:
+    build-on: [amd64]
     build-for: [amd64]
-  - build-on: [arm64]
+  arm64:
+    build-on: [arm64]
     build-for: [arm64]
 
 layout:
@@ -131,9 +133,7 @@ parts:
       - locales-all
       - locales
       - libc6
-      - python2
       - python3
-      - python-setuptools
       - wget
     override-build: |
       craftctl default
@@ -212,10 +212,8 @@ parts:
 
   supervisor:
     plugin: dump
-    source: http://archive.ubuntu.com/ubuntu/pool/universe/s/supervisor/supervisor_3.3.1-1.1_all.deb
+    source: http://archive.ubuntu.com/ubuntu/pool/universe/s/supervisor/supervisor_4.2.5-3_all.deb
     source-type: deb
-    stage-packages:
-      - python2
     override-build: |
       craftctl default
       SUPERVISOR_DIR=$CRAFT_PART_INSTALL/etc/supervisor
@@ -223,17 +221,19 @@ parts:
       sed -i -e 's|/var|%(ENV_SNAP_DATA)s/var|g' $SUPERVISOR_DIR/supervisord.conf
       sed -i -e 's|/etc|%(ENV_SNAP_DATA)s/etc|g' $SUPERVISOR_DIR/supervisord.conf
       sed -i '3,5d' $SUPERVISOR_DIR/supervisord.conf
-      sed -i -e 's|usr/sbin/nginx|snap/onlyoffice-ds/current/usr/sbin/nginx|g' $INIT_D_DIR/supervisor
-      sed -i -e 's|etc|snap/onlyoffice-ds/current/etc|g' $INIT_D_DIR/supervisor
-      sed -i -e 's|lib|snap/onlyoffice-ds/current/lib|g' $INIT_D_DIR/supervisor
+      sed -i -e 's|/etc|$SNAP/etc|g' $INIT_D_DIR/supervisor
+      sed -i -e 's|/lib|$SNAP/lib|g' $INIT_D_DIR/supervisor
+      sed -i -e 's|/usr|$SNAP/usr|g' $INIT_D_DIR/supervisor
+      sed -i -e 's|/var|$SNAP_DATA/var|g' $INIT_D_DIR/supervisor
+
 
   nginx:
     plugin: dump
     source: https://github.com/nginx/nginx.git
     source-type: git
-    source-tag: release-1.23.1
+    source-tag: release-1.27.1
     stage-packages:
-      - python-setuptools
+      - libpcre3
       - python3-setuptools
     override-build: |
       craftctl default
@@ -271,8 +271,8 @@ parts:
       - automake
       - pkg-config
       - libtool
+      - libpcre3
       - libpcre3-dev
-      - libpcre++-dev
       - zlib1g
       - zlib1g-dev
       - wget
@@ -308,14 +308,17 @@ parts:
       - -DWITH_PARTITION_STORAGE_ENGINE=OFF
       - -DINSTALL_MYSQLTESTDIR=
     stage-packages:
-      - libaio1
+      - libaio1t64
     build-packages:
       - wget
       - g++
       - cmake
       - bison
-      - libncurses5-dev
+      - libncurses-dev
       - libaio-dev
+      - libtirpc-dev
+      - libtirpc3t64
+      - pkg-config
     stage:
       # Remove scripts that we'll be replacing with our own
       - -support-files/mysql.server

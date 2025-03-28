@@ -60,4 +60,6 @@ fi
 
 documentserver-flush-cache.sh -r false
 
-$SNAP/usr/bin/python2 $SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
+export PYTHONPATH="${PYTHONPATH}:$SNAP/usr/lib/python3/dist-packages"
+
+$SNAP/usr/bin/supervisord -n -c $SNAP_DATA/etc/supervisor/supervisord.conf
