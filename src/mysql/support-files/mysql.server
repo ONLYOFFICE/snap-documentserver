@@ -45,7 +45,7 @@
 
 # shellcheck source=src/mysql/utilities/mysql-utilities
 . "$SNAP/utilities/mysql-utilities"
-. "$SNAP/snap/hooks/configure"
+. "$SNAP/meta/hooks/configure"
 basedir="$SNAP"
 datadir="$SNAP_DATA/mysql"
 
