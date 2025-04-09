@@ -3,7 +3,7 @@
 
 ## Overview
 
-ONLYOFFICE Document Server is a free collaborative online office suite comprising viewers and editors for texts, spreadsheets and presentations, fully compatible with Office Open XML formats: .docx, .xlsx, .pptx and enabling collaborative editing in real time.
+ONLYOFFICE Document Server is an open-source office suite pack that comprises all the tools you need to work with documents, spreadsheets, presentations, PDFs, and PDF forms. Work with office files of all popular formats; DOCX, ODT, XLSX, ODS, CSV, PPTX, ODP, etc. and enabling collaborative editing in real time.
 
 ## Functionality
 
