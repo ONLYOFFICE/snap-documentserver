@@ -48,7 +48,7 @@ jobs:
 
     - name: Notice for revision
       run: |
-        REVISION=$(cat /home/runner/runners/*/_diag/pages/*.log | grep Revision | awk '{print $3}')
+        REVISION=$(cat /home/runner/actions-runner/*/_diag/pages/*.log | grep Revision | awk '{print $3}')
         for STR in $REVISION; do
           echo "::notice::Snap published to revision $STR"
         done
@@ -86,7 +86,7 @@ jobs:
 
     - name: Notice for revision
       run: |
-        REVISION=$(cat /home/runner/runners/*/_diag/pages/*.log | grep Revision | awk '{print $3}')
+        REVISION=$(cat /home/runner/actions-runner/*/_diag/pages/*.log | grep Revision | awk '{print $3}')
         for STR in $REVISION; do
           echo "::notice::Snap published to revision $STR"
         done
