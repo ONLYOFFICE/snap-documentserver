@@ -412,7 +412,7 @@ parts:
       sed -i -e "s|M4_NGINX_LOG|$SNAP_DATA_DIR/var/log/nginx|" $SNAP_DS_COMMON_CONF
       ##ds-docservice.conf
       SNAP_DS_DOCSERVICE_CONF=$NGINX_DIR/includes/ds-docservice.conf
-      LINE_FOR_CHANGE=33
+      LINE_FOR_CHANGE=36
       cp common/documentserver/nginx/includes/ds-docservice.conf.m4 $SNAP_DS_DOCSERVICE_CONF
       if [ $(grep -n "M4_DS_ROOT" $SNAP_DS_DOCSERVICE_CONF | grep $LINE_FOR_CHANGE | wc -l) -ne 1 ]; then
         echo "Incorrect ds-docservice.conf file"
