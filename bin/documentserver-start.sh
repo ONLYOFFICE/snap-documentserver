@@ -32,6 +32,13 @@ else
     sed -i -e '/autostart/s/true/false/'  $SUPERVISOR_CONF_DIR/ds-example.conf
 fi
 
+ADMINPANEL_ENABLED=$(snapctl get onlyoffice.adminpanel-enabled)
+if [ "${ADMINPANEL_ENABLED}" == "true" ]; then
+    sed -i -e '/autostart/s/false/true/'  $SUPERVISOR_CONF_DIR/ds-adminpanel.conf
+else
+    sed -i -e '/autostart/s/true/false/'  $SUPERVISOR_CONF_DIR/ds-adminpanel.conf
+fi
+
 USE_UNAUTHORIZED_STORAGE_ENABLED=$(snapctl get onlyoffice.use-unautorized-storage)
 if [ "${USE_UNAUTHORIZED_STORAGE_ENABLED}" == "true" ]; then
     sed -i -e '/rejectUnauthorized/s/true/false/' $DS_CONF_DIR/local.json
