@@ -389,6 +389,7 @@ parts:
       sed -i -e 's|read the .*</a>|just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key</em> command.|' $WECLOME_HTML
       sed -i -e '/<h3>Add it to the autostart/d' $WECLOME_HTML
       sed -i -e '/<pre>sudo systemctl enable/d' $WECLOME_HTML
+      sed -i -e 's/sudo systemctl start ds-adminpanel/sudo snap set onlyoffice-ds onlyoffice.adminpanel-enabled=true/' $WECLOME_HTML
       #nginx configs
       NGINX_DIR=$CRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx
       mkdir -p $NGINX_DIR/includes
