@@ -191,6 +191,13 @@ By default, example is not enabled. You can enable the example, using the comman
 ```
 # snap set onlyoffice-ds onlyoffice.example-enabled=true
 ```
+### Enabling the Admin Panel
+
+By default, Admin Panel is not enabled. You can enable the Admin Panel, using the command:
+
+```
+# snap set onlyoffice-ds onlyoffice.adminpanel-enabled=true
+```
 
 ## Project Information
 

@@ -2,6 +2,9 @@
 	"log": {
 	  "filePath": "/snap/onlyoffice-ds/current/etc/onlyoffice/documentserver/log4js/production.json"
 	},
+    "runtimeConfig": {
+      "filePath": "/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/runtime.json"
+    },
 	"storage": {
 	  "fs": {
 		"folderPath": "/var/snap/onlyoffice-ds/common/var/lib/onlyoffice/documentserver/App_Data/cache/files"
@@ -34,7 +37,12 @@
 			},
 			"/info": {
 			  "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/server/info",
-			  "options": {"maxAge": "7d"}
+			  "options": {
+				"maxAge": 0,
+				"cacheControl": "public, no-cache, must-revalidate",
+				"etag": true,
+				"lastModified": true
+			  }
 			},
 			"/sdkjs-plugins": {
 			  "path": "/var/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/sdkjs-plugins",

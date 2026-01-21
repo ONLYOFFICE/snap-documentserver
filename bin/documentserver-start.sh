@@ -10,12 +10,15 @@ touch $SNAP_DATA/var/run/supervisord.pid
 mkdir -p $LOG_DIR/docservice/
 mkdir -p $LOG_DIR/converter/
 mkdir -p $LOG_DIR-example/
+mkdir -p $LOG_DIR/adminpanel/
 mkdir -p $SNAP_DATA/var/lib/onlyoffice/documentserver-example/files/
 
 touch $LOG_DIR/docservice/out.log
 touch $LOG_DIR/docservice/err.log
 touch $LOG_DIR/converter/out.log
 touch $LOG_DIR/converter/err.log
+touch $LOG_DIR/adminpanel/out.log
+touch $LOG_DIR/adminpanel/err.log
 touch $LOG_DIR-example/out.log
 touch $LOG_DIR-example/err.log
 
@@ -27,6 +30,13 @@ if [ "${EXAMPLE_ENABLED}" == "true" ]; then
     sed -i -e '/autostart/s/false/true/'  $SUPERVISOR_CONF_DIR/ds-example.conf
 else
     sed -i -e '/autostart/s/true/false/'  $SUPERVISOR_CONF_DIR/ds-example.conf
+fi
+
+ADMINPANEL_ENABLED=$(snapctl get onlyoffice.adminpanel-enabled)
+if [ "${ADMINPANEL_ENABLED}" == "true" ]; then
+    sed -i -e '/autostart/s/false/true/'  $SUPERVISOR_CONF_DIR/ds-adminpanel.conf
+else
+    sed -i -e '/autostart/s/true/false/'  $SUPERVISOR_CONF_DIR/ds-adminpanel.conf
 fi
 
 USE_UNAUTHORIZED_STORAGE_ENABLED=$(snapctl get onlyoffice.use-unautorized-storage)
