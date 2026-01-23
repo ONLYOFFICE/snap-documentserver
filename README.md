@@ -1,56 +1,84 @@
+# 📦 Snap for ONLYOFFICE Docs
+
 [![License](https://img.shields.io/badge/License-GNU%20AGPL%20V3-green.svg?style=flat)](https://www.gnu.org/licenses/agpl-3.0.en.html)
 [![ONLYOFFICE Docs](https://snapcraft.io/onlyoffice-ds/badge.svg)](https://snapcraft.io/onlyoffice-ds)
 
-## Overview
+## ✨ Overview
 
-ONLYOFFICE Docs (Document Server) is an open-source office suite that comprises all the tools you need to work with documents, spreadsheets, presentations, PDFs, and PDF forms. The suite supports office files of all popular formats (DOCX, ODT, XLSX, ODS, CSV, PPTX, ODP, etc.) and enables collaborative editing in real time.
+[**ONLYOFFICE Docs**](https://www.onlyoffice.com/docs?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS) (Document Server) is a powerful **open-source office suite** for real-time document collaboration. It enables you to:
 
-## Functionality
+- Create and edit documents, spreadsheets, presentations, and PDFs
+- Collaborate with multiple users simultaneously
+- Work with all popular office formats (DOCX, ODT, XLSX, ODS, CSV, PPTX, ODP, etc.)
 
-ONLYOFFICE Document Server includes the following editors:
+💡 **Why Snap?**
 
-* ONLYOFFICE Document Editor
-* ONLYOFFICE Spreadsheet Editor
-* ONLYOFFICE Presentation Editor
- 
-The editors allow you to create, edit, save and export text, spreadsheet and presentation documents.
+The **Snap** package bundles all dependencies, making installation, updates, and management seamless across Linux distributions.
 
-## Installing ONLYOFFICE Document Server using Snapcraft command line tool
+## 🛠️ Core Editors
 
-ONLYOFFICE Document Server is available in [Snapcraft store](https://snapcraft.io/onlyoffice-ds) as a snap package. A snap contains all the dependencies to run the application. To use it, all you need is snapd, a system to install and manage snaps. Snapd is included into most of modern distributions. You only need to either enable or install it. See the [official snap project page](https://docs.snapcraft.io/core/install) for the snapd installation instructions.
+ONLYOFFICE Docs includes a full set of editors and tools:
 
-For example, to install snapd under Ubuntu you need to run the commands:
+- [**Document Editor**](https://www.onlyoffice.com/word-processor?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS) – Create, edit, save, and export text documents
+- [**Spreadsheet Editor**](https://www.onlyoffice.com/sheets?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS) – Work with spreadsheets in real time
+- [**Presentation Editor**](https://www.onlyoffice.com/slides?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS) – Build and share presentations
+- [**PDF Editor**](https://www.onlyoffice.com/pdf-editor?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS) – View and edit PDFs
+- [**Form Creator**](https://www.onlyoffice.com/form-creator?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS) – Design fillable online forms
+- [**Diagram Viewer**](https://www.onlyoffice.com/diagram-viewer?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS) – View diagrams embedded in documents
 
-```
+---
+
+## 🚀 Installation Guide
+
+### 1. Ensure `snapd` is available
+
+ONLYOFFICE Docs is available in the [Snapcraft store](https://snapcraft.io/onlyoffice-ds). Snap packages contain all dependencies, so setup is simple.
+
+To use Snap packages, you need **snapd**, a system to install and manage snaps. Most modern Linux distributions include `snapd` by default; you may only need to enable or install it.
+
+If missing, install it. Example for Ubuntu/Debian:
+
+```bash
 # apt update
 # apt install snapd
 ```
 
-Now the editors can be easily installed using the following command:
+👉 For other distributions, see the [official snapd installation guide](https://snapcraft.io/docs/installing-snapd)
 
-```
+### 2. Install ONLYOFFICE Docs
+
+Once snapd is ready, install ONLYOFFICE Docs with the following command:
+
+```bash
 # snap install onlyoffice-ds
 ```
 
-## Running ONLYOFFICE Document Server
+The Document Server and all required dependencies are now installed.
 
-Once the installation is over, ONLYOFFICE Document Server will be avalible at [http://localhost](http://localhost)
+## ▶️ Running ONLYOFFICE Docs
 
-You can check status of ONLYOFFICE Document Server [here](http://localhost/welcome)
+After installation, the service starts automatically.
 
-## Uninstalling ONLYOFFICE Document Server
+- Open the editor in your browser: [http://localhost](http://localhost)
+- Access the status page: [http://localhost/welcome](http://localhost/welcome)
 
-To remove the snap containing ONLYOFFICE editors use the following command:
+To check service status:
 
+```bash
+# snap services onlyoffice-ds
 ```
-# snap remove onlyoffice-ds
+
+To restart service :
+
+```bash
+# snap restart onlyoffice-ds
 ```
 
-## Configuration
+## ⚙️ Configuration
 
-### Running ONLYOFFICE Document Server on Different Port
+### Running ONLYOFFICE Document Server on a different port
 
-By default, the snap will listen on port 80. If you'd like to change the HTTP port (say, to port 8888), run:
+By default, the snap listens to port 80. If you'd like to change the HTTP port (e.g., to port 8888), run:
 
 ```
 # snap set onlyoffice-ds onlyoffice.ds-port=8888
@@ -58,26 +86,26 @@ By default, the snap will listen on port 80. If you'd like to change the HTTP po
 
 ### MySQL port configuration
 
-By default, MySQL uses port 3306. You can also change the database port, using the command:
+By default, MySQL uses port 3306. You can also change the database port:
 
 ```
 # snap set onlyoffice-ds onlyoffice.db-port=3307
 ```
 
-### Running ONLYOFFICE Document Server using HTTPS
+### 🔐 Running ONLYOFFICE Document Server using HTTPS
 
-Access to the onlyoffice application can be secured using SSL so as to prevent unauthorized access. While a CA certified SSL certificate allows for verification of trust via the CA, a self signed certificates can also provide an equal level of trust verification as long as each client takes some additional steps to verify the identity of your website. Below the instructions on achieving this are provided.
+Access to ONLYOFFICE can be secured with SSL to prevent unauthorized access. While a CA-certified SSL certificate ensures trust verification through the certificate authority, self-signed certificates can offer a similar level of trust, provided each client takes additional steps to verify your website's identity. Follow the instructions below for guidance.
 
-To secure the application via SSL basically two things are needed:
+To secure the application via SSL, basically two things are needed:
 
 - **Private key (.key)**
 - **SSL certificate (.crt)**
 
-When using CA certified certificates, these files are provided to you by the CA. When using self-signed certificates you need to generate these files yourself. Skip the following section if you are have CA certified SSL certificates.
+When using CA-certified certificates, the necessary files are provided by the certificate authority. For self-signed certificates, you’ll need to generate these files yourself. If you already have CA-certified SSL certificates, you can skip the following section.
 
-#### Generation of Self Signed Certificates
+#### Generation of self-signed certificates
 
-Generation of self-signed SSL certificates involves a simple 3 step procedure.
+Generating self-signed SSL certificates is a straightforward three-step process.
 
 **STEP 1**: Create the server private key
 
@@ -97,14 +125,13 @@ $ openssl req -new -key onlyoffice.key -out onlyoffice.csr
 $ openssl x509 -req -days 365 -in onlyoffice.csr -signkey onlyoffice.key -out onlyoffice.crt
 ```
 
-You have now generated an SSL certificate that's valid for 365 days.
+You have now generated an SSL certificate which is valid for 365 days.
 
-If you'd like to use Example with Self Signed Certificates then you need to [allow to use unauthorized storage](#allow-document-server-to-use-unauthorized-storage).
+If you'd like to use Example with Self-Signed Certificates, you need to [allow using unauthorized storage](#allow-document-server-to-use-unauthorized-storage).
 
 #### Strengthening the server security
 
-This section provides you with instructions to [strengthen your server security](https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html).
-To achieve this you need to generate stronger DHE parameters.
+This section offers instructions to [enhance your server's security](https://raymii.org/s/tutorials/Strong_SSL_Security_On_nginx.html). To do so, you'll need to generate stronger DHE parameters.
 
 ```
 $ openssl dhparam -out dhparam.pem 2048
@@ -112,11 +139,11 @@ $ openssl dhparam -out dhparam.pem 2048
 
 #### Installation of the SSL Certificates
 
-Out of the four files generated above, you need to install the `onlyoffice.key`, `onlyoffice.crt` and `dhparam.pem` files at the onlyoffice server. The CSR file is not needed, but do make sure you safely backup the file (in case you ever need it again).
+From the four files generated above, you need to install `onlyoffice.key`, `onlyoffice.crt` and `dhparam.pem` on the ONLYOFFICE server. The CSR file is not required, but be sure to back it up securely in case it’s needed in the future.
 
-The default path that the onlyoffice application is configured to look for the SSL certificates is at `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs`.
+The default path where the ONLYOFFICE application is configured to locate SSL certificates is `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs`.
 
-The `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/` path is the path of the data store, which means that you have to copy the files into it.
+The path `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/` serves as the data storage, meaning you’ll need to copy the files into this directory.
 
 ```
 # cp onlyoffice.key /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
@@ -124,15 +151,15 @@ The `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/` path is the path 
 # cp dhparam.pem /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/
 ```
 
-Then you must restart ONLYOFFICE Document Server to work on ssl, run:
+Then, restart ONLYOFFICE Document Server to work on SSL:
 
 ```
 # snap restart onlyoffice-ds
 ```
 
-You are now just one step away from having our application secured.
+You are now just one step away from having the application secured.
 
-If you want to return ONLYOFFICE Document Server to work on HTTP, delete files from the `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs` and restart ONLYOFFICE Document Server.
+To revert the ONLYOFFICE Document Server to operate over HTTP, delete the files from `/var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs` and restart the server.
 
 ```
 # rm /var/snap/onlyoffice-ds/current/var/www/onlyoffice/Data/certs/onlyoffice.*
@@ -140,31 +167,31 @@ If you want to return ONLYOFFICE Document Server to work on HTTP, delete files f
 # snap restart onlyoffice-ds
 ```
 
-#### Running ONLYOFFICE Document Server on Different SSL Port
+#### Running ONLYOFFICE Document Server on a different SSL port
 
-By default, HTTPS SSL port is 443. If you'd like to change it (say, to port 444), run:
+By default, HTTPS SSL port is 443. If you'd like to change it (e.g., to port 444), run:
 
 ```
 # snap set onlyoffice-ds onlyoffice.ds-ssl-port=444
 ```
 
-#### Allow document server to use unauthorized storage
+#### Allow ONLYOFFICE to use unauthorized storage
 
-By default, document server is prevented from using an unauthorized storage. To allow it, run:
+By default, the Document Server is prevented from using an unauthorized storage. To allow it, run:
 
 ```
 # snap set onlyoffice-ds onlyoffice.use-unautorized-storage=true
 ```
 
-#### Set document server to run on loopback interface
+#### Set Document Server to run on loopback interface
 
-By default, document server do not run on loopback interface. To set it, run:
+By default, the Document Server doesn't run on loopback interface. To set it, run:
 
 ```
 # snap set onlyoffice-ds onlyoffice.loopback=true
 ```
 
-#### JSON Web Token
+#### 🔑 JSON Web Token
 
 - **jwt-enabled**: Specifies the enabling the JSON Web Token validation by the ONLYOFFICE Document Server. Defaults to `true`.
 - **jwt-secret**: Defines the secret key to validate the JSON Web Token in the request to the ONLYOFFICE Document Server. Random string by default.
@@ -176,39 +203,51 @@ If you'd like to change the JSON Web Token parameters, run:
 # snap set onlyoffice-ds onlyoffice.key=value
 ```
 
-#### Allow document server to use WOPI protocol
+#### Allow Document Server to use WOPI protocol
 
-By default, document server is prevented from using a WOPI protocol. To allow it, run:
+By default, the Document Server is prevented from using a WOPI protocol. To allow it, run:
 
 ```
 # snap set onlyoffice-ds onlyoffice.wopi=true
 ```
 
-### Enabling the Example
+### Enabling the example
 
-By default, example is not enabled. You can enable the example, using the command:
+By default, a test example is not enabled. You can enable it using the command:
 
 ```
 # snap set onlyoffice-ds onlyoffice.example-enabled=true
 ```
 ### Enabling the Admin Panel
 
-By default, Admin Panel is not enabled. You can enable the Admin Panel, using the command:
+By default, the Admin Panel is not enabled. To enable the Admin Panel, use the command:
 
 ```
 # snap set onlyoffice-ds onlyoffice.adminpanel-enabled=true
 ```
 
-## Project Information
+### Uninstall ONLYOFFICE Docs
 
-Official website: [https://www.onlyoffice.com/apps.aspx](https://www.onlyoffice.com/apps.aspx/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnap)
+To remove the snap containing ONLYOFFICE Docs, use the following command:
 
-Code repository: [https://github.com/ONLYOFFICE/DocumentServer](https://github.com/ONLYOFFICE/DocumentServer "https://github.com/ONLYOFFICE/DocumentServer")
+```bash
+# snap remove onlyoffice-ds
+```
 
-## User Feedback and Support
+## 📌 Project links
 
-If you have any problems with or questions about ONLYOFFICE Document Server, please visit our official forum to find answers to your questions: [forum.onlyoffice.com][1] or you can ask and answer ONLYOFFICE development questions on [Stack Overflow][3].
+🌍 Official Website: [ONLYOFFICE Docs](https://www.onlyoffice.com/docs?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS)
 
-  [1]: https://forum.onlyoffice.com
-  [2]: https://github.com/ONLYOFFICE/DocumentServer
-  [3]: http://stackoverflow.com/questions/tagged/onlyoffice
+💾 Code repository: [ONLYOFFICE Docs main repo](https://github.com/ONLYOFFICE/DocumentServer)
+
+🧑‍💻 ONLYOFFICE API: Check out [developer documentation](https://api.onlyoffice.com/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubSnapDS)
+
+## 💬 Support & Community
+
+Need help or want to discuss ONLYOFFICE Docs? Join our community:
+
+- 🛠 Forum: [ONLYOFFICE Community](https://community.onlyoffice.com/)
+- 🐛 GitHub Issues: [Report issues](https://github.com/ONLYOFFICE/snap-documentserver/issues)
+- 💬 Feedback platform: [feedback.onlyoffice.com](https://feedback.onlyoffice.com/forums/966080-your-voice-matters).
+
+---
