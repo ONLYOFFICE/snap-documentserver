@@ -484,3 +484,20 @@ parts:
       rabbitmq-env-start.sh: usr/lib/rabbitmq/bin/rabbitmq-env-start.sh
       nginx-start.sh: usr/sbin/nginx-start.sh
       generate-all-fonts.sh: usr/sbin/generate-all-fonts.sh
+
+  cleanup:
+    after:
+      - rabbitmq
+      - ds-package
+      - node
+      - supervisor
+      - nginx
+      - mysql
+    plugin: nil
+    build-snaps: [core22]
+    override-prime: |
+      set -eux
+      for snap in "core22"; do
+        cd "/snap/$snap/current" && find . -type f,l -name *.so* -exec rm -f "$CRAFT_PRIME/{}" \;
+      done
+      cat $CRAFT_PROJECT_DIR/clean.list | while read f; do rm -f $CRAFT_PRIME/usr/lib/*-linux-gnu/$f*; rm -f $CRAFT_PRIME/lib/*-linux-gnu/$f*; rm -f $CRAFT_PRIME/lib/$f*; done
