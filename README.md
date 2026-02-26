@@ -218,13 +218,6 @@ By default, a test example is not enabled. You can enable it using the command:
 ```
 # snap set onlyoffice-ds onlyoffice.example-enabled=true
 ```
-### Enabling the Admin Panel
-
-By default, the Admin Panel is not enabled. To enable the Admin Panel, use the command:
-
-```
-# snap set onlyoffice-ds onlyoffice.adminpanel-enabled=true
-```
 
 ### Uninstall ONLYOFFICE Docs
 

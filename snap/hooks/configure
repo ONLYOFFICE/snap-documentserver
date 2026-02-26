@@ -11,7 +11,6 @@ DEFAULT_JWT_ENABLED="true"
 DEFAULT_JWT_SECRET="default-jwt-secret"
 DEFAULT_JWT_HEADER="Authorization"
 DEFAULT_EXAMPLE_ENABLED="false"
-DEFAULT_ADMINPANEL_ENABLED="flase"
 DEFAULT_USE_UNAUTHORIZED_STORAGE="false"
 DEFAULT_LOOPBACK="false"
 DEFAULT_WOPI="false"
@@ -331,49 +330,6 @@ previous_onlyoffice_example_enabled()
 set_previous_onlyoffice_example_enabled()
 {
 	snapctl set private.onlyoffice.example-enabled="$1"
-}
-
-
-# onlyoffice.adminpanel-enabled
-
-onlyoffice_adminpanel_enabled()
-{
-	onlyoffice_adminpanel_enabled="$(onlyoffice_adminpanel_enabled)"
-	previous_onlyoffice_adminpanel_enabled="$(previous_onlyoffice_adminpanel_enabled)"
-
-	# If no changes were requested, then there's nothing to do here.
-	if [ "$onlyoffice_adminpanel_enabled" = "$previous_onlyoffice_adminpanel_enabled" ]; then
-		return 0
-	fi
-	set_onlyoffice_adminpanel_enabled "$onlyoffice_adminpanel_enabled"
-	set_previous_onlyoffice_adminpanel_enabled $onlyoffice_adminpanel_enabled
-}
-
-set_onlyoffice_adminpanel_enabled()
-{
-	snapctl set onlyoffice.adminpanel-enabled="$1"
-}
-
-onlyoffice_adminpanel_enabled()
-{
-	port="$(snapctl get onlyoffice.adminpanel-enabled)"
-	if [ -z "$port" ]; then
-		port="$DEFAULT_ADMINPANEL_ENABLED"
-		set_onlyoffice_adminpanel_enabled $port
-		set_previous_onlyoffice_adminpanel_enabled $port
-	fi
-
-	echo "$port"
-}
-
-previous_onlyoffice_adminpanel_enabled()
-{
-	snapctl get private.onlyoffice.adminpanel-enabled
-}
-
-set_previous_onlyoffice_adminpanel_enabled()
-{
-	snapctl set private.onlyoffice.adminpanel-enabled="$1"
 }
 
 

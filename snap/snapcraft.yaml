@@ -389,7 +389,7 @@ parts:
       sed -i -e 's|read the .*</a>|just use <em>sudo snap set onlyoffice-ds onlyoffice.jwt-secret=new-secret-key</em> command.|' $WECLOME_HTML
       sed -i -e '/<h3>Add it to the autostart/d' $WECLOME_HTML
       sed -i -e '/<pre>sudo systemctl enable/d' $WECLOME_HTML
-      sed -i -e 's/sudo systemctl start ds-adminpanel/sudo snap set onlyoffice-ds onlyoffice.adminpanel-enabled=true/' $WECLOME_HTML
+      sed -i -e '/<!-- BEGIN ADMIN PANEL SECTION -->/,/<!-- END ADMIN PANEL SECTION -->/d' $WECLOME_HTML
       #nginx configs
       NGINX_DIR=$CRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx
       mkdir -p $NGINX_DIR/includes
@@ -430,8 +430,6 @@ parts:
       sed -i -e 's|M4_PRODUCT_VERSION|${SNAPCRAFT_PROJECT_VERSION}|' $SNAP_DS_DOCSERVICE_CONF
       ##http-common.conf
       cp common/documentserver/nginx/includes/http-common.conf.m4 $NGINX_DIR/includes/http-common.conf
-      ##ds-adminpanel.conf
-      cp common/documentserver/nginx/includes/ds-adminpanel.conf.m4 $NGINX_DIR/includes/ds-adminpanel.conf
       ##ds-example.conf
       SNAP_DS_EXAMPLE_CONF=$NGINX_DIR/includes/ds-example.conf
       cp common/documentserver-example/nginx/includes/ds-example.conf.m4 $SNAP_DS_EXAMPLE_CONF
@@ -472,7 +470,6 @@ parts:
       example-local.json: etc/onlyoffice/documentserver-example/local.json
       ds-docservice.conf: etc/supervisor/conf.d/ds-docservice.conf
       ds-converter.conf: etc/supervisor/conf.d/ds-converter.conf
-      ds-adminpanel.conf: etc/supervisor/conf.d/ds-adminpanel.conf
       ds-example.conf: etc/supervisor/conf.d/ds-example.conf
       ds.conf: etc/supervisor/conf.d/ds.conf
 
