@@ -28,7 +28,7 @@ layout:
   /usr/bin/wget:
     bind-file: $SNAP/usr/bin/wget
   /usr/lib/x86_64-linux-gnu/libpsl.so.5:
-    bind-file: $SNAP/usr/lib/x86_64-linux-gnu/libpsl.so.5.3.2
+    bind-file: $SNAP/usr/lib/x86_64-linux-gnu/libpsl.so.5.3.4
   /etc/wgetrc:
     bind-file: $SNAP/etc/wgetrc
 
