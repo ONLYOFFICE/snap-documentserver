@@ -446,7 +446,7 @@ parts:
       sed -i -e 's|\$RESTART_CONDITION|false|' $SNAP_PLUGINSMANAGER_SH
       sed -i -e 's|sdkjs-plugins/"|sdkjs-plugins/"\n\nif [ ! -d \${PLUGIN_DIR} ]; then\n  mkdir -p \${PLUGIN_DIR}\n  cp -R \$SNAP/var/www/onlyoffice/documentserver/sdkjs-plugins \${PLUGIN_DIR}/..\nfi|' $SNAP_PLUGINSMANAGER_SH
       sed -i -e "s|LD_LIBRARY_PATH=|LD_LIBRARY_PATH=\$SNAP|" $SNAP_PLUGINSMANAGER_SH
-      sed -i -e '/chown/d' $SNAP_PLUGINSMANAGER_SH
+      sed -i -e 's/chown/echo chown/' $SNAP_PLUGINSMANAGER_SH
       sed -i -e 's|"\${args\[@\]}"|--update="\${PLUGIN_DIR}/plugin-list-default.json"|' $SNAP_PLUGINSMANAGER_SH
       #Add documentserver-prepare4shutdown.sh to snap
       SNAP_PREPARE4SHUTDOWN_SH=$CRAFT_PART_INSTALL/usr/sbin/documentserver-prepare4shutdown.sh
