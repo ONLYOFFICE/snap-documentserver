@@ -390,6 +390,10 @@ parts:
       sed -i -e '/<h3>Add it to the autostart/d' $WECLOME_HTML
       sed -i -e '/<pre>sudo systemctl enable/d' $WECLOME_HTML
       sed -i -e '/<!-- BEGIN ADMIN PANEL SECTION -->/,/<!-- END ADMIN PANEL SECTION -->/d' $WECLOME_HTML
+      #example-disabled page
+      EXAMPLE_DISABLE_HTML=$WECLOME_DIR/example-disabled.html
+      cp common/documentserver-example/welcome/example-disabled.html $EXAMPLE_DISABLE_HTML
+      sed -i -e 's/{{EXAMPLE_DISABLED_COMMANDS}}/sudo snap set onlyoffice-ds onlyoffice.example-enabled=true/' $EXAMPLE_DISABLE_HTML
       #nginx configs
       NGINX_DIR=$CRAFT_PART_INSTALL/etc/onlyoffice/documentserver/nginx
       mkdir -p $NGINX_DIR/includes
