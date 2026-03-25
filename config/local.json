@@ -18,6 +18,7 @@
 	  "CoAuthoring": {
 		"server": {
 		  "newFileTemplate" : "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/document-templates/new",
+                  "documentFormatsFile": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/document-formats/onlyoffice-docs-formats.json",
 		  "static_content": {
 			"/fonts": {
 			  "path": "/snap/onlyoffice-ds/current/var/www/onlyoffice/documentserver/fonts",
