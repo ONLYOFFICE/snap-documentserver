@@ -15,6 +15,10 @@ DEFAULT_USE_UNAUTHORIZED_STORAGE="false"
 DEFAULT_LOOPBACK="false"
 DEFAULT_WOPI="false"
 
+jq_inplace() {
+	FILE=${@: -1}
+	jq "$@" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE";
+}
 
 # onlyoffice.ds-port
 # onlyoffice.ds-ssl-port
@@ -191,9 +195,10 @@ update_jwt_enabled_settings()
 	DS_CONF_DIR=$SNAP_DATA/etc/onlyoffice/documentserver
 	DS_EXAMPLE_CONF_DIR=$SNAP_DATA/etc/onlyoffice/documentserver-example
 
-	sed -i "/browser/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $DS_CONF_DIR/local.json
-	sed -i "/inbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $DS_CONF_DIR/local.json
-	sed -i "/outbox/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $DS_CONF_DIR/local.json
+	JWT_ENABLED=${onlyoffice_jwt_enabled}
+	jq_inplace ".services.CoAuthoring.token.enable.browser = $JWT_ENABLED" $DS_CONF_DIR/local.json
+	jq_inplace ".services.CoAuthoring.token.enable.request.inbox = $JWT_ENABLED" $DS_CONF_DIR/local.json
+	jq_inplace ".services.CoAuthoring.token.enable.request.outbox = $JWT_ENABLED" $DS_CONF_DIR/local.json
 
 	sed -i "/enable/s/"${previous_onlyoffice_jwt_enabled}"/"${onlyoffice_jwt_enabled}"/g" $DS_EXAMPLE_CONF_DIR/local.json
 }
@@ -212,11 +217,16 @@ token_onlyoffice_jwt_secret()
 	fi
 	set_onlyoffice_jwt_secret "$onlyoffice_jwt_secret"
 	set_previous_onlyoffice_jwt_secret $onlyoffice_jwt_secret
-	sed -i "/inbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	sed -i "/outbox/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
-	sed -i "/session/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver/local.json
 
-	sed -i "/secret/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $SNAP_DATA/etc/onlyoffice/documentserver-example/local.json
+	DS_CONF_DIR=$SNAP_DATA/etc/onlyoffice/documentserver
+	DS_EXAMPLE_CONF_DIR=$SNAP_DATA/etc/onlyoffice/documentserver-example
+
+	JWT_SECRET=${onlyoffice_jwt_secret}
+	jq_inplace ".services.CoAuthoring.secret.inbox.string = \"$JWT_SECRET\"" $DS_CONF_DIR/local.json
+	jq_inplace ".services.CoAuthoring.secret.outbox.string = \"$JWT_SECRET\"" $DS_CONF_DIR/local.json
+	jq_inplace ".services.CoAuthoring.secret.session.string = \"$JWT_SECRET\"" $DS_CONF_DIR/local.json
+
+	sed -i "/secret/s/"${previous_onlyoffice_jwt_secret}"/"${onlyoffice_jwt_secret}"/g" $DS_EXAMPLE_CONF_DIR/local.json
 
 	snapctl restart onlyoffice-ds.documentserver
 }
