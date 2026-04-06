@@ -16,7 +16,12 @@ DEFAULT_LOOPBACK="false"
 DEFAULT_WOPI="false"
 
 jq_inplace() {
-	FILE=${@: -1}
+	# Find last arg (filename)
+	last=""
+	for arg in "$@"; do
+		last="$arg"
+	done
+	FILE="$last"
 	jq "$@" > "$FILE.tmp" && mv "$FILE.tmp" "$FILE";
 }
 
