@@ -37,8 +37,10 @@ else
 fi
 
 WOPI_ENABLED=$(snapctl get onlyoffice.wopi)
-jq ".wopi.enable = $WOPI_ENABLED" $DS_CONF_DIR/local.json > local.json.tmp && mv local.json.tmp $DS_CONF_DIR/local.json
-jq ".wopi.enable = $WOPI_ENABLED" $DS_CONF_DIR/default.json > default.json.tmp && mv default.json.tmp $DS_CONF_DIR/default.json
+if [ ! -z "$WOPI_ENABLED" ]; then
+    jq ".wopi.enable = $WOPI_ENABLED" $DS_CONF_DIR/local.json > local.json.tmp && mv local.json.tmp $DS_CONF_DIR/local.json
+    jq ".wopi.enable = $WOPI_ENABLED" $DS_CONF_DIR/default.json > default.json.tmp && mv default.json.tmp $DS_CONF_DIR/default.json
+fi
 
 export LC_ALL=C.UTF-8
 
