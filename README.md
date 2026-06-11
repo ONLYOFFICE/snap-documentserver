@@ -84,14 +84,6 @@ By default, the snap listens to port 80. If you'd like to change the HTTP port (
 # snap set onlyoffice-ds onlyoffice.ds-port=8888
 ```
 
-### MySQL port configuration
-
-By default, MySQL uses port 3306. You can also change the database port:
-
-```
-# snap set onlyoffice-ds onlyoffice.db-port=3307
-```
-
 ### 🔐 Running ONLYOFFICE Document Server using HTTPS
 
 Access to ONLYOFFICE can be secured with SSL to prevent unauthorized access. While a CA-certified SSL certificate ensures trust verification through the certificate authority, self-signed certificates can offer a similar level of trust, provided each client takes additional steps to verify your website's identity. Follow the instructions below for guidance.
