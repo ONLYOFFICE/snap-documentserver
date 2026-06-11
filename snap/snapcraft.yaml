@@ -205,8 +205,8 @@ parts:
   node:
     plugin: dump
     source:
-      - to amd64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-x64.tar.gz
-      - to arm64: https://nodejs.org/dist/v16.15.0/node-v16.15.0-linux-arm64.tar.gz
+      - to amd64: https://nodejs.org/dist/v24.16.0/node-v24.16.0-linux-x64.tar.gz
+      - to arm64: https://nodejs.org/dist/v24.16.0/node-v24.16.0-linux-arm64.tar.gz
     override-build: |
       craftctl default
       rm -f $CRAFT_PART_INSTALL/README.md
