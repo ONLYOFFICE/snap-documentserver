@@ -1,0 +1,185 @@
+name: Build and test snap package
+
+on:
+  pull_request:
+
+env:
+  DO_REGION: ${{ vars.DO_REGION || 'fra1' }}
+  DO_SIZE: ${{ vars.DO_SIZE || 's-2vcpu-4gb' }}
+
+jobs:
+  build:
+    name: Build amd64 snap
+    runs-on: ubuntu-24.04
+    outputs:
+      snap-name: ${{ steps.snap.outputs.name }}
+      artifact-name: ${{ steps.snap.outputs.artifact-name }}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v5
+
+      - name: Read snap metadata
+        id: snap
+        run: |
+          set -euo pipefail
+          snap_name=$(awk '/^name:[[:space:]]*/ { print $2; exit }' snap/snapcraft.yaml)
+          if [ -z "$snap_name" ]; then
+            echo "Unable to read snap name from snap/snapcraft.yaml" >&2
+            exit 1
+          fi
+          echo "name=$snap_name" >> "$GITHUB_OUTPUT"
+          echo "artifact-name=${snap_name}-snap-amd64" >> "$GITHUB_OUTPUT"
+
+      - name: Build snap
+        uses: snapcore/action-build@v1
+        id: build
+
+      - name: Upload snap artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ steps.snap.outputs.artifact-name }}
+          path: ${{ steps.build.outputs.snap }}
+          if-no-files-found: error
+
+  test:
+    name: Test ${{ matrix.os.name }} / ${{ matrix.scenario }}
+    runs-on: ubuntu-24.04
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - name: ubuntu-24.04
+            image: ubuntu-24-04-x64
+          - name: ubuntu-22.04
+            image: ubuntu-22-04-x64
+          - name: debian-12
+            image: debian-12-x64
+          - name: fedora-43
+            image: fedora-43-x64
+        scenario:
+          - clean
+          - upgrade
+    env:
+      SNAP_NAME: ${{ needs.build.outputs.snap-name }}
+      DROPLET_NAME: snap-test-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.os.name }}-${{ matrix.scenario }}
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v5
+
+      - name: Download snap artifact
+        uses: actions/download-artifact@v7
+        with:
+          name: ${{ needs.build.outputs.artifact-name }}
+          path: dist
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Create DigitalOcean droplet
+        id: droplet
+        run: |
+          set -euo pipefail
+          result=$(doctl compute droplet create "$DROPLET_NAME" \
+            --image "${{ matrix.os.image }}" \
+            --region "$DO_REGION" \
+            --size "$DO_SIZE" \
+            --ssh-keys "${{ secrets.DO_SSH_KEY_FINGERPRINT }}" \
+            --wait \
+            --format ID,PublicIPv4 \
+            --no-header)
+          droplet_id=$(awk '{ print $1 }' <<< "$result")
+          droplet_ip=$(awk '{ print $2 }' <<< "$result")
+          if [ -z "$droplet_id" ] || [ -z "$droplet_ip" ]; then
+            echo "Unable to parse droplet details: $result" >&2
+            exit 1
+          fi
+          echo "id=$droplet_id" >> "$GITHUB_OUTPUT"
+          echo "ip=$droplet_ip" >> "$GITHUB_OUTPUT"
+
+      - name: Configure SSH key
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "${{ secrets.DO_SSH_PRIVATE_KEY }}" > ~/.ssh/do_snap_test
+          chmod 600 ~/.ssh/do_snap_test
+
+      - name: Wait for SSH
+        run: |
+          set -euo pipefail
+          for attempt in {1..60}; do
+            if ssh -i ~/.ssh/do_snap_test -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=10 -o ServerAliveInterval=30 -o ServerAliveCountMax=10 root@"${{ steps.droplet.outputs.ip }}" true; then
+              exit 0
+            fi
+            echo "Waiting for SSH ($attempt/60)..."
+            sleep 10
+          done
+          echo "SSH did not become available" >&2
+          exit 1
+
+      - name: Copy snap and test script to droplet
+        run: |
+          set -euo pipefail
+          snap_file=$(find dist -maxdepth 1 -name '*.snap' -print -quit)
+          if [ -z "$snap_file" ]; then
+            echo "No .snap artifact found in dist" >&2
+            exit 1
+          fi
+          scp -i ~/.ssh/do_snap_test -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ServerAliveInterval=30 -o ServerAliveCountMax=10 \
+            "$snap_file" \
+            e2e-playwright/install-update-onlyoffice-ds-snap.sh \
+            root@"${{ steps.droplet.outputs.ip }}":./
+
+      - name: Run ${{ matrix.scenario }} scenario and service checks
+        env:
+          DROPLET_IP: ${{ steps.droplet.outputs.ip }}
+          SCENARIO: ${{ matrix.scenario }}
+        run: |
+          set -euo pipefail
+
+          # Keep the SSH session alive during long-running snap installs that may be quiet.
+          ssh_opts=(
+            -i ~/.ssh/do_snap_test
+            -o StrictHostKeyChecking=no
+            -o UserKnownHostsFile=/dev/null
+            -o ServerAliveInterval=30
+            -o ServerAliveCountMax=10
+          )
+          ssh "${ssh_opts[@]}" root@"$DROPLET_IP" \
+            "SNAP_NAME='$SNAP_NAME' SCENARIO='$SCENARIO' bash ./install-update-onlyoffice-ds-snap.sh"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          set -euo pipefail
+          npm ci --prefix e2e-playwright
+          npm --prefix e2e-playwright exec -- playwright install --with-deps chromium
+
+      - name: Run Playwright Document Server test
+        env:
+          PLAYWRIGHT_BASE_URL: http://${{ steps.droplet.outputs.ip }}
+        run: npm run --prefix e2e-playwright test:e2e
+
+      - name: Upload Playwright artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v6
+        with:
+          name: playwright-artifacts-${{ matrix.os.name }}-${{ matrix.scenario }}
+          path: |
+            e2e-playwright/playwright-report/
+            e2e-playwright/test-results/
+          if-no-files-found: ignore
+
+      - name: Delete DigitalOcean droplet
+        if: ${{ always() }}
+        run: |
+          set -euo pipefail
+          if [ -n "${{ steps.droplet.outputs.id }}" ]; then
+            doctl compute droplet delete "${{ steps.droplet.outputs.id }}" --force
+          fi
