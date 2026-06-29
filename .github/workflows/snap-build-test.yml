@@ -2,6 +2,7 @@ name: Build and test snap package
 
 on:
   pull_request:
+  workflow_dispatch:  
 
 env:
   DO_REGION: ${{ vars.DO_REGION || 'fra1' }}
