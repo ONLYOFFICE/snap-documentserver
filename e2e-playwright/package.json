@@ -1,0 +1,10 @@
+{
+  "name": "snap-documentserver-e2e-playwright",
+  "private": true,
+  "scripts": {
+    "test:e2e": "playwright test tests/e2e/ds.spec.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.54.1"
+  }
+}
