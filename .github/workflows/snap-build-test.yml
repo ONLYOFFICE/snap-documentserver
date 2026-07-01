@@ -165,7 +165,9 @@ jobs:
       - name: Run Playwright Document Server test
         env:
           PLAYWRIGHT_BASE_URL: http://${{ steps.droplet.outputs.ip }}
-        run: npm run --prefix e2e-playwright test:e2e
+          run: |
+            sleep 30
+            npm run --prefix e2e-playwright test:e2e
 
       - name: Upload Playwright artifacts
         if: ${{ failure() }}
