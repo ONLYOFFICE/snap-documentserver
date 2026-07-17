@@ -47,10 +47,6 @@ jobs:
       run: |
         set -euo pipefail
         export PATH="/snap/bin:$PATH"
-        LOGIN_FILE=$(mktemp)
-        trap 'rm -f "$LOGIN_FILE"; snapcraft logout || true' EXIT
-        printf '%s' "$SNAPCRAFT_STORE_CREDENTIALS" > "$LOGIN_FILE"
-        snapcraft login --with "$LOGIN_FILE"
         snapcraft upload onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap --release beta 2>&1 | tee snapcraft-upload.log
         REVISION=$(grep -oE 'Revision [0-9]+' snapcraft-upload.log | awk '{print $2}' | tail -n 1 || true)
         [[ -n "$REVISION" ]] || { echo "::warning::Snap revision was not found in snapcraft upload output"; exit 1; }
@@ -89,10 +85,6 @@ jobs:
       run: |
         set -euo pipefail
         export PATH="/snap/bin:$PATH"
-        LOGIN_FILE=$(mktemp)
-        trap 'rm -f "$LOGIN_FILE"; snapcraft logout || true' EXIT
-        printf '%s' "$SNAPCRAFT_STORE_CREDENTIALS" > "$LOGIN_FILE"
-        snapcraft login --with "$LOGIN_FILE"
         snapcraft upload onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap --release beta 2>&1 | tee snapcraft-upload.log
         REVISION=$(grep -oE 'Revision [0-9]+' snapcraft-upload.log | awk '{print $2}' | tail -n 1 || true)
         [[ -n "$REVISION" ]] || { echo "::warning::Snap revision was not found in snapcraft upload output"; exit 1; }
