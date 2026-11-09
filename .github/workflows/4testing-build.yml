@@ -13,6 +13,18 @@ on:
         description: 'Build number'
         type: string
         required: true
+      branch:
+        description: 'Source branch (reports/<branch>/<build>)'
+        type: string
+        required: false
+      channel:
+        description: 'Snap Store channel'
+        type: choice
+        options:
+        - edge
+        - beta
+        - candidate
+        default: beta
 
 jobs:
   build_arm64:
@@ -44,10 +56,11 @@ jobs:
       id: revision
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+        CHANNEL: ${{ github.event.inputs.channel || 'beta' }}
       run: |
         set -euo pipefail
         export PATH="/snap/bin:$PATH"
-        snapcraft upload onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap --release beta 2>&1 | tee snapcraft-upload.log
+        snapcraft upload onlyoffice-ds_${{ github.event.inputs.version }}_arm64.snap --release "$CHANNEL" 2>&1 | tee snapcraft-upload.log
         REVISION=$(grep -oE 'Revision [0-9]+' snapcraft-upload.log | awk '{print $2}' | tail -n 1 || true)
         [[ -n "$REVISION" ]] || { echo "::warning::Snap revision was not found in snapcraft upload output"; exit 1; }
         echo "revision=$REVISION" >> "$GITHUB_OUTPUT"
@@ -82,10 +95,11 @@ jobs:
       id: revision
       env:
         SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_TOKEN }}
+        CHANNEL: ${{ github.event.inputs.channel || 'beta' }}
       run: |
         set -euo pipefail
         export PATH="/snap/bin:$PATH"
-        snapcraft upload onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap --release beta 2>&1 | tee snapcraft-upload.log
+        snapcraft upload onlyoffice-ds_${{ github.event.inputs.version }}_amd64.snap --release "$CHANNEL" 2>&1 | tee snapcraft-upload.log
         REVISION=$(grep -oE 'Revision [0-9]+' snapcraft-upload.log | awk '{print $2}' | tail -n 1 || true)
         [[ -n "$REVISION" ]] || { echo "::warning::Snap revision was not found in snapcraft upload output"; exit 1; }
         echo "revision=$REVISION" >> "$GITHUB_OUTPUT"
@@ -112,13 +126,15 @@ jobs:
         AMD64_REVISION: ${{ needs.build_amd64.outputs.revision }}
         ARM64_REVISION: ${{ needs.build_arm64.outputs.revision }}
         S3_BUCKET: ${{ vars.S3_BUCKET || 'repo-doc-onlyoffice-com' }}
+        BRANCH: ${{ github.event.inputs.branch }}
       run: |
         set -euo pipefail
 
+        REPORT_DIR="reports/${BRANCH:-release/v${VERSION}}"
         TMP_FILE=$(mktemp)
         for KEY in \
-          "reports/release/v${VERSION}/${BUILD_NUMBER}/server.html" \
-          "reports/release/v${VERSION}/latest/server.html"
+          "${REPORT_DIR}/${BUILD_NUMBER}/server.html" \
+          "${REPORT_DIR}/latest/server.html"
         do
           echo "Updating s3://${S3_BUCKET}/${KEY}"
 
